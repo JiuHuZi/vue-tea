@@ -12,7 +12,9 @@
 </template>
 
 <script>
-export default {}
+export default {
+  name: 'Header'
+}
 </script>
 
 <style scoped>
@@ -20,9 +22,6 @@ header {
   background-color: #ff585d;
   height: 44px;
   width: 100%;
-  position: fixed;
-  top: 0;
-  left: 0;
   display: flex;
   justify-content: space-around;
   align-items: center;

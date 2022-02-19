@@ -45,7 +45,6 @@ export default {
 .swiper-main {
   width: 100%;
   height: 165px;
-  margin-top: 95px;
   position: relative;
 }
 .swiper-container {

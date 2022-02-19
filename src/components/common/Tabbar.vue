@@ -54,34 +54,33 @@ export default {
 </script>
 
 <style scoped>
-.active{color:red}
-.tabbar{
-  position: fixed;
-  left: 0;
-  bottom: 0;
+.active {
+  color: red;
+}
+.tabbar {
   width: 100%;
   height: 60px;
   background-color: #fff;
   z-index: 999;
 }
-.tabbar ul{
+.tabbar ul {
   display: flex;
   justify-content: space-around;
   width: 100%;
   height: 100%;
   align-items: center;
 }
-.tabbar ul li{
+.tabbar ul li {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 }
-.tabbar ul li img{
+.tabbar ul li img {
   width: 31px;
   height: 31px;
 }
-.tabbar ul li span{
+.tabbar ul li span {
   font-size: 16px;
 }
 </style>
