@@ -1,7 +1,7 @@
 <template>
   <header>
     <div class="logo"><img src="@/assets/images/logo.png" alt="" /></div>
-    <div class="search">
+    <div class="search" @click="goSearch">
       <i class="iconfont icon-Magnifier"></i>
       <span>搜您喜欢的……</span>
     </div>
@@ -13,7 +13,12 @@
 
 <script>
 export default {
-  name: 'Header'
+  name: 'Header',
+  methods: {
+    goSearch() {
+      this.$router.push('/search')
+    }
+  }
 }
 </script>
 
