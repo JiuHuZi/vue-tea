@@ -18,14 +18,8 @@
 import Card from '@/components/home/Card.vue'
 export default {
   name: 'Like',
-  data() {
-    return {
-      likeList: [
-        { id: 1, imgUrl: './images/like.jpeg', name: '建盏茶具套装 红色芝麻毫 12件套', price: 299 },
-        { id: 2, imgUrl: './images/like2.jpeg', name: '建盏茶具套装 红色芝麻毫 12件套', price: 299 },
-        { id: 3, imgUrl: './images/like3.jpeg', name: '建盏茶具套装 红色芝麻毫 12件套', price: 299 }
-      ]
-    }
+  props: {
+    likeList: Array
   },
   components: {
     Card

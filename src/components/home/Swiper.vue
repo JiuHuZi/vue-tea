@@ -19,13 +19,11 @@ export default {
     swiper,
     swiperSlide
   },
+  props: {
+    swiperList: Array
+  },
   data() {
     return {
-      swiperList: [
-        { id: 1, imgUrl: './images/swiper1.jpeg' },
-        { id: 2, imgUrl: './images/swiper2.jpeg' },
-        { id: 3, imgUrl: './images/swiper3.jpeg' }
-      ],
       swiperOption: {
         autoplay: 3000,
         speed: 1000,

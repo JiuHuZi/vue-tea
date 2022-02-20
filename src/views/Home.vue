@@ -3,15 +3,19 @@
     <div class="headers">
       <div class="headers-main">
         <Header></Header>
-        <ly-tab v-model="selectedId" :items="items" :options="options"> </ly-tab>
+        <ly-tab v-model="selectedId" :items="items" :options="options" @change="changeTab"> </ly-tab>
       </div>
     </div>
     <section class="wrapper">
       <div>
-        <Swiper></Swiper>
-        <Icons></Icons>
-        <Recommend></Recommend>
-        <Like></Like>
+        <div v-for="(item, index) in newData" :key="index">
+          <Swiper v-if="item.type == 'swiperList'" :swiperList="item.data"></Swiper>
+          <Icons v-if="item.type == 'iconsList'" :iconsList="item.data"></Icons>
+          <Recommend v-if="item.type == 'recommendList'" :recommendList="item.data"></Recommend>
+
+          <Ad v-if="item.type == 'adList'" :adList="item.data"></Ad>
+          <Like v-if="item.type == 'likeList'" :likeList="item.data"></Like>
+        </div>
       </div>
     </section>
     <Tabbar></Tabbar>
@@ -25,9 +29,11 @@ import Swiper from '@/components/home/Swiper.vue'
 import Icons from '@/components/home/Icons.vue'
 import Recommend from '@/components/home/Recommend.vue'
 import Like from '@/components/home/Like.vue'
+import Ad from '@/components/home/Ad.vue'
 
 // 引入插件
 import BetterScroll from 'better-scroll'
+import axios from 'axios'
 export default {
   name: 'Home',
   components: {
@@ -36,22 +42,69 @@ export default {
     Swiper,
     Icons,
     Recommend,
-    Like
+    Like,
+    Ad
   },
   data() {
     return {
       selectedId: 0,
-      items: [{ label: '推荐' }, { label: '大红袍' }, { label: '铁观音' }, { label: '绿茶' }, { label: '普洱' }, { label: '单枞茶' }, { label: '花茶' }, { label: '茶具' }],
+      items: [],
+      newData: [],
       options: {
         activeColor: '#ff585d'
-      }
+      },
+      oBetterScroll: '',
+      tBetterScroll: ''
     }
   },
-  mounted() {
-    new BetterScroll('.wrapper', {
-      movable: true,
-      zoom: true
-    })
+  // mounted() {
+  //   new BetterScroll('.wrapper', {
+  //     movable: true,
+  //     zoom: true
+  //   })
+  // },
+  created() {
+    this.getData()
+  },
+  methods: {
+    async getData() {
+      let { data: res } = await axios({
+        url: '/api/index_list/0/data/1'
+      })
+
+      this.items = Object.freeze(res.data.topBar)
+      this.newData = Object.freeze(res.data.data)
+
+      // 当 DOM 加载完毕再执行
+      this.$nextTick(() => {
+        this.oBetterScroll = new BetterScroll('.wrapper', {
+          movable: true,
+          zoom: true
+        })
+      })
+    },
+    async addData(index) {
+      let { data: res } = await axios({
+        url: `/api/index_list/${index}/data/1`
+      })
+      // console.log(res)
+      if (res.data.constructor != Array) {
+        this.newData = res.data.data
+      } else {
+        this.newData = res.data
+      }
+
+      // 当 DOM 加载完毕再执行
+      this.$nextTick(() => {
+        this.tBetterScroll = new BetterScroll('.wrapper', {
+          movable: true,
+          zoom: true
+        })
+      })
+    },
+    changeTab(item, index) {
+      this.addData(index)
+    }
   }
 }
 </script>

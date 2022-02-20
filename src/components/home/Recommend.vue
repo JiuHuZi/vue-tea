@@ -21,14 +21,8 @@
 import Card from '@/components/home/Card.vue'
 export default {
   name: 'Recommend',
-  data() {
-    return {
-      recommendList: [
-        { id: 1, name: '龙井1号铁罐250g', content: '鲜爽甘醇 口粮首选', price: '68', imgUrl: './images/recommend.jpeg' },
-        { id: 2, name: '龙井1号铁罐250g', content: '鲜爽甘醇 口粮首选', price: '68', imgUrl: './images/recommend.jpeg' },
-        { id: 3, name: '龙井1号铁罐250g', content: '鲜爽甘醇 口粮首选', price: '68', imgUrl: './images/recommend.jpeg' }
-      ]
-    }
+  props: {
+    recommendList: Array
   },
   components: {
     Card
