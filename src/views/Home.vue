@@ -33,7 +33,8 @@ import Ad from '@/components/home/Ad.vue'
 
 // 引入插件
 import BetterScroll from 'better-scroll'
-import axios from 'axios'
+import http from '@/common/api/request.js'
+
 export default {
   name: 'Home',
   components: {
@@ -68,12 +69,12 @@ export default {
   },
   methods: {
     async getData() {
-      let { data: res } = await axios({
+      let res = await http.$axios({
         url: '/api/index_list/0/data/1'
       })
 
-      this.items = Object.freeze(res.data.topBar)
-      this.newData = Object.freeze(res.data.data)
+      this.items = Object.freeze(res.topBar)
+      this.newData = Object.freeze(res.data)
 
       // 当 DOM 加载完毕再执行
       this.$nextTick(() => {
@@ -84,14 +85,14 @@ export default {
       })
     },
     async addData(index) {
-      let { data: res } = await axios({
+      let res = await http.$axios({
         url: `/api/index_list/${index}/data/1`
       })
-      // console.log(res)
-      if (res.data.constructor != Array) {
-        this.newData = res.data.data
-      } else {
+
+      if (res.constructor != Array) {
         this.newData = res.data
+      } else {
+        this.newData = res
       }
 
       // 当 DOM 加载完毕再执行
