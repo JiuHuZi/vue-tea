@@ -18,26 +18,26 @@ export default {
         {
           title: '首页',
           path: '/home',
-          active: './images/home.png',
-          selected: './images/home-select.png'
+          active: '/images/home.png',
+          selected: '/images/home-select.png'
         },
         {
           title: '分类',
           path: '/list',
-          active: './images/list.png',
-          selected: './images/list-select.png'
+          active: '/images/list.png',
+          selected: '/images/list-select.png'
         },
         {
           title: '购物车',
           path: '/cart',
-          active: './images/cart.png',
-          selected: './images/cart-select.png'
+          active: '/images/cart.png',
+          selected: '/images/cart-select.png'
         },
         {
           title: '我的',
           path: '/my',
-          active: './images/my.png',
-          selected: './images/my-select.png'
+          active: '/images/my.png',
+          selected: '/images/my-select.png'
         }
       ]
     }

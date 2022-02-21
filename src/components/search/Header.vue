@@ -9,13 +9,18 @@
         <input type="search" placeholder="搜索您喜欢的产品..." />
       </form>
     </div>
-    <div class="search-btn">搜索</div>
+    <div class="search-btn" @click="goSearchList">搜索</div>
   </header>
 </template>
 
 <script>
 export default {
-  name: 'searchHeader'
+  name: 'searchHeader',
+  methods: {
+    goSearchList() {
+      this.$router.push({ name: 'slist' })
+    }
+  }
 }
 </script>
 
