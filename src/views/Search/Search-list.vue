@@ -24,27 +24,13 @@
     </div>
     <section>
       <ul>
-        <li>
-          <img src="@/assets/images/goods1.jpg" alt="" />
-          <h3>赛事茶-第三届武夷山茶叶交易会暨仙店杯-优质奖肉桂160g</h3>
+        <li v-for="(item, index) in goodsList" :key="index">
+          <img :src="item.imgUrl" alt="" />
+          <h3>{{ item.name }}</h3>
           <div class="price">
-            <div><span>￥</span><b>238</b></div>
-            <div>立即购买</div>
-          </div>
-        </li>
-        <li>
-          <img src="@/assets/images/goods1.jpg" alt="" />
-          <h3>赛事茶-第三届武夷山茶叶交易会暨仙店杯-优质奖肉桂160g</h3>
-          <div class="price">
-            <div><span>￥</span><b>238</b></div>
-            <div>立即购买</div>
-          </div>
-        </li>
-        <li>
-          <img src="@/assets/images/goods1.jpg" alt="" />
-          <h3>赛事茶-第三届武夷山茶叶交易会暨仙店杯-优质奖肉桂160g</h3>
-          <div class="price">
-            <div><span>￥</span><b>238</b></div>
+            <div>
+              <span>￥</span><b>{{ item.price }}</b>
+            </div>
             <div>立即购买</div>
           </div>
         </li>
@@ -57,9 +43,38 @@
 <script>
 import Header from '@/components/search/Header.vue'
 import Tabbar from '@/components/common/Tabbar.vue'
+import http from '@/common/api/request.js'
 export default {
   name: 'search-list',
-  components: { Header, Tabbar }
+  components: { Header, Tabbar },
+  data() {
+    return {
+      goodsList: []
+    }
+  },
+  created() {
+    this.getData()
+  },
+  methods: {
+    getData() {
+      http
+        .$axios({
+          url: '/api/goods/shopList',
+          params: {
+            searchName: this.$route.query.key
+          }
+        })
+        .then((res) => {
+          this.goodsList = res
+          console.log(res)
+        })
+    }
+  },
+  watch: {
+    $route() {
+      this.getData()
+    }
+  }
 }
 </script>
 
