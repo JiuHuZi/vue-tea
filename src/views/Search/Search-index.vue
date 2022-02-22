@@ -9,7 +9,7 @@
           <span class="clear" @click="delStorage">清空历史记录</span>
         </h2>
         <ul>
-          <li v-for="(item, index) in searchArr" :key="index">{{ item }}</li>
+          <li v-for="(item, index) in searchArr" :key="index" @click="goSearchList(item)">{{ item }}</li>
         </ul>
       </div>
       <div class="notSearchList" v-else>暂无搜索记录……</div>
@@ -49,6 +49,17 @@ export default {
           localStorage.removeItem('searchList')
           // 清空数据
           this.searchArr = []
+        }
+      })
+    },
+    // 点击历史搜索，进入搜索结果页面
+    goSearchList(item) {
+      // console.log(item)
+      // 跳转页面
+      this.$router.push({
+        name: 'slist',
+        query: {
+          key: item
         }
       })
     }

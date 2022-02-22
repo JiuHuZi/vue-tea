@@ -80,6 +80,7 @@ header {
 }
 .search-btn {
   font-size: 16px;
+  line-height: 44px;
 }
 .search-main {
   background-color: #fff;

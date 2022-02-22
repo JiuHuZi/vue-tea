@@ -13,9 +13,9 @@
       </ul>
     </div>
     <section>
-      <ul>
+      <ul v-if="goodsList.length">
         <li v-for="(item, index) in goodsList" :key="index">
-          <img :src="item.imgUrl" alt="" />
+          <img v-lazy="item.imgUrl" alt="" />
           <h3>{{ item.name }}</h3>
           <div class="price">
             <div>
@@ -25,6 +25,7 @@
           </div>
         </li>
       </ul>
+      <h5 v-else>暂无数据……</h5>
     </section>
     <Tabbar></Tabbar>
   </div>
@@ -39,6 +40,7 @@ export default {
   components: { Header, Tabbar },
   data() {
     return {
+      oBetterScroll: '',
       goodsList: [],
       searchList: {
         currentIndex: 0,
@@ -107,7 +109,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 .search-list {
   width: 100vw;
   height: 100vh;
@@ -135,24 +137,27 @@ export default {
 section {
   flex: 1;
   overflow: hidden;
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    li {
+      width: 50%;
+      padding: 10px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      img {
+        width: 170px;
+        height: 170px;
+      }
+    }
+  }
 }
-section ul {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-}
-section ul li {
-  width: 50%;
-  padding: 10px;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-section ul li img {
-  width: 170px;
-  height: 170px;
+section ul li img[lazy='loading'] {
+  background-color: #f7f7f7;
 }
 section ul li h3 {
   width: 100%;

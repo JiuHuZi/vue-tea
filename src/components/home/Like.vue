@@ -3,7 +3,7 @@
     <Card><span>猜你喜欢</span></Card>
     <ul>
       <li v-for="(item, index) in likeList" :key="index">
-        <h2><img :src="item.imgUrl" alt="" /></h2>
+        <h2><img v-lazy="item.imgUrl" /></h2>
         <h3>{{ item.name }}</h3>
         <div class="price">
           <span>￥</span>
@@ -66,5 +66,8 @@ export default {
 .price b {
   font-size: 16px;
   font-weight: bold;
+}
+img[lazy='loading'] {
+  background-color: #f7f7f7;
 }
 </style>
