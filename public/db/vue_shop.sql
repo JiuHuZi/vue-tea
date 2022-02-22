@@ -24,15 +24,16 @@ CREATE TABLE `goods_list` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(200) DEFAULT NULL,
   `content` varchar(200) DEFAULT NULL,
-  `price` varchar(200) DEFAULT NULL,
-  `num` varchar(200) DEFAULT NULL,
+  `price` double DEFAULT NULL,
+  `num` int(11) DEFAULT NULL,
   `imgUrl` varchar(200) DEFAULT NULL,
+  `complete` varchar(200) DEFAULT NULL,
   KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
 
 /*Data for the table `goods_list` */
 
-insert  into `goods_list`(`id`,`name`,`content`,`price`,`num`,`imgUrl`) values (1,'浅尝-金牡丹（武夷岩茶）',NULL,'14.60',NULL,'/images/goods1.jpeg'),(2,'2016南糯山古树普洱生茶',NULL,'98',NULL,'/images/goods2.jpeg'),(3,'黄山太平猴魁绿茶1号',NULL,'99',NULL,'/images/goods3.jpeg'),(4,'绿茶-无瑕黄金芽礼盒',NULL,'188',NULL,'/images/goods4.jpeg');
+insert  into `goods_list`(`id`,`name`,`content`,`price`,`num`,`imgUrl`,`complete`) values (1,'浅尝-金牡丹（武夷岩茶）',NULL,14.6,1,'/images/goods1.jpeg',NULL),(2,'2016南糯山古树普洱生茶',NULL,98,2,'/images/goods2.jpeg',NULL),(3,'黄山太平猴魁绿茶1号',NULL,99,3,'/images/goods3.jpeg',NULL),(4,'绿茶-无瑕黄金芽礼盒',NULL,188,4,'/images/goods4.jpeg',NULL),(5,NULL,NULL,NULL,NULL,NULL,NULL);
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

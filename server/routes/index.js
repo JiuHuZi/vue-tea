@@ -127,8 +127,10 @@ router.get('/api/index_list/2/data/1', function (req, res, next) {
 // 查询商品数据接口
 router.get('/api/goods/shopList', function (req, res, next) {
   // 前端给后端的数据
-  let searchName = req.query.searchName
-  connection.query('select * from goods_list where name like "%' + searchName + '%"', function (err, results) {
+  let [searchName, orderName] = Object.keys(req.query)
+  let [name, order] = Object.values(req.query)
+
+  connection.query('select * from goods_list where name like "%' + name + '%" order by ' + orderName + ' ' + order + '', function (err, results) {
     res.send({
       code: 0,
       data: results

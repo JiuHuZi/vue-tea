@@ -3,21 +3,11 @@
     <div class="headers">
       <Header></Header>
       <ul>
-        <li>
-          <div>综合</div>
-        </li>
-        <li>
-          <div>价格</div>
-          <div class="search-filter">
-            <i class="iconfont icon-arrow_up_fat"></i>
-            <i class="iconfont icon-arrow_down_fat"></i>
-          </div>
-        </li>
-        <li>
-          <div>销量</div>
-          <div class="search-filter">
-            <i class="iconfont icon-arrow_up_fat"></i>
-            <i class="iconfont icon-arrow_down_fat"></i>
+        <li v-for="(item, index) in searchList.data" :key="index" @click="changeTab(index)">
+          <div :class="searchList.currentIndex == index ? 'active' : ''">{{ item.name }}</div>
+          <div class="search-filter" v-if="index != 0">
+            <i class="iconfont icon-arrow_up_fat" :class="item.status == 1 ? 'active' : ''"></i>
+            <i class="iconfont icon-arrow_down_fat" :class="item.status == 2 ? 'active' : ''"></i>
           </div>
         </li>
       </ul>
@@ -49,7 +39,17 @@ export default {
   components: { Header, Tabbar },
   data() {
     return {
-      goodsList: []
+      goodsList: [],
+      searchList: {
+        currentIndex: 0,
+        data: [
+          // status:0 都不亮  status:1 上箭头亮    status:2 下箭头亮
+          // key -> 数据库的键值
+          { name: '综合', key: 'complete' },
+          { name: '价格', status: 0, key: 'price' },
+          { name: '销量', status: 0, key: 'num' }
+        ]
+      }
     }
   },
   created() {
@@ -61,18 +61,47 @@ export default {
         .$axios({
           url: '/api/goods/shopList',
           params: {
-            searchName: this.$route.query.key
+            searchName: this.$route.query.key,
+            ...this.orderBy
           }
         })
         .then((res) => {
           this.goodsList = res
-          console.log(res)
+          // console.log(res)
         })
+    },
+    changeTab(index) {
+      this.searchList.currentIndex = index
+      // 点击的下标对应数据的哪个
+      let item = this.searchList.data[index]
+      // 取消所有的状态值 == 都变成 0
+      this.searchList.data.forEach((v, i) => {
+        if (i != index) {
+          v.status = 0
+        }
+      })
+
+      // 当前点击的改变状态
+      if (index == this.searchList.currentIndex) {
+        item.status = item.status == 1 ? 2 : 1
+      }
+
+      // 发送请求进行数据排序
+      this.getData()
     }
   },
   watch: {
     $route() {
       this.getData()
+    }
+  },
+  computed: {
+    orderBy() {
+      // 知道当前是哪个对象
+      let obj = this.searchList.data[this.searchList.currentIndex]
+      // 针对于状态，判断是升序还是降序
+      let val = obj.status == 1 ? 'asc' : 'desc'
+      return { [obj.key]: val }
     }
   }
 }
@@ -154,5 +183,8 @@ section ul li .price div:first-child span {
 section ul li .price div:first-child b {
   color: red;
   font-size: 16px;
+}
+.active {
+  color: red;
 }
 </style>
