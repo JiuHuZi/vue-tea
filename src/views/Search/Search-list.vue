@@ -12,20 +12,22 @@
         </li>
       </ul>
     </div>
-    <section>
-      <ul v-if="goodsList.length">
-        <li v-for="(item, index) in goodsList" :key="index">
-          <img v-lazy="item.imgUrl" alt="" />
-          <h3>{{ item.name }}</h3>
-          <div class="price">
-            <div>
-              <span>￥</span><b>{{ item.price }}</b>
+    <section ref="sectionMain">
+      <div>
+        <ul v-if="goodsList.length">
+          <li v-for="(item, index) in goodsList" :key="index">
+            <img v-lazy="item.imgUrl" alt="" />
+            <h3>{{ item.name }}</h3>
+            <div class="price">
+              <div>
+                <span>￥</span><b>{{ item.price }}</b>
+              </div>
+              <div>立即购买</div>
             </div>
-            <div>立即购买</div>
-          </div>
-        </li>
-      </ul>
-      <h5 v-else>暂无数据……</h5>
+          </li>
+        </ul>
+        <h5 v-else>暂无数据……</h5>
+      </div>
     </section>
     <Tabbar></Tabbar>
   </div>
@@ -35,6 +37,7 @@
 import Header from '@/components/search/Header.vue'
 import Tabbar from '@/components/common/Tabbar.vue'
 import http from '@/common/api/request.js'
+import BetterScroll from 'better-scroll'
 export default {
   name: 'search-list',
   components: { Header, Tabbar },
@@ -71,6 +74,11 @@ export default {
           this.goodsList = res
           // console.log(res)
         })
+
+      // 当 DOM 加载完毕再执行
+      this.$nextTick(() => {
+        new BetterScroll(this.$refs.sectionMain)
+      })
     },
     changeTab(index) {
       this.searchList.currentIndex = index

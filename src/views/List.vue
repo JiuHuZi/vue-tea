@@ -6,50 +6,26 @@
       <div class="go-home"><i class="iconfont icon-shouye"></i></div>
     </header>
     <section>
-      <div class="list-l">
+      <div class="list-l" ref="left">
         <ul class="l-item">
-          <li class="active">推荐</li>
-          <li>推荐</li>
-          <li>推荐</li>
-          <li>推荐</li>
+          <li :class="{ active: index == currentIndex }" v-for="(item, index) in leftData" :key="index" @click="goScroll(index)">{{ item.name }}</li>
         </ul>
       </div>
-      <div class="list-r">
-        <ul>
-          <li class="shop-list">
-            <h2>推荐</h2>
-            <ul class="r-content">
-              <li>
-                <img src="@/assets/images/list1.jpeg" alt="" />
-                <span>铁观音</span>
-              </li>
-              <li>
-                <img src="@/assets/images/list1.jpeg" alt="" />
-                <span>铁观音</span>
-              </li>
-              <li>
-                <img src="@/assets/images/list1.jpeg" alt="" />
-                <span>铁观音</span>
-              </li>
-              <li>
-                <img src="@/assets/images/list1.jpeg" alt="" />
-                <span>铁观音</span>
-              </li>
-              <li>
-                <img src="@/assets/images/list1.jpeg" alt="" />
-                <span>铁观音</span>
-              </li>
-              <li>
-                <img src="@/assets/images/list1.jpeg" alt="" />
-                <span>铁观音</span>
-              </li>
-              <li>
-                <img src="@/assets/images/list1.jpeg" alt="" />
-                <span>铁观音</span>
-              </li>
-            </ul>
-          </li>
-        </ul>
+
+      <div class="list-r" ref="right">
+        <div class="right-main">
+          <ul v-for="(item, index) in rightData" :key="index" class="shop-list">
+            <li v-for="(k, i) in item" :key="i">
+              <h2>{{ k.name }}</h2>
+              <ul class="r-content">
+                <li v-for="(j, idx) in k.list" :key="idx">
+                  <img :src="j.imgUrl" alt="" />
+                  <span>{{ j.name }}</span>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
       </div>
     </section>
     <Tabbar></Tabbar>
@@ -57,13 +33,91 @@
 </template>
 <script>
 import Tabbar from '@/components/common/Tabbar.vue'
+import http from '@/common/api/request.js'
+import BetterScroll from 'better-scroll'
 export default {
   name: 'List',
+  data() {
+    return {
+      // 左侧数据
+      leftData: [],
+      // 右侧数据
+      rightData: [],
+      // 右侧滑动
+      rightBScroll: '',
+      // 承载右侧每一块的高度值
+      allHeight: [],
+      // 右侧滚动距离
+      scrollY: ''
+    }
+  },
   components: {
     Tabbar
+  },
+  async created() {
+    let res = await http.$axios({
+      url: '/api/goods/list'
+    })
+
+    let leftArr = []
+    let rightArr = []
+
+    res.forEach((v) => {
+      leftArr.push({
+        id: v.id,
+        name: v.name
+      })
+      rightArr.push(v.data)
+    })
+
+    this.leftData = leftArr
+    this.rightData = rightArr
+
+    // 当 DOM 加载完毕再执行
+    this.$nextTick(() => {
+      // 左侧滑动
+      new BetterScroll(this.$refs.left, {
+        // 解决better-scroll 的默认取消 click 事件
+        click: true
+      })
+      // 右侧滑动
+      this.rightBScroll = new BetterScroll(this.$refs.right, {
+        click: true,
+        probeType: 3
+      })
+      // 统计右侧所有板块高度值，并且放入数组中
+      let heitht = 0
+      this.allHeight.push(heitht)
+      // 获取右侧每一块的高度值
+      let uls = this.$refs.right.getElementsByClassName('shop-list')
+      // 把 DOM 对象转换成真正的数组
+      Array.from(uls).forEach((v) => {
+        heitht += v.clientHeight
+        this.allHeight.push(heitht)
+      })
+
+      // 得到右侧滚动的值
+      this.rightBScroll.on('scroll', (pos) => {
+        this.scrollY = Math.abs(pos.y)
+      })
+    })
+  },
+  methods: {
+    goScroll(index) {
+      // console.log(index)
+      this.rightBScroll.scrollTo(0, -this.allHeight[index], 300)
+    }
+  },
+  computed: {
+    currentIndex() {
+      return this.allHeight.findIndex((item, index) => {
+        return this.scrollY >= item && this.scrollY < this.allHeight[index + 1]
+      })
+    }
   }
 }
 </script>
+
 <style lang="less" scoped>
 .list {
   display: flex;
@@ -130,7 +184,9 @@ export default {
         align-items: center;
         li {
           width: 100%;
-          line-height: 50px;
+          // line-height: 50px;
+          margin: 20px 0;
+          padding: 3px 0;
           text-align: center;
           font-size: 16px;
           &.active {
@@ -174,6 +230,9 @@ export default {
   }
   ::v-deep .tabbar {
     border-top: 1px solid #eee;
+  }
+  .right-main {
+    padding-bottom: 70vh;
   }
 }
 </style>
