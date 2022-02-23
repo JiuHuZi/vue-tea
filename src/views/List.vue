@@ -2,7 +2,7 @@
   <div class="list">
     <header>
       <div class="returns"><i class="iconfont icon-fanhui"></i></div>
-      <div class="search"><i class="iconfont icon-Magnifier"></i> <span>搜您喜欢的……</span></div>
+      <div class="search" @click="$router.push('/search')"><i class="iconfont icon-Magnifier"></i> <span>搜您喜欢的……</span></div>
       <div class="go-home"><i class="iconfont icon-shouye"></i></div>
     </header>
     <section>
