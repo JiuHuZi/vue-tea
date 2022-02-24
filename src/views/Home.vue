@@ -58,12 +58,6 @@ export default {
       tBetterScroll: ''
     }
   },
-  // mounted() {
-  //   new BetterScroll('.wrapper', {
-  //     movable: true,
-  //     zoom: true
-  //   })
-  // },
   created() {
     this.getData()
   },

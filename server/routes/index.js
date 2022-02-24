@@ -60,16 +60,15 @@ router.get('/api/index_list/0/data/1', function (req, res, next) {
           id: 3,
           type: 'likeList',
           data: [
-            { id: 1, imgUrl: './images/like.jpeg', name: '建盏茶具套装 红色芝麻毫 12件套', price: 299 },
-            { id: 2, imgUrl: './images/like.jpeg', name: '建盏茶具套装 红色芝麻毫 12件套', price: 299 },
-            { id: 3, imgUrl: './images/like.jpeg', name: '建盏茶具套装 红色芝麻毫 12件套', price: 299 },
-            { id: 4, imgUrl: './images/like.jpeg', name: '建盏茶具套装 红色芝麻毫 12件套', price: 299 },
-            { id: 5, imgUrl: './images/like.jpeg', name: '建盏茶具套装 红色芝麻毫 12件套', price: 299 },
-            { id: 6, imgUrl: './images/like3.jpeg', name: '建盏茶具套装 红色芝麻毫 12件套', price: 299 },
-            { id: 7, imgUrl: './images/like2.jpeg', name: '建盏茶具套装 红色芝麻毫 12件套', price: 299 },
-            { id: 8, imgUrl: './images/like3.jpeg', name: '建盏茶具套装 红色芝麻毫 12件套', price: 299 },
-            { id: 9, imgUrl: './images/like2.jpeg', name: '建盏茶具套装 红色芝麻毫 12件套', price: 299 },
-            { id: 10, imgUrl: './images/like3.jpeg', name: '建盏茶具套装 红色芝麻毫 12件套', price: 299 }
+            { id: 1, imgUrl: '/images/goods1.jpeg', name: '浅尝-金牡丹（武夷岩茶）', price: 14.6 },
+            { id: 2, imgUrl: '/images/goods2.jpeg', name: '2016南糯山古树普洱生茶', price: 98 },
+            { id: 3, imgUrl: '/images/goods3.jpeg', name: '黄山太平猴魁绿茶1号', price: 99 },
+            { id: 4, imgUrl: '/images/goods4.jpeg', name: '绿茶-无瑕黄金芽礼盒', price: 188 },
+            { id: 5, imgUrl: '/images/goods5.jpeg', name: '黑金茶具套装', price: 458 },
+            { id: 6, imgUrl: '/images/goods6.jpeg', name: '高山流水陶瓷旅行茶具', price: 168 },
+            { id: 7, imgUrl: '/images/goods7.jpeg', name: '金油滴建盏', price: 298 },
+            { id: 8, imgUrl: '/images/goods8.jpeg', name: '浅尝-白牡丹', price: 6.6 },
+            { id: 9, imgUrl: '/images/goods9.jpeg', name: '2016白毫银针巧克力茶砖', price: 98 }
           ]
         }
       ]
@@ -324,6 +323,18 @@ router.get('/api/goods/list', function (req, res, next) {
         ]
       }
     ]
+  })
+})
+
+// 查询商品 ID 的接口
+router.get('/api/goods/id', function (req, res, next) {
+  let id = req.query.id
+  connection.query('select * from goods_list where id = ' + id + '', function (err, results) {
+    if (err) throw err
+    res.json({
+      code: 0,
+      data: results[0]
+    })
   })
 })
 module.exports = router

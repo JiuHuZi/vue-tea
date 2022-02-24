@@ -2,7 +2,7 @@
   <div class="like">
     <Card><span>猜你喜欢</span></Card>
     <ul>
-      <li v-for="(item, index) in likeList" :key="index" @click="goDetail">
+      <li v-for="(item, index) in likeList" :key="index" @click="goDetail(item.id)">
         <h2><img v-lazy="item.imgUrl" /></h2>
         <h3>{{ item.name }}</h3>
         <div class="price">
@@ -25,9 +25,12 @@ export default {
     Card
   },
   methods: {
-    goDetail() {
+    goDetail(id) {
       this.$router.push({
-        path: '/detail'
+        path: '/detail',
+        query: {
+          id
+        }
       })
     }
   }
