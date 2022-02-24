@@ -138,7 +138,7 @@ export default {
         params: { id }
       })
 
-      console.log(res)
+      // console.log(res)
       this.goods = res
     }
   }
