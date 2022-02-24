@@ -6,12 +6,12 @@
         <input type="text" placeholder="请输入手机号" pattern="[0-9]*" />
       </div>
       <div class="login-code">
-        <input type="text" placeholder="请输入验证码" pattern="[0-9]*" />
-        <button>获取短信验证码</button>
+        <input type="text" placeholder="请输入密码" />
       </div>
       <div class="login-btn">登录</div>
       <div class="login-tab">
-        <span @click="$router.push('/userlogin')">密码登录</span>
+        <span @click="$router.push('/login')">短信登录</span>
+        <span>找回密码</span>
         <span>快速注册</span>
       </div>
     </section>
@@ -59,15 +59,7 @@ section {
     display: flex;
     input {
       flex: 1;
-      border-radius: 6px 0 0 6px;
-    }
-    button {
-      padding: 0 20px;
-      line-height: 44px;
-      background-color: #ff585d;
-      border: 0;
-      color: #fff;
-      border-radius: 0 6px 6px 0;
+      border-radius: 6px;
     }
   }
   .login-btn {
