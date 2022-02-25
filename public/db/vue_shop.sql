@@ -47,11 +47,11 @@ CREATE TABLE `user` (
   `nickName` varchar(200) DEFAULT NULL,
   `token` varchar(200) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
 
 /*Data for the table `user` */
 
-insert  into `user`(`id`,`tel`,`pwd`,`imgUrl`,`nickName`,`token`) values (1,'13144274876','123456',NULL,NULL,NULL),(2,'12345678901','666666',NULL,NULL,NULL);
+insert  into `user`(`id`,`tel`,`pwd`,`imgUrl`,`nickName`,`token`) values (1,'13144274876','123456','/images/header.jpeg',NULL,NULL),(2,'12345678901','888888','/images/header.jpeg',NULL,NULL),(3,'13166981478','666666','/images/header.jpeg',NULL,NULL),(4,'13144112259','999999','/images/header.jpeg',NULL,NULL),(5,'17345698789','666666','/images/header.jpeg','','');
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
