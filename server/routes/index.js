@@ -2,13 +2,56 @@ var express = require('express')
 var router = express.Router()
 var connection = require('../db/sql.js')
 var user = require('../db/userSql.js')
+var QcloudSms = require('qcloudsms_js')
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
   res.render('index', { title: 'Express' })
 })
 
-//
+//发送短信验证
+router.post('/api/code', function (req, res, next) {
+  let tel = req.body.phone
+
+  // 短信应用SDK AppID
+  var appid = 1400636424 // SDK AppID是1400开头
+
+  // 短信应用SDK AppKey
+  var appkey = '0e32a8ad0a40b4a81bdd9f61436dd98f'
+
+  // 需要发送短信的手机号码
+  var phoneNumbers = [tel]
+
+  // 短信模板ID，需要在短信应用中申请
+  var templateId = 285590 // NOTE: 这里的模板ID`7839`只是一个示例，真实的模板ID需要在短信控制台中申请
+
+  // 签名
+  var smsSign = '腾讯云' // NOTE: 这里的签名只是示例，请使用真实的已申请的签名, 签名参数使用的是`签名内容`，而不是`签名ID`
+
+  // 实例化QcloudSms
+  var qcloudsms = QcloudSms(appid, appkey)
+
+  // 设置请求回调处理, 这里只是演示，用户需要自定义相应处理回调
+  function callback(err, ress, resData) {
+    if (err) {
+      console.log('err: ', err)
+    } else {
+      res.send({
+        code: 200,
+        data: {
+          success: true,
+          data: ress.req.body.params[0]
+        }
+      })
+    }
+  }
+  var ssender = qcloudsms.SmsSingleSender()
+  // 这个 变量 就是往手机上，发送的短信
+  var params = [Math.floor(Math.random() * (9999 - 1000)) + 1000]
+  ssender.sendWithParam(86, phoneNumbers[0], templateId, params, smsSign, '', '', callback) // 签名参数不能为空串
+})
+
+//密码登录验证
 router.post('/api/login', function (req, res, next) {
   // 后端要接收前端传递过来的值
   let params = {
