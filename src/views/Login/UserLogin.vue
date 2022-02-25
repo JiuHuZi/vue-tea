@@ -3,12 +3,12 @@
     <Header></Header>
     <section>
       <div class="login-tel">
-        <input type="text" placeholder="请输入手机号" pattern="[0-9]*" />
+        <input type="text" placeholder="请输入手机号" v-model="userTel" pattern="[0-9]*" />
       </div>
       <div class="login-code">
-        <input type="text" placeholder="请输入密码" />
+        <input type="text" placeholder="请输入密码" v-model="userPwd" />
       </div>
-      <div class="login-btn">登录</div>
+      <div class="login-btn" @click="login">登录</div>
       <div class="login-tab">
         <span @click="$router.push('/login')">短信登录</span>
         <span>找回密码</span>
@@ -22,11 +22,72 @@
 <script>
 import Header from '@/components/Login/header.vue'
 import Tabber from '@/components/common/Tabbar.vue'
+import { Toast } from 'mint-ui'
+import http from '@/common/api/request.js'
 export default {
   name: 'Login',
   components: {
     Tabber,
     Header
+  },
+  data() {
+    return {
+      // 用户输入的手机号
+      userTel: '',
+      // 用户输入的密码
+      userPwd: '',
+      // 验证规则
+      rules: {
+        // 手机号验证
+        userTel: {
+          rule: /^1[23456789]\d{9}$/,
+          msg: '手机号不能为空，并且是11位数字'
+        },
+        // 密码验证
+        userPwd: {
+          rule: /^\w{6,12}$/,
+          msg: '密码不能为空，并且要求6-12位'
+        }
+      }
+    }
+  },
+  methods: {
+    // 点击登录按钮
+    login() {
+      // 前端验证
+      if (!this.validata('userTel')) return
+      if (!this.validata('userPwd')) return
+      // 发送请求，后端验证
+      http
+        .$axios({
+          url: '/api/login',
+          method: 'POST',
+          data: {
+            userTel: this.userTel,
+            userPwd: this.userPwd
+          }
+        })
+        .then((res) => {
+          // 提示信息
+          Toast(res.msg)
+          // 登录失败
+          if (!res.success) return
+          // 登录成功 => 跳转页面，存储用户信息
+
+          console.log(res)
+        })
+    },
+    // 验证信息提示
+    validata(key) {
+      let bool = true
+      if (!this.rules[key].rule.test(this[key])) {
+        // 提示信息
+        Toast(this.rules[key].msg)
+        bool = false
+        return false
+      }
+      return bool
+    }
   }
 }
 </script>

@@ -1,10 +1,58 @@
 var express = require('express')
 var router = express.Router()
 var connection = require('../db/sql.js')
+var user = require('../db/userSql.js')
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
   res.render('index', { title: 'Express' })
+})
+
+//
+router.post('/api/login', function (req, res, next) {
+  // 后端要接收前端传递过来的值
+  let params = {
+    userTel: req.body.userTel,
+    userPwd: req.body.userPwd
+  }
+
+  // 查询用户手机号是否存在
+  connection.query(user.queryUserTel(params), function (err, results) {
+    // 手机号存在
+    if (results.length > 0) {
+      connection.query(user.queryUserPwd(params), function (err, results) {
+        if (results.length > 0) {
+          // 手机号和密码都正确
+          res.send({
+            code: 200,
+            data: {
+              success: true,
+              msg: '登录成功',
+              data: results[0]
+            }
+          })
+        } else {
+          // 密码不正确
+          res.send({
+            code: 301,
+            data: {
+              success: false,
+              msg: '密码不正确'
+            }
+          })
+        }
+      })
+    } else {
+      // 手机号不存在
+      res.send({
+        code: 301,
+        data: {
+          success: false,
+          msg: '手机号不存在'
+        }
+      })
+    }
+  })
 })
 
 // 首页推荐的数据
@@ -337,4 +385,5 @@ router.get('/api/goods/id', function (req, res, next) {
     })
   })
 })
+
 module.exports = router
