@@ -9,6 +9,130 @@ router.get('/', function (req, res, next) {
   res.render('index', { title: 'Express' })
 })
 
+// 修改密码
+router.post('/api/recovery', function (req, res, next) {
+  let params = {
+    userTel: req.body.phone,
+    userPwd: req.body.pwd
+  }
+  connection.query(user.queryUserTel(params), function (err, result) {
+    // 某一条记录数 ID
+    let id = result[0].id
+    let pwd = result[0].pwd
+    connection.query(`update user set pwd = replace(pwd,'${pwd}','${params.userPwd}') where id = ${id}`, function (error, results) {
+      res.send({
+        code: 200,
+        data: {
+          success: true,
+          msg: '修改成功'
+        }
+      })
+    })
+  })
+})
+
+// 查询用户是否存在
+router.post('/api/selectUser', function (req, res, next) {
+  let params = {
+    userTel: req.body.phone
+  }
+
+  connection.query(user.queryUserTel(params), function (err, result) {
+    if (err) throw err
+    if (result.length > 0) {
+      res.send({
+        code: 200,
+        data: {
+          success: true
+        }
+      })
+    } else {
+      res.send({
+        code: 0,
+        data: {
+          success: false,
+          msg: '此用户不存在'
+        }
+      })
+    }
+  })
+})
+
+// 注册
+router.post('/api/register', function (req, res, next) {
+  let params = {
+    userTel: req.body.phone,
+    userPwd: req.body.pwd
+  }
+
+  // 查询用户是否存在
+  connection.query(user.queryUserTel(params), function (err, result) {
+    if (err) throw err
+    // 用户存在
+    if (result.length > 0) {
+      res.send({
+        code: 200,
+        data: {
+          success: true,
+          msg: '登陆成功',
+          data: result[0]
+        }
+      })
+    } else {
+      // 不存在，新增一条数据
+      connection.query(user.insertData(params), function () {
+        connection.query(user.queryUserTel(params), function (e, r) {
+          res.send({
+            code: 200,
+            data: {
+              success: true,
+              msg: '登陆成功',
+              data: r[0]
+            }
+          })
+        })
+      })
+    }
+  })
+})
+
+// 增加一个用户
+router.post('/api/addUser', function (req, res, next) {
+  let params = {
+    userTel: req.body.phone
+  }
+
+  // 查询用户是否存在
+  connection.query(user.queryUserTel(params), function (err, result) {
+    if (err) throw err
+    // 用户存在
+    if (result.length > 0) {
+      res.send({
+        code: 200,
+        data: {
+          success: true,
+          msg: '登陆成功',
+          data: result[0]
+        }
+      })
+    } else {
+      // 不存在，新增一条数据
+      connection.query(user.insertData(params), function () {
+        connection.query(user.queryUserTel(params), function (e, r) {
+          res.send({
+            code: 200,
+            data: {
+              success: true,
+              msg: '登陆成功',
+              data: r[0]
+            }
+          })
+        })
+      })
+    }
+  })
+})
+
 //发送短信验证
 router.post('/api/code', function (req, res, next) {
   let tel = req.body.phone
@@ -47,7 +171,8 @@ router.post('/api/code', function (req, res, next) {
   }
   var ssender = qcloudsms.SmsSingleSender()
   // 这个 变量 就是往手机上，发送的短信
-  var params = [Math.floor(Math.random() * (9999 - 1000)) + 1000]
+  // var params = [Math.floor(Math.random() * (9999 - 1000)) + 1000]
+  var params = ['8848']
   ssender.sendWithParam(86, phoneNumbers[0], templateId, params, smsSign, '', '', callback) // 签名参数不能为空串
 })
 

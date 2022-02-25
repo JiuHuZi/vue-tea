@@ -52,6 +52,20 @@ const routes = [
     path: '/userlogin',
     name: 'UserLogin',
     component: () => import('@/views/Login/UserLogin.vue')
+  },
+  {
+    path: '/register',
+    name: 'Register',
+    component: () => import('@/views/Login/Register.vue')
+  },
+  {
+    path: '/recovery',
+    name: 'Recovery',
+    children: [
+      { path: '/', name: 'recoveryindex', component: () => import('@/views/Recovery/recoveryIndex.vue') },
+      { path: 'btn', name: 'btn', component: () => import('@/views/Recovery/RecoveryBtn.vue') }
+    ],
+    component: () => import('@/views/Search.vue')
   }
 ]
 

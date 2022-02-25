@@ -1,6 +1,6 @@
 <template>
   <div class="login container">
-    <Header></Header>
+    <Header><span>注册</span></Header>
     <section>
       <div class="login-tel">
         <input type="text" placeholder="请输入手机号" v-model="userTel" pattern="[0-9]*" />
@@ -9,7 +9,10 @@
         <input type="text" placeholder="请输入验证码" v-model="userCode" pattern="[0-9]*" />
         <button @click="sendCode" :disabled="disabled">{{ codeMsg }}</button>
       </div>
-      <div class="login-btn" @click="login">登录</div>
+      <div class="login-code">
+        <input type="text" placeholder="请设置密码" v-model="userPwd" />
+      </div>
+      <div class="login-btn" @click="register">注册</div>
       <div class="login-tab">
         <span @click="$router.push('/userlogin')">密码登录</span>
         <span @click="$router.push('/register')">快速注册</span>
@@ -25,7 +28,7 @@ import Tabber from '@/components/common/Tabbar.vue'
 import { Toast } from 'mint-ui'
 import http from '@/common/api/request.js'
 export default {
-  name: 'Login',
+  name: 'Register',
   components: {
     Tabber,
     Header
@@ -36,6 +39,7 @@ export default {
       disabled: false,
       userCode: '',
       userTel: '',
+      userPwd: '',
       codeNum: 6,
       codeMsg: '获取短信验证码',
       // 验证规则
@@ -44,6 +48,10 @@ export default {
         userTel: {
           rule: /^1[23456789]\d{9}$/,
           msg: '手机号不能为空，并且是11位数字'
+        },
+        userPwd: {
+          rule: /^\w{6,12}$/,
+          msg: '密码不能为空，并且是6-12位'
         }
       }
     }
@@ -53,6 +61,7 @@ export default {
     sendCode() {
       // 手机号不正确
       if (!this.validata('userTel')) return
+      if (!this.validata('userPwd')) return
 
       // 手机号正确
       // 请求短信验证码接口
@@ -99,27 +108,31 @@ export default {
       }
       return bool
     },
-    // 点击登录
-    login() {
+    // 点击注册
+    register() {
+      // 验证密码
+      if (!this.validata('userPwd')) return
+
       // 判断验证码是否正确
       if (this.code != this.userCode) {
         Toast('验证码不正确')
         return
       }
 
+      // 如果正确，进行注册
       if (this.code == this.userCode) {
         // 证明用户输入的短信验证码是正确的
         //  发送请求
         http
           .$axios({
-            url: '/api/addUser',
+            url: '/api/register',
             method: 'POST',
             data: {
-              phone: this.userTel
+              phone: this.userTel,
+              pwd: this.userPwd
             }
           })
           .then((res) => {
-            if (!res.success) return
             console.log(res)
           })
       }

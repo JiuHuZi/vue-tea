@@ -1,19 +1,11 @@
 <template>
   <div class="login container">
-    <Header></Header>
+    <Header><span>找回密码</span></Header>
     <section>
       <div class="login-tel">
-        <input type="text" placeholder="请输入手机号" v-model="userTel" pattern="[0-9]*" />
+        <input type="text" placeholder="请输入新的密码" v-model="userPwd" />
       </div>
-      <div class="login-code">
-        <input type="text" placeholder="请输入密码" v-model="userPwd" />
-      </div>
-      <div class="login-btn" @click="login">登录</div>
-      <div class="login-tab">
-        <span @click="$router.push('/login')">短信登录</span>
-        <span @click="$router.push('/recovery')">找回密码</span>
-        <span @click="$router.push('/register')">快速注册</span>
-      </div>
+      <div class="login-btn" @click="submitBtn">确认修改</div>
     </section>
     <Tabber></Tabber>
   </div>
@@ -25,56 +17,45 @@ import Tabber from '@/components/common/Tabbar.vue'
 import { Toast } from 'mint-ui'
 import http from '@/common/api/request.js'
 export default {
-  name: 'Login',
+  name: 'RecoveryBtn',
   components: {
     Tabber,
     Header
   },
   data() {
     return {
-      // 用户输入的手机号
-      userTel: '',
-      // 用户输入的密码
       userPwd: '',
       // 验证规则
       rules: {
         // 手机号验证
-        userTel: {
-          rule: /^1[23456789]\d{9}$/,
-          msg: '手机号不能为空，并且是11位数字'
-        },
-        // 密码验证
         userPwd: {
           rule: /^\w{6,12}$/,
-          msg: '密码不能为空，并且要求6-12位'
+          msg: '密码不能为空，并且是6-12位'
         }
       }
     }
   },
   methods: {
-    // 点击登录按钮
-    login() {
-      // 前端验证
-      if (!this.validata('userTel')) return
+    submitBtn() {
       if (!this.validata('userPwd')) return
-      // 发送请求，后端验证
+
+      // 确认修改
       http
         .$axios({
-          url: '/api/login',
+          url: '/api/recovery',
           method: 'POST',
           data: {
-            userTel: this.userTel,
-            userPwd: this.userPwd
+            phone: this.$route.query.phone,
+            pwd: this.userPwd
           }
         })
         .then((res) => {
-          // 提示信息
           Toast(res.msg)
-          // 登录失败
-          if (!res.success) return
-          // 登录成功 => 跳转页面，存储用户信息
-
-          console.log(res)
+          if (res.success) {
+            this.$router.push({
+              path: '/login'
+            })
+          }
         })
     },
     // 验证信息提示
@@ -120,7 +101,15 @@ section {
     display: flex;
     input {
       flex: 1;
-      border-radius: 6px;
+      border-radius: 6px 0 0 6px;
+    }
+    button {
+      padding: 0 20px;
+      line-height: 44px;
+      background-color: #ff585d;
+      border: 0;
+      color: #fff;
+      border-radius: 0 6px 6px 0;
     }
   }
   .login-btn {
@@ -130,11 +119,6 @@ section {
     color: #fff;
     font-size: 16px;
     border-radius: 6px;
-  }
-  .login-tab {
-    display: flex;
-    justify-content: space-between;
-    font-size: 14px;
   }
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div class="login container">
-    <Header></Header>
+    <Header><span>找回密码</span></Header>
     <section>
       <div class="login-tel">
         <input type="text" placeholder="请输入手机号" v-model="userTel" pattern="[0-9]*" />
@@ -9,11 +9,7 @@
         <input type="text" placeholder="请输入验证码" v-model="userCode" pattern="[0-9]*" />
         <button @click="sendCode" :disabled="disabled">{{ codeMsg }}</button>
       </div>
-      <div class="login-btn" @click="login">登录</div>
-      <div class="login-tab">
-        <span @click="$router.push('/userlogin')">密码登录</span>
-        <span @click="$router.push('/register')">快速注册</span>
-      </div>
+      <div class="login-btn" @click="next">下一步</div>
     </section>
     <Tabber></Tabber>
   </div>
@@ -25,7 +21,7 @@ import Tabber from '@/components/common/Tabbar.vue'
 import { Toast } from 'mint-ui'
 import http from '@/common/api/request.js'
 export default {
-  name: 'Login',
+  name: 'RecoveryIndex',
   components: {
     Tabber,
     Header
@@ -99,30 +95,34 @@ export default {
       }
       return bool
     },
-    // 点击登录
-    login() {
+    // 点击下一步
+    async next() {
       // 判断验证码是否正确
       if (this.code != this.userCode) {
         Toast('验证码不正确')
         return
       }
 
-      if (this.code == this.userCode) {
-        // 证明用户输入的短信验证码是正确的
-        //  发送请求
-        http
-          .$axios({
-            url: '/api/addUser',
-            method: 'POST',
-            data: {
-              phone: this.userTel
-            }
-          })
-          .then((res) => {
-            if (!res.success) return
-            console.log(res)
-          })
+      // 告诉后端，用户输入的手机号，存在吗？
+      let res = await http.$axios({
+        url: '/api/selectUser',
+        method: 'POST',
+        data: {
+          phone: this.userTel
+        }
+      })
+      // console.log(res)
+      if (!res.success) {
+        Toast(res.msg)
+        return
       }
+
+      this.$router.push({
+        name: 'btn',
+        query: {
+          phone: this.userTel
+        }
+      })
     }
   }
 }
@@ -174,11 +174,6 @@ section {
     color: #fff;
     font-size: 16px;
     border-radius: 6px;
-  }
-  .login-tab {
-    display: flex;
-    justify-content: space-between;
-    font-size: 14px;
   }
 }
 </style>

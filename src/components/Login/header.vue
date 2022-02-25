@@ -1,6 +1,6 @@
 <template>
   <header>
-    <div><i class="iconfont icon-fanhui"></i></div>
+    <div @click="$router.back()"><i class="iconfont icon-fanhui"></i></div>
     <div>
       <slot>
         <span>登录</span>
