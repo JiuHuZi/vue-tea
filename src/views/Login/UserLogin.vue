@@ -24,6 +24,7 @@ import Header from '@/components/Login/header.vue'
 import Tabber from '@/components/common/Tabbar.vue'
 import { Toast } from 'mint-ui'
 import http from '@/common/api/request.js'
+import { mapMutations } from 'vuex'
 export default {
   name: 'Login',
   components: {
@@ -52,6 +53,7 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['USER_LOGIN']),
     // 点击登录按钮
     login() {
       // 前端验证
@@ -73,8 +75,9 @@ export default {
           // 登录失败
           if (!res.success) return
           // 登录成功 => 跳转页面，存储用户信息
-
-          console.log(res)
+          this.USER_LOGIN(res.data)
+          // 跳转到我的页面中
+          this.$router.push('/my')
         })
     },
     // 验证信息提示

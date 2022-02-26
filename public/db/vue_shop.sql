@@ -51,7 +51,7 @@ CREATE TABLE `user` (
 
 /*Data for the table `user` */
 
-insert  into `user`(`id`,`tel`,`pwd`,`imgUrl`,`nickName`,`token`) values (1,'13144274876','123456','/images/header.jpeg',NULL,NULL),(2,'12345678901','888888','/images/header.jpeg',NULL,NULL),(3,'13166981478','666666','/images/header.jpeg',NULL,NULL),(4,'13144112259','999999','/images/header.jpeg',NULL,NULL),(5,'17345698789','666666','/images/header.jpeg','','');
+insert  into `user`(`id`,`tel`,`pwd`,`imgUrl`,`nickName`,`token`) values (1,'13144274876','123456','/images/headerImg/jiuhu.jpg','九狐',NULL),(2,'12345678901','888888','/images/headerImg/header.jpeg','张三',NULL),(3,'13166981478','666666','/images/headerImg/header.jpeg','李四',NULL),(4,'13144112259','999999','/images/headerImg/header.jpeg','王五',NULL),(5,'17345698789','666666','/images/headerImg/header.jpeg','赵六','');
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

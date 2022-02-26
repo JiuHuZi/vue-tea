@@ -24,6 +24,7 @@ import Header from '@/components/Login/header.vue'
 import Tabber from '@/components/common/Tabbar.vue'
 import { Toast } from 'mint-ui'
 import http from '@/common/api/request.js'
+import { mapMutations } from 'vuex'
 export default {
   name: 'Login',
   components: {
@@ -49,6 +50,7 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['USER_LOGIN']),
     // 点击获取短信验证码按钮
     sendCode() {
       // 手机号不正确
@@ -120,7 +122,10 @@ export default {
           })
           .then((res) => {
             if (!res.success) return
-            console.log(res)
+            // 登录成功 => 跳转页面，存储用户信息
+            this.USER_LOGIN(res.data)
+            // 跳转到我的页面中
+            this.$router.push('/my')
           })
       }
     }

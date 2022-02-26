@@ -5,3 +5,10 @@
     </keep-alive>
   </div>
 </template>
+<script>
+export default {
+  created() {
+    this.$store.commit('INIT_USER')
+  }
+}
+</script>
