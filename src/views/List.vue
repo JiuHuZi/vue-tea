@@ -1,6 +1,6 @@
 <template>
   <div class="list">
-    <header>
+    <header v-show="isShow">
       <div class="returns"><i class="iconfont icon-fanhui"></i></div>
       <div class="search" @click="$router.push('/search')"><i class="iconfont icon-Magnifier"></i> <span>搜您喜欢的……</span></div>
       <div class="go-home"><i class="iconfont icon-shouye"></i></div>
@@ -39,6 +39,7 @@ export default {
   name: 'List',
   data() {
     return {
+      isShow: true,
       // 左侧数据
       leftData: [],
       // 右侧数据
@@ -83,7 +84,8 @@ export default {
       // 右侧滑动
       this.rightBScroll = new BetterScroll(this.$refs.right, {
         click: true,
-        probeType: 3
+        probeType: 3,
+        bounce: false
       })
       // 统计右侧所有板块高度值，并且放入数组中
       let heitht = 0
@@ -99,6 +101,12 @@ export default {
       // 得到右侧滚动的值
       this.rightBScroll.on('scroll', (pos) => {
         this.scrollY = Math.abs(pos.y)
+
+        if (Math.abs(pos.y) >= 50) {
+          this.isShow = false
+        } else {
+          this.isShow = true
+        }
       })
     })
   },
@@ -138,7 +146,7 @@ export default {
       align-items: center;
       i {
         color: #fff;
-        font-size: 34px;
+        font-size: 22px;
       }
     }
     .search {
@@ -161,6 +169,9 @@ export default {
     }
     .go-home {
       padding: 0 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       i {
         font-size: 28px;
         color: #fff;

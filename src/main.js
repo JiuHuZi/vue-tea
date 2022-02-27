@@ -17,10 +17,15 @@ import LyTab from 'ly-tab'
 import MintUI from 'mint-ui'
 import 'mint-ui/lib/style.css'
 
+// 全局引入 vant
+import Vant from 'vant'
+import 'vant/lib/index.css'
+
 Vue.config.productionTip = false
 
 Vue.use(LyTab)
 Vue.use(MintUI)
+Vue.use(Vant)
 
 new Vue({
   router,
