@@ -147,6 +147,7 @@ section {
   align-items: center;
   flex-direction: column;
   background-color: #f5f5f5;
+  font-size: 12px;
   div {
     width: 335px;
     margin: 10px 0;

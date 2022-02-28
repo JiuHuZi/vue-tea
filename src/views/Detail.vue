@@ -58,7 +58,7 @@
     </section>
 
     <footer>
-      <div class="add-cart">加入购物车</div>
+      <div class="add-cart" @click="addCart">加入购物车</div>
       <div>立即购买</div>
     </footer>
   </div>
@@ -140,6 +140,24 @@ export default {
 
       // console.log(res)
       this.goods = res
+    },
+    // 加入购物车
+    addCart() {
+      let id = this.$route.query.id
+      http
+        .$axios({
+          url: '/api/addCart',
+          method: 'POST',
+          data: {
+            goodsId: id
+          },
+          headers: {
+            token: true
+          }
+        })
+        .then((res) => {
+          console.log(res)
+        })
     }
   }
 }

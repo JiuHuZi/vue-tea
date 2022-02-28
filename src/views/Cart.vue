@@ -1,7 +1,7 @@
 <template>
   <div class="cart container">
     <header>
-      <i class="iconfont icon-fanhui"></i>
+      <i class="iconfont icon-fanhui" @click="$router.push('/home')"></i>
       <span>购物车</span>
       <span>编辑</span>
     </header>
@@ -13,7 +13,24 @@
       </div>
       <ul>
         <li>
-          <div>
+          <div class="check">
+            <van-checkbox v-model="checked" checked-color="#ee0a24"></van-checkbox>
+          </div>
+          <h2><img src="/images/goods1.jpeg" alt="" /></h2>
+
+          <div class="goods">
+            <div class="goods-title">
+              <span>浅尝-金牡丹（武夷岩茶）</span>
+              <i class="iconfont icon-shanchu"></i>
+            </div>
+            <div class="goods-price">
+              <span>¥14.60</span>
+              <van-stepper v-model="value" integer />
+            </div>
+          </div>
+        </li>
+        <li>
+          <div class="check">
             <van-checkbox v-model="checked" checked-color="#ee0a24"></van-checkbox>
           </div>
           <h2><img src="/images/goods1.jpeg" alt="" /></h2>
@@ -99,6 +116,10 @@ section {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      margin: 3px 0;
+      .check {
+        padding-right: 10px;
+      }
       h2 {
         width: 74;
         height: 74px;

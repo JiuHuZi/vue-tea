@@ -3,10 +3,23 @@ var router = express.Router()
 var connection = require('../db/sql.js')
 var user = require('../db/userSql.js')
 var QcloudSms = require('qcloudsms_js')
+// 引入 token 包
+var jwt = require('jsonwebtoken')
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
   res.render('index', { title: 'Express' })
+})
+
+// 添加购物车
+router.post('/api/addCart', function (req, res, next) {
+  let token = req.headers.token
+  let tel = jwt.decode(token)
+  res.send({
+    data: {
+      tel
+    }
+  })
 })
 
 // 修改密码
