@@ -69,6 +69,7 @@ import 'swiper/dist/css/swiper.css'
 import { swiper, swiperSlide } from 'vue-awesome-swiper'
 import BetterScroll from 'better-scroll'
 import http from '@/common/api/request.js'
+import { Toast } from 'mint-ui'
 export default {
   name: 'Detail',
   components: {
@@ -156,7 +157,9 @@ export default {
           }
         })
         .then((res) => {
-          console.log(res)
+          if (res.success) {
+            Toast(res.msg)
+          }
         })
     }
   }

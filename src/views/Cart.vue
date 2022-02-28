@@ -6,50 +6,39 @@
       <span>编辑</span>
     </header>
 
-    <section>
+    <section v-if="list.length">
       <div class="cart-title">
         <van-checkbox v-model="checked" checked-color="#ee0a24"></van-checkbox>
         <span>商品</span>
       </div>
       <ul>
-        <li>
+        <li v-for="(item, index) in list" :key="index">
           <div class="check">
             <van-checkbox v-model="checked" checked-color="#ee0a24"></van-checkbox>
           </div>
-          <h2><img src="/images/goods1.jpeg" alt="" /></h2>
+          <h2><img :src="item.goods_imgUrl" alt="" /></h2>
 
           <div class="goods">
             <div class="goods-title">
-              <span>浅尝-金牡丹（武夷岩茶）</span>
+              <span>{{ item.goods_name }}</span>
               <i class="iconfont icon-shanchu"></i>
             </div>
             <div class="goods-price">
-              <span>¥14.60</span>
-              <van-stepper v-model="value" integer />
-            </div>
-          </div>
-        </li>
-        <li>
-          <div class="check">
-            <van-checkbox v-model="checked" checked-color="#ee0a24"></van-checkbox>
-          </div>
-          <h2><img src="/images/goods1.jpeg" alt="" /></h2>
-
-          <div class="goods">
-            <div class="goods-title">
-              <span>浅尝-金牡丹（武夷岩茶）</span>
-              <i class="iconfont icon-shanchu"></i>
-            </div>
-            <div class="goods-price">
-              <span>¥14.60</span>
-              <van-stepper v-model="value" integer />
+              <span>¥{{ item.goods_price }}</span>
+              <van-stepper v-model="item.goods_num" integer />
             </div>
           </div>
         </li>
       </ul>
     </section>
+    <section v-else>
+      <h5>
+        暂无数据，
+        <router-link to="/home">去首页逛逛</router-link>
+      </h5>
+    </section>
 
-    <footer>
+    <footer v-if="list.length">
       <div class="radio">
         <van-checkbox v-model="checked" checked-color="#ee0a24"></van-checkbox>
       </div>
@@ -66,13 +55,36 @@
 </template>
 
 <script>
+import http from '@/common/api/request.js'
+import { mapState, mapMutations } from 'vuex'
 export default {
   name: 'Cart',
   data() {
     return {
-      checked: true,
-      value: 1
+      checked: true
     }
+  },
+  methods: {
+    ...mapMutations(['cartList']),
+    async getData() {
+      let res = await http.$axios({
+        url: '/api/selectCart',
+        method: 'POST',
+        headers: {
+          token: true
+        }
+      })
+      // console.log(res)
+      this.cartList(res.data)
+    }
+  },
+  created() {
+    this.getData()
+  },
+  computed: {
+    ...mapState({
+      list: (state) => state.cart.list
+    })
   }
 }
 </script>

@@ -11,14 +11,59 @@ router.get('/', function (req, res, next) {
   res.render('index', { title: 'Express' })
 })
 
-// 添加购物车
-router.post('/api/addCart', function (req, res, next) {
+// 查询购物车
+router.post('/api/selectCart', function (req, res, next) {
+  // token
   let token = req.headers.token
-  let tel = jwt.decode(token)
-  res.send({
-    data: {
-      tel
-    }
+  let tokenObj = jwt.decode(token)
+
+  // 查询用户
+  connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
+    // 用户id
+    let uid = results[0].id
+
+    // 查询购物车
+    connection.query(`select * from goods_cart where uid = ${uid}`, function (err, result) {
+      res.send({
+        data: {
+          code: 200,
+          success: true,
+          data: result
+        }
+      })
+    })
+  })
+})
+
+// 添加购物车数据
+router.post('/api/addCart', function (req, res, next) {
+  // 后端接收前端的参数
+  let goodsId = req.body.goodsId
+  // token
+  let token = req.headers.token
+  let tokenObj = jwt.decode(token)
+
+  // 查询用户
+  connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
+    // 用户id
+    let uid = results[0].id
+
+    // 查询商品
+    connection.query(`select * from goods_list where id = ${goodsId}`, function (err, result) {
+      let goodsName = result[0].name
+      let goodsPrice = result[0].price
+      let goodsImgUrl = result[0].imgUrl
+
+      connection.query(`insert into goods_cart (uid,goods_id,goods_name,goods_price,goods_num,goods_imgUrl) values(${uid},${goodsId},'${goodsName}',${goodsPrice},1,'${goodsImgUrl}')`, function (e, r) {
+        res.send({
+          data: {
+            code: 200,
+            success: true,
+            msg: '添加购物车成功'
+          }
+        })
+      })
+    })
   })
 })
 
