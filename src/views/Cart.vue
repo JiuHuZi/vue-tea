@@ -3,25 +3,25 @@
     <header>
       <i class="iconfont icon-fanhui" @click="$router.push('/home')"></i>
       <span>购物车</span>
-      <span>编辑</span>
+      <span @click="isNavBar" v-text="isNavState ? '完成' : '编辑'"></span>
     </header>
 
     <section v-if="list.length">
       <div class="cart-title">
-        <van-checkbox v-model="checked" checked-color="#ee0a24"></van-checkbox>
+        <van-checkbox @click="checkAllFn" :value="isCheckedAll" checked-color="#ee0a24"></van-checkbox>
         <span>商品</span>
       </div>
       <ul>
         <li v-for="(item, index) in list" :key="index">
           <div class="check">
-            <van-checkbox v-model="checked" checked-color="#ee0a24"></van-checkbox>
+            <van-checkbox @click="checkItem(index)" v-model="item.checked" checked-color="#ee0a24"></van-checkbox>
           </div>
           <h2><img :src="item.goods_imgUrl" alt="" /></h2>
 
           <div class="goods">
             <div class="goods-title">
               <span>{{ item.goods_name }}</span>
-              <i class="iconfont icon-shanchu"></i>
+              <i class="iconfont icon-shanchu" @click="delGoodsFn(item.id)"></i>
             </div>
             <div class="goods-price">
               <span>¥{{ item.goods_price }}</span>
@@ -40,32 +40,36 @@
 
     <footer v-if="list.length">
       <div class="radio">
-        <van-checkbox v-model="checked" checked-color="#ee0a24"></van-checkbox>
+        <van-checkbox @click="checkAllFn" :value="isCheckedAll" checked-color="#ee0a24"></van-checkbox>
       </div>
-      <div class="total">
-        <div>共有 <span class="total-active">1</span> 件商品</div>
+      <div class="total" v-show="!isNavState">
+        <div>
+          共有 <span class="total-active">{{ total.num }}</span> 件商品
+        </div>
         <div>
           <span>总计：</span>
-          <span class="total-active">￥128.00 + 0茶币</span>
+          <span class="total-active">￥{{ total.price.toFixed(2) }} + 0茶币</span>
         </div>
       </div>
-      <div class="order">去结算</div>
+      <div class="order" v-if="!isNavState">去结算</div>
+      <div class="order" v-if="isNavState" @click="delGoodsFn">删除</div>
     </footer>
   </div>
 </template>
 
 <script>
 import http from '@/common/api/request.js'
-import { mapState, mapMutations } from 'vuex'
+import { mapState, mapMutations, mapActions, mapGetters } from 'vuex'
 export default {
   name: 'Cart',
   data() {
     return {
-      checked: true
+      isNavState: false
     }
   },
   methods: {
-    ...mapMutations(['cartList']),
+    ...mapMutations(['cartList', 'checkItem']),
+    ...mapActions(['checkAllFn', 'delGoodsFn']),
     async getData() {
       let res = await http.$axios({
         url: '/api/selectCart',
@@ -74,8 +78,17 @@ export default {
           token: true
         }
       })
-      // console.log(res)
+
+      res.data.forEach((v) => {
+        v['checked'] = true
+      })
+      // console.log(res.data)
+
       this.cartList(res.data)
+    },
+    // 点击编辑或者完成按钮
+    isNavBar() {
+      this.isNavState = !this.isNavState
     }
   },
   created() {
@@ -84,7 +97,8 @@ export default {
   computed: {
     ...mapState({
       list: (state) => state.cart.list
-    })
+    }),
+    ...mapGetters(['isCheckedAll', 'total'])
   }
 }
 </script>
