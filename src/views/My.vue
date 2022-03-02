@@ -10,7 +10,7 @@
     <section>
       <div class="section_title">个人中心</div>
       <ul>
-        <li>
+        <li @click="goPath">
           <div>
             <i class="iconfont icon-dizhi icons"></i>
             <span>地址管理</span>
@@ -42,6 +42,10 @@ export default {
     ...mapMutations(['loginOut']),
     goLogin() {
       this.$router.push('/login')
+    },
+    // 进入地址管理
+    goPath() {
+      this.$router.push('/path')
     }
   },
   computed: {

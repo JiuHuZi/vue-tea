@@ -106,9 +106,6 @@ export default {
           num: value
         }
       })
-      // .then((res) => {
-      //   console.log(res)
-      // })
     }
   },
   created() {

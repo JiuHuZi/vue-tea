@@ -69,6 +69,15 @@ const routes = [
       { path: 'btn', name: 'btn', component: () => import('@/views/Recovery/RecoveryBtn.vue') }
     ],
     component: () => import('@/views/Search.vue')
+  },
+  {
+    path: '/path',
+    name: 'Path',
+    children: [
+      { path: '/', name: 'pathindex', component: () => import('@/views/Path/PathIndex.vue') },
+      { path: 'pathlist', name: 'pathlist', component: () => import('@/views/Path/PathList.vue') }
+    ],
+    component: () => import('@/views/Path.vue')
   }
 ]
 
