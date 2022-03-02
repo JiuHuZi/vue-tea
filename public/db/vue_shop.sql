@@ -29,11 +29,11 @@ CREATE TABLE `goods_cart` (
   `goods_num` int(11) NOT NULL,
   `goods_imgUrl` varchar(200) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=52 DEFAULT CHARSET=utf8mb4;
 
 /*Data for the table `goods_cart` */
 
-insert  into `goods_cart`(`id`,`uid`,`goods_id`,`goods_name`,`goods_price`,`goods_num`,`goods_imgUrl`) values (5,8,9,'2016白毫银针巧克力茶砖',98,1,'/images/goods9.jpeg'),(33,6,1,'浅尝-金牡丹（武夷岩茶）',14.6,1,'/images/goods1.jpeg');
+insert  into `goods_cart`(`id`,`uid`,`goods_id`,`goods_name`,`goods_price`,`goods_num`,`goods_imgUrl`) values (5,8,9,'2016白毫银针巧克力茶砖',98,1,'/images/goods9.jpeg'),(51,6,6,'高山流水陶瓷旅行茶具',168,1,'/images/goods6.jpeg');
 
 /*Table structure for table `goods_list` */
 
