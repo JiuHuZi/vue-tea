@@ -25,7 +25,7 @@
             </div>
             <div class="goods-price">
               <span>¥{{ item.goods_price }}</span>
-              <van-stepper v-model="item.goods_num" integer />
+              <van-stepper @change="changeNum($event, item)" v-model="item.goods_num" integer />
             </div>
           </div>
         </li>
@@ -89,6 +89,26 @@ export default {
     // 点击编辑或者完成按钮
     isNavBar() {
       this.isNavState = !this.isNavState
+    },
+    // 修改数量
+    changeNum(value, item) {
+      // 当前购物车商品的ID以及，修改后的数量 ==> 传递给后端
+      // value 就是修改后的数量
+      // item.id 就是购物车商品的id
+      http.$axios({
+        url: '/api/updateNum',
+        method: 'POST',
+        headers: {
+          token: true
+        },
+        data: {
+          id: item.id,
+          num: value
+        }
+      })
+      // .then((res) => {
+      //   console.log(res)
+      // })
     }
   },
   created() {

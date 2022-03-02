@@ -30,8 +30,8 @@ export default {
     [CART_LIST](state, cartArr) {
       state.list = cartArr
 
-      cartArr.forEach((v) => {
-        state.selectList.push(v.id)
+      state.selectList = state.list.map((v) => {
+        return v.id
       })
     },
     // 全选
@@ -98,8 +98,6 @@ export default {
           arrCart = state.selectList
 
           commit('delGoods')
-          // 全不选
-          commit('unCheckAll')
         }
 
         http
@@ -111,7 +109,9 @@ export default {
             }
           })
           .then((res) => {
-            console.log(res)
+            if (res.success) {
+              Toast(res.msg)
+            }
           })
       })
     }

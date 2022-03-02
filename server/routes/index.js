@@ -11,6 +11,25 @@ router.get('/', function (req, res, next) {
   res.render('index', { title: 'Express' })
 })
 
+// 修改购物车数量
+router.post('/api/updateNum', function (req, res, next) {
+  let id = req.body.id
+  let changeNum = req.body.num
+
+  connection.query(`select * from goods_cart where id = ${id}`, function (error, results) {
+    // 原来的数量
+    let num = results[0].goods_num
+    connection.query(`update goods_cart set goods_num = replace(goods_num,${num},${changeNum}) where id = ${id}`, function (err, result) {
+      res.send({
+        data: {
+          code: 200,
+          success: true
+        }
+      })
+    })
+  })
+})
+
 // 删除购物车数据
 router.post('/api/deleteCart', function (req, res, next) {
   let arrId = req.body.arrId
@@ -71,14 +90,32 @@ router.post('/api/addCart', function (req, res, next) {
       let goodsPrice = result[0].price
       let goodsImgUrl = result[0].imgUrl
 
-      connection.query(`insert into goods_cart (uid,goods_id,goods_name,goods_price,goods_num,goods_imgUrl) values(${uid},${goodsId},'${goodsName}',${goodsPrice},1,'${goodsImgUrl}')`, function (e, r) {
-        res.send({
-          data: {
-            code: 200,
-            success: true,
-            msg: '添加购物车成功'
-          }
-        })
+      // 查询当前用户在之前是否添加过本商品
+      connection.query(`select * from goods_cart where uid=${uid} and goods_id = ${goodsId}`, function (e, r) {
+        // 用户之前添加过商品到购物车
+        if (r.length > 0) {
+          let num = r[0].goods_num
+          connection.query(`update goods_cart set goods_num = replace(goods_num,${num},${parseInt(num) + 1}) where id = ${r[0].id}`, function (e, datas) {
+            res.send({
+              data: {
+                code: 200,
+                success: true,
+                msg: '添加购物车成功'
+              }
+            })
+          })
+        } else {
+          // 没有，新增
+          connection.query(`insert into goods_cart (uid,goods_id,goods_name,goods_price,goods_num,goods_imgUrl) values(${uid},${goodsId},'${goodsName}',${goodsPrice},1,'${goodsImgUrl}')`, function (e, r) {
+            res.send({
+              data: {
+                code: 200,
+                success: true,
+                msg: '添加购物车成功'
+              }
+            })
+          })
+        }
       })
     })
   })
