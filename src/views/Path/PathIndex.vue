@@ -3,7 +3,7 @@
     <Header></Header>
     <section>
       <ul v-if="list.length">
-        <li @click="goList" v-for="(item, index) in list" :key="index">
+        <li v-for="(item, index) in list" :key="index" @click="goList(item)">
           <div class="path-main">
             <div>
               <span>{{ item.name }}</span>
@@ -19,7 +19,7 @@
         </li>
       </ul>
       <h5 style="text-align: center" v-else>暂无数据，请添加地址</h5>
-      <div class="add-path" @click="goList">添加地址</div>
+      <div class="add-path" @click="goList('add')">添加地址</div>
     </section>
     <Tabber></Tabber>
   </div>
@@ -38,9 +38,12 @@ export default {
   },
   methods: {
     ...mapMutations(['initData']),
-    goList() {
+    goList(options) {
       this.$router.push({
-        name: 'pathlist'
+        name: 'pathlist',
+        params: {
+          key: JSON.stringify(options)
+        }
       })
     },
     getData() {
@@ -54,7 +57,7 @@ export default {
         })
         .then((res) => {
           this.initData(res.data)
-          console.log(res.data)
+          // console.log(res.data)
         })
     }
   },

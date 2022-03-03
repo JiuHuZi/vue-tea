@@ -1,6 +1,6 @@
 <template>
   <header>
-    <i class="iconfont icon-fanhui" @click="$router.back()"></i>
+    <i class="iconfont icon-fanhui" @click="goBack"></i>
     <slot>
       <span>我的地址</span>
     </slot>
@@ -10,7 +10,16 @@
 
 <script>
 export default {
-  name: 'pathHeader'
+  name: 'pathHeader',
+  methods: {
+    goBack() {
+      if (this.$route.name == 'pathlist') {
+        this.$router.replace('/path')
+      } else {
+        this.$router.push('/my')
+      }
+    }
+  }
 }
 </script>
 

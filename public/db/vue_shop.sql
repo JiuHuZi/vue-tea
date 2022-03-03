@@ -30,12 +30,13 @@ CREATE TABLE `address` (
   `county` varchar(200) NOT NULL,
   `addressDetail` varchar(200) NOT NULL,
   `isDefault` varchar(50) NOT NULL,
+  `areaCode` varchar(200) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4;
 
 /*Data for the table `address` */
 
-insert  into `address`(`id`,`uid`,`name`,`tel`,`province`,`city`,`county`,`addressDetail`,`isDefault`) values (1,8,'九狐子','13144274876','北京市','北京市','西城区','测试详细地址','0'),(3,8,'九狐','13144274876','北京市','北京市','西城区','测试详细地址1','0'),(4,8,'测试名字1','12345678999','天津市','天津市','塘沽区','测试地址1','0'),(5,8,'测试名字2','13144274876','北京市','北京市','东城区','测试地址1','1');
+insert  into `address`(`id`,`uid`,`name`,`tel`,`province`,`city`,`county`,`addressDetail`,`isDefault`,`areaCode`) values (6,8,'李四','13144274876','北京市','北京市','西城区','测试地址3','1','110102'),(7,8,'九狐123','13144274876','北京市','北京市','东城区','测试地址2','0','110101');
 
 /*Table structure for table `goods_cart` */
 
