@@ -2,22 +2,23 @@
   <div class="path-index container">
     <Header></Header>
     <section>
-      <ul>
-        <li @click="goList">
+      <ul v-if="list.length">
+        <li @click="goList" v-for="(item, index) in list" :key="index">
           <div class="path-main">
             <div>
-              <span>张三</span>
-              <span>13144274876</span>
+              <span>{{ item.name }}</span>
+              <span>{{ item.tel }}</span>
             </div>
             <div>
-              <span class="active">[默认]</span>
-              <span>天津 天津市 和平区 3434</span>
+              <span class="active" v-if="item.isDefault == 1">[默认]</span>
+              <span>{{ item.province }} {{ item.city }} {{ item.county }} {{ item.addressDetail }}</span>
             </div>
           </div>
 
           <i class="iconfont icon-fanhui path-icon"></i>
         </li>
       </ul>
+      <h5 style="text-align: center" v-else>暂无数据，请添加地址</h5>
       <div class="add-path" @click="goList">添加地址</div>
     </section>
     <Tabber></Tabber>
@@ -27,6 +28,8 @@
 <script>
 import Header from '@/components/path/header.vue'
 import Tabber from '@/components/common/Tabbar.vue'
+import http from '@/common/api/request.js'
+import { mapMutations, mapState } from 'vuex'
 export default {
   name: 'PathIndex',
   components: {
@@ -34,11 +37,34 @@ export default {
     Tabber
   },
   methods: {
+    ...mapMutations(['initData']),
     goList() {
       this.$router.push({
         name: 'pathlist'
       })
+    },
+    getData() {
+      http
+        .$axios({
+          url: '/api/selectAddress',
+          method: 'POST',
+          headers: {
+            token: true
+          }
+        })
+        .then((res) => {
+          this.initData(res.data)
+          console.log(res.data)
+        })
     }
+  },
+  created() {
+    this.getData()
+  },
+  computed: {
+    ...mapState({
+      list: (state) => state.path.list
+    })
   }
 }
 </script>

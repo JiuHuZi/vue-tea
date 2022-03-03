@@ -11,6 +11,76 @@ router.get('/', function (req, res, next) {
   res.render('index', { title: 'Express' })
 })
 
+// 查询收货地址
+router.post('/api/selectAddress', function (req, res, next) {
+  // token
+  let token = req.headers.token
+  let tokenObj = jwt.decode(token)
+
+  // 查询用户
+  connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
+    // 用户id
+    let uid = results[0].id
+
+    connection.query(`select * from address where uid = ${uid}`, function (err, result) {
+      res.send({
+        data: {
+          code: 200,
+          success: true,
+          msg: '查询成功',
+          data: result
+        }
+      })
+    })
+  })
+})
+
+// 新增收货地址
+router.post('/api/addAddress', function (req, res, next) {
+  // token
+  let token = req.headers.token
+  let tokenObj = jwt.decode(token)
+
+  // 拿到前端给后端传入的数据
+  let body = req.body
+
+  let [name, tel, province, city, county, addressDetail, isDefault] = [body.name, body.tel, body.province, body.city, body.county, body.addressDetail, body.isDefault]
+
+  // 查询用户
+  connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
+    // 用户id
+    let uid = results[0].id
+    // 增加一条收货地址
+
+    if (isDefault != 1) {
+      connection.query(`insert into address (uid,name, tel, province, city, county, addressDetail, isDefault) values(${uid},'${name}','${tel}','${province}','${city}','${county}','${addressDetail}','${isDefault}')`, function (err, result) {
+        res.send({
+          data: {
+            code: 200,
+            success: true,
+            msg: '收货地址添加成功'
+          }
+        })
+      })
+    } else {
+      connection.query(`select * from address where uid = ${uid} and isDefault = ${isDefault}`, function (err, result) {
+        let addressId = result[0].id
+        connection.query(`update address set isDefault = replace(isDefault,'1','0') where id = ${addressId}`, function (e, r) {
+          connection.query(`insert into address (uid,name, tel, province, city, county, addressDetail, isDefault) values(${uid},'${name}','${tel}','${province}','${city}','${county}','${addressDetail}','${isDefault}')`, function () {
+            res.send({
+              data: {
+                code: 200,
+                success: true,
+                msg: '收货地址添加成功'
+              }
+            })
+          })
+        })
+      })
+    }
+  })
+})
+
 // 修改购物车数量
 router.post('/api/updateNum', function (req, res, next) {
   let id = req.body.id

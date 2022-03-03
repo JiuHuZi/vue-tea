@@ -16,6 +16,27 @@ CREATE DATABASE /*!32312 IF NOT EXISTS*/`vue_shop` /*!40100 DEFAULT CHARACTER SE
 
 USE `vue_shop`;
 
+/*Table structure for table `address` */
+
+DROP TABLE IF EXISTS `address`;
+
+CREATE TABLE `address` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uid` int(11) NOT NULL,
+  `name` varchar(200) NOT NULL,
+  `tel` varchar(200) NOT NULL,
+  `province` varchar(200) NOT NULL,
+  `city` varchar(200) NOT NULL,
+  `county` varchar(200) NOT NULL,
+  `addressDetail` varchar(200) NOT NULL,
+  `isDefault` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
+
+/*Data for the table `address` */
+
+insert  into `address`(`id`,`uid`,`name`,`tel`,`province`,`city`,`county`,`addressDetail`,`isDefault`) values (1,8,'九狐子','13144274876','北京市','北京市','西城区','测试详细地址','0'),(3,8,'九狐','13144274876','北京市','北京市','西城区','测试详细地址1','0'),(4,8,'测试名字1','12345678999','天津市','天津市','塘沽区','测试地址1','0'),(5,8,'测试名字2','13144274876','北京市','北京市','东城区','测试地址1','1');
+
 /*Table structure for table `goods_cart` */
 
 DROP TABLE IF EXISTS `goods_cart`;

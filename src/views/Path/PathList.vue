@@ -4,7 +4,7 @@
       <span>添加地址</span>
     </Header>
     <section>
-      <van-address-edit :area-list="areaList" show-set-default show-search-result :search-result="searchResult" @save="onSave" />
+      <van-address-edit :area-list="areaList" show-set-default @save="onSave" />
     </section>
     <Tabber></Tabber>
   </div>
@@ -14,6 +14,7 @@
 import Header from '@/components/path/header.vue'
 import Tabber from '@/components/common/Tabbar.vue'
 import { Toast } from 'vant'
+import http from '@/common/api/request.js'
 export default {
   name: 'PathList',
   components: {
@@ -42,8 +43,27 @@ export default {
     }
   },
   methods: {
-    onSave() {
-      Toast('save')
+    // 点击保存触发
+    onSave(content) {
+      content.isDefault = content.isDefault == true ? 1 : 0
+
+      http
+        .$axios({
+          url: '/api/addAddress',
+          method: 'POST',
+          headers: {
+            token: true
+          },
+          data: {
+            ...content
+          }
+        })
+        .then((res) => {
+          if (!res.success) return
+
+          Toast(res.msg)
+          this.$router.push('/path')
+        })
     }
   }
 }
