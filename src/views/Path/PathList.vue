@@ -86,7 +86,6 @@ export default {
     },
     // 点击保存触发  => 修改
     onUpdate(content) {
-      console.log(content)
       content.isDefault = content.isDefault == true ? 1 : 0
       http
         .$axios({

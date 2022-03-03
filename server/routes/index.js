@@ -31,7 +31,6 @@ router.post('/api/updateAddress', function (req, res, next) {
     connection.query(`select * from address where uid= ${uid}`, function (err, result) {
       if (result.length > 0) {
         // let addressId = result[0].id
-        console.log(`update address set isDefault ='0' where uid = ${uid}`)
         connection.query(`update address set isDefault ='0' where uid = ${uid}`, function (e, r) {
           let updateSql = `update address set uid= ?,name =?, tel = ?, province = ?, city = ?, county = ?, addressDetail = ?, isDefault = ?, areaCode = ? where id = ${id}`
           connection.query(updateSql, [uid, name, tel, province, city, county, addressDetail, isDefault, areaCode], function (errors, datas) {
@@ -112,7 +111,8 @@ router.post('/api/addAddress', function (req, res, next) {
   // 拿到前端给后端传入的数据
   let body = req.body
 
-  let [name, tel, province, city, county, addressDetail, isDefault, areaCode] = [body.name, body.tel, body.province, body.city, body.county, body.addressDetail, body.isDefault, body.areaCode]
+  // let [name, tel, province, city, county, addressDetail, isDefault, areaCode] = [body.name, body.tel, body.province, body.city, body.county, body.addressDetail, body.isDefault, body.areaCode]
+  let { name, tel, province, city, county, addressDetail, isDefault, areaCode } = body
 
   // 查询用户
   connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
