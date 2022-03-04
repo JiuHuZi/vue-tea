@@ -82,7 +82,6 @@ export default {
     },
     // 删除
     onDelete(content) {
-      Toast('delete')
       http
         .$axios({
           url: '/api/deleteAddress',
