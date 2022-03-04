@@ -11,6 +11,20 @@ router.get('/', function (req, res, next) {
   res.render('index', { title: 'Express' })
 })
 
+// 删除收货地址
+router.post('/api/deleteAddress', function (req, res, next) {
+  let id = req.body.id
+  connection.query(`delete from address where id = ${id}`, function (err, results) {
+    res.send({
+      data: {
+        code: 200,
+        msg: '删除成功',
+        success: true
+      }
+    })
+  })
+})
+
 // 修改收货地址
 router.post('/api/updateAddress', function (req, res, next) {
   // token

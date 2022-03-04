@@ -81,8 +81,24 @@ export default {
         })
     },
     // 删除
-    onDelete() {
+    onDelete(content) {
       Toast('delete')
+      http
+        .$axios({
+          url: '/api/deleteAddress',
+          method: 'POST',
+          headers: {
+            token: true
+          },
+          data: {
+            id: content.id
+          }
+        })
+        .then((res) => {
+          if (!res.success) return
+          Toast(res.msg)
+          this.$router.push('/path')
+        })
     },
     // 点击保存触发  => 修改
     onUpdate(content) {

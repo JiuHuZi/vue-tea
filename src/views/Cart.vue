@@ -51,7 +51,7 @@
           <span class="total-active">￥{{ total.price.toFixed(2) }} + 0茶币</span>
         </div>
       </div>
-      <div class="order" v-if="!isNavState">去结算</div>
+      <div class="order" v-if="!isNavState" @click="goOrder">去结算</div>
       <div class="order" v-if="isNavState" @click="delGoodsFn">删除</div>
     </footer>
   </div>
@@ -60,6 +60,7 @@
 <script>
 import http from '@/common/api/request.js'
 import { mapState, mapMutations, mapActions, mapGetters } from 'vuex'
+import { Toast } from 'vant'
 export default {
   name: 'Cart',
   data() {
@@ -106,6 +107,19 @@ export default {
           num: value
         }
       })
+    },
+    // 去结算
+    goOrder() {
+      if (this.selectList.length == 0) {
+        Toast('至少选择1件商品')
+        return
+      }
+      this.$router.push({
+        path: '/order',
+        query: {
+          detail: JSON.stringify(this.selectList)
+        }
+      })
     }
   },
   created() {
@@ -113,7 +127,8 @@ export default {
   },
   computed: {
     ...mapState({
-      list: (state) => state.cart.list
+      list: (state) => state.cart.list,
+      selectList: (state) => state.cart.selectList
     }),
     ...mapGetters(['isCheckedAll', 'total'])
   }

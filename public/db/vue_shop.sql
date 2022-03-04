@@ -36,7 +36,7 @@ CREATE TABLE `address` (
 
 /*Data for the table `address` */
 
-insert  into `address`(`id`,`uid`,`name`,`tel`,`province`,`city`,`county`,`addressDetail`,`isDefault`,`areaCode`) values (6,8,'李四','13144274876','北京市','北京市','西城区','测试地址3','1','110102'),(7,8,'九狐123','13144274876','北京市','北京市','东城区','测试地址2','0','110101'),(8,8,'张三','13144274876','北京市','北京市','西城区','123','0','110102'),(9,6,'孙七','13144274877','天津市','天津市','塘沽区','测试地址1','1','120101'),(10,6,'孙七','13144274877','北京市','北京市','东城区','测试地址2','0','110101');
+insert  into `address`(`id`,`uid`,`name`,`tel`,`province`,`city`,`county`,`addressDetail`,`isDefault`,`areaCode`) values (6,8,'李四','13144274876','北京市','北京市','西城区','测试地址3','0','110102'),(7,8,'九狐123','13144274876','北京市','北京市','东城区','测试地址2','1','110101'),(9,6,'孙七','13144274877','天津市','天津市','塘沽区','测试地址1','1','120101'),(10,6,'孙七','13144274877','北京市','北京市','东城区','测试地址2','0','110101');
 
 /*Table structure for table `goods_cart` */
 
@@ -51,11 +51,11 @@ CREATE TABLE `goods_cart` (
   `goods_num` int(11) NOT NULL,
   `goods_imgUrl` varchar(200) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=52 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8mb4;
 
 /*Data for the table `goods_cart` */
 
-insert  into `goods_cart`(`id`,`uid`,`goods_id`,`goods_name`,`goods_price`,`goods_num`,`goods_imgUrl`) values (5,8,9,'2016白毫银针巧克力茶砖',98,1,'/images/goods9.jpeg'),(51,6,6,'高山流水陶瓷旅行茶具',168,1,'/images/goods6.jpeg');
+insert  into `goods_cart`(`id`,`uid`,`goods_id`,`goods_name`,`goods_price`,`goods_num`,`goods_imgUrl`) values (5,8,9,'2016白毫银针巧克力茶砖',98,2,'/images/goods9.jpeg'),(51,6,6,'高山流水陶瓷旅行茶具',168,1,'/images/goods6.jpeg'),(52,8,8,'浅尝-白牡丹',6.6,4,'/images/goods8.jpeg');
 
 /*Table structure for table `goods_list` */
 
