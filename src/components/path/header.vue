@@ -15,6 +15,8 @@ export default {
     goBack() {
       if (this.$route.name == 'pathlist') {
         this.$router.replace('/path')
+      } else if (this.$route.fullPath == '/path?type=select') {
+        this.$router.back()
       } else {
         this.$router.push('/my')
       }
