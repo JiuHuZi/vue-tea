@@ -8,3 +8,5 @@ export const UN_CHECK_ALL = 'unCheckAll'
 export const CHECK_ITEM = 'checkItem'
 // 收货地址
 export const INIT_DATA = 'initData'
+// 订单
+export const INIT_ORDER = 'initOrder'

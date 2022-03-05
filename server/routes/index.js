@@ -11,6 +11,94 @@ router.get('/', function (req, res, next) {
   res.render('index', { title: 'Express' })
 })
 
+// 查询一个订单
+router.post('/api/selectOrder', function (req, res, next) {
+  // 接收前端给后端的订单号
+  let order_id = req.body.order_id
+
+  connection.query(`select * from store_order where order_id = '${order_id}'`, function (err, result) {
+    res.send({
+      data: {
+        code: 200,
+        data: result,
+        success: true
+      }
+    })
+  })
+})
+
+// 生成一个订单
+router.post('/api/addOrder', function (req, res, next) {
+  // token
+  let token = req.headers.token
+  let tokenObj = jwt.decode(token)
+
+  //  前端给后端的数据
+  let goodsArr = req.body.arr
+
+  // 生成订单号 order_id,规则：时间戳 + 6位随机数
+  function setTimeDateFmt(s) {
+    return s < 10 ? '0' + s : s
+  }
+  function randomNumber() {
+    const now = new Date()
+    let month = now.getMonth() + 1
+    let day = now.getDate()
+    let hour = now.getHours()
+    let minutes = now.getMinutes()
+    let seconds = now.getSeconds()
+
+    month = setTimeDateFmt(month)
+    day = setTimeDateFmt(day)
+    hour = setTimeDateFmt(hour)
+    minutes = setTimeDateFmt(minutes)
+    seconds = setTimeDateFmt(seconds)
+
+    let orderCode = now.getFullYear().toString() + month.toString() + day.toString() + hour.toString() + minutes.toString() + seconds.toString() + Math.round(Math.random() * 1000000).toString()
+
+    return orderCode
+  }
+
+  /**
+   * 未支付：1
+   * 待支付：2
+   * 支付成功：3
+   * 支付失败：4 | 0
+   */
+
+  // 商品列表名称
+  let goodsName = []
+  // 订单商品总金额
+  let goodsPrice = 0
+  // 订单商品总数量
+  let goodsNum = 0
+  // 订单号
+  let orderId = randomNumber()
+
+  goodsArr.forEach((v) => {
+    goodsName.push(v.goods_name)
+    goodsNum += v.goods_num
+    goodsPrice += v.goods_price * v.goods_num
+  })
+
+  // 查询用户
+  connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
+    // 用户id
+    let uid = results[0].id
+    connection.query(`insert into store_order (order_id,goods_name,goods_price,goods_num,order_status,uid) values('${orderId}', '${goodsName}','${goodsPrice}',${goodsNum},'1',${uid})`, function (error, results) {
+      connection.query(`select * from store_order where uid = ${uid} and order_id = '${orderId}'`, function (err, result) {
+        res.send({
+          data: {
+            code: 200,
+            data: result,
+            success: true
+          }
+        })
+      })
+    })
+  })
+})
+
 // 删除收货地址
 router.post('/api/deleteAddress', function (req, res, next) {
   let id = req.body.id

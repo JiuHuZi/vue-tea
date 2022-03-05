@@ -58,7 +58,7 @@
         <b>{{ total.num }}</b>
         <span>件，</span>
         <span>总金额：</span>
-        <em>￥{{ total.price.toFixed(2) }}</em>
+        <em>￥{{ total.price }}</em>
       </div>
       <div class="order-topay">提交订单</div>
     </footer>
@@ -74,24 +74,25 @@ export default {
     return {
       radioPayment: 'wx',
       path: {},
-      item: []
+      item: [],
+      total: {
+        num: 0,
+        price: 0
+      }
     }
   },
   computed: {
     ...mapState({
-      list: (state) => state.cart.list
+      order_id: (state) => state.order.order_id
     }),
-    ...mapGetters(['total', 'defaultPath']),
-    goodsList() {
-      return this.item.map((id) => {
-        return this.list.find((v) => v.id == id)
-      })
-    }
+    ...mapGetters(['defaultPath'])
   },
   created() {
-    // 选中的商品
+    // 选中的商品id号
     this.item = JSON.parse(this.$route.query.detail)
+    this.goodsList = JSON.parse(this.$route.query.goodsList)
 
+    // 查询到地址
     http
       .$axios({
         url: '/api/selectAddress',
@@ -110,9 +111,30 @@ export default {
           this.path = res.data[0]
         }
       })
+
+    // 查询订单
+    http
+      .$axios({
+        url: '/api/selectOrder',
+        method: 'POST',
+        headers: {
+          token: true
+        },
+        data: {
+          order_id: this.order_id
+        }
+      })
+      .then((res) => {
+        // 存储订单号
+        this.initOrder(res.data)
+        this.total = {
+          price: parseFloat(res.data[0].goods_price).toFixed(2),
+          num: res.data[0].goods_num
+        }
+      })
   },
   methods: {
-    ...mapMutations(['initData'])
+    ...mapMutations(['initData', 'initOrder'])
   }
 }
 </script>

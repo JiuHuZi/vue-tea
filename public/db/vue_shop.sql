@@ -32,7 +32,7 @@ CREATE TABLE `address` (
   `isDefault` varchar(50) NOT NULL,
   `areaCode` varchar(200) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4;
 
 /*Data for the table `address` */
 
@@ -51,11 +51,11 @@ CREATE TABLE `goods_cart` (
   `goods_num` int(11) NOT NULL,
   `goods_imgUrl` varchar(200) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=utf8mb4;
 
 /*Data for the table `goods_cart` */
 
-insert  into `goods_cart`(`id`,`uid`,`goods_id`,`goods_name`,`goods_price`,`goods_num`,`goods_imgUrl`) values (5,8,9,'2016白毫银针巧克力茶砖',98,2,'/images/goods9.jpeg'),(51,6,6,'高山流水陶瓷旅行茶具',168,1,'/images/goods6.jpeg'),(52,8,8,'浅尝-白牡丹',6.6,4,'/images/goods8.jpeg');
+insert  into `goods_cart`(`id`,`uid`,`goods_id`,`goods_name`,`goods_price`,`goods_num`,`goods_imgUrl`) values (5,8,9,'2016白毫银针巧克力茶砖',98,2,'/images/goods9.jpeg'),(51,6,6,'高山流水陶瓷旅行茶具',168,1,'/images/goods6.jpeg'),(52,8,8,'浅尝-白牡丹',6.6,4,'/images/goods8.jpeg'),(53,8,6,'高山流水陶瓷旅行茶具',168,1,'/images/goods6.jpeg');
 
 /*Table structure for table `goods_list` */
 
@@ -76,6 +76,25 @@ CREATE TABLE `goods_list` (
 /*Data for the table `goods_list` */
 
 insert  into `goods_list`(`id`,`name`,`content`,`price`,`num`,`imgUrl`,`complete`) values (1,'浅尝-金牡丹（武夷岩茶）',NULL,14.6,1,'/images/goods1.jpeg',NULL),(2,'2016南糯山古树普洱生茶',NULL,98,2,'/images/goods2.jpeg',NULL),(3,'黄山太平猴魁绿茶1号',NULL,99,3,'/images/goods3.jpeg',NULL),(4,'绿茶-无瑕黄金芽礼盒',NULL,188,4,'/images/goods4.jpeg',NULL),(5,'黑金茶具套装',NULL,458,5,'/images/goods5.jpeg',NULL),(6,'高山流水陶瓷旅行茶具',NULL,168,6,'/images/goods6.jpeg',NULL),(7,'金油滴建盏',NULL,298,7,'/images/goods7.jpeg',NULL),(8,'浅尝-白牡丹',NULL,6.6,8,'/images/goods8.jpeg',NULL),(9,'2016白毫银针巧克力茶砖',NULL,98,9,'/images/goods9.jpeg',NULL);
+
+/*Table structure for table `store_order` */
+
+DROP TABLE IF EXISTS `store_order`;
+
+CREATE TABLE `store_order` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `order_id` varchar(200) NOT NULL,
+  `goods_name` varchar(200) NOT NULL,
+  `goods_price` varchar(200) NOT NULL,
+  `goods_num` int(11) NOT NULL,
+  `order_status` varchar(200) NOT NULL,
+  `uid` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
+
+/*Data for the table `store_order` */
+
+insert  into `store_order`(`id`,`order_id`,`goods_name`,`goods_price`,`goods_num`,`order_status`,`uid`) values (1,'20220305163351739857','2016白毫银针巧克力茶砖,浅尝-白牡丹,高山流水陶瓷旅行茶具','390.4',7,'1',8);
 
 /*Table structure for table `user` */
 

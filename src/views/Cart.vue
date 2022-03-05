@@ -69,7 +69,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(['cartList', 'checkItem']),
+    ...mapMutations(['cartList', 'checkItem', 'initOrder']),
     ...mapActions(['checkAllFn', 'delGoodsFn']),
     async getData() {
       let res = await http.$axios({
@@ -83,7 +83,6 @@ export default {
       res.data.forEach((v) => {
         v['checked'] = true
       })
-      // console.log(res.data)
 
       this.cartList(res.data)
     },
@@ -114,12 +113,41 @@ export default {
         Toast('至少选择1件商品')
         return
       }
-      this.$router.push({
-        path: '/order',
-        query: {
-          detail: JSON.stringify(this.selectList)
-        }
+
+      let newList = []
+      this.list.forEach((item) => {
+        this.selectList.filter((v) => {
+          if (v == item.id) {
+            newList.push(item)
+          }
+        })
       })
+
+      // 生成一个订单
+      http
+        .$axios({
+          url: '/api/addOrder',
+          method: 'POST',
+          headers: {
+            token: true
+          },
+          data: {
+            arr: newList
+          }
+        })
+        .then((res) => {
+          if (!res.success) return
+          // 存储订单号
+          this.initOrder(res.data)
+          // 进入提交订单页面
+          this.$router.push({
+            path: 'Order',
+            query: {
+              detail: JSON.stringify(this.selectList),
+              goodsList: JSON.stringify(this.goodsList)
+            }
+          })
+        })
     }
   },
   created() {
@@ -130,7 +158,12 @@ export default {
       list: (state) => state.cart.list,
       selectList: (state) => state.cart.selectList
     }),
-    ...mapGetters(['isCheckedAll', 'total'])
+    ...mapGetters(['isCheckedAll', 'total']),
+    goodsList() {
+      return this.selectList.map((id) => {
+        return this.list.find((v) => v.id == id)
+      })
+    }
   }
 }
 </script>
