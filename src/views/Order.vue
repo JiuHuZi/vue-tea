@@ -11,7 +11,7 @@
     <section>
       <div class="path">
         <h3 class="path-title">收货信息</h3>
-        <div class="path-content">
+        <div class="path-content" @click="goPath">
           <div class="path-main">
             <div>
               <span>{{ path.name }}</span>
@@ -60,7 +60,7 @@
         <span>总金额：</span>
         <em>￥{{ total.price }}</em>
       </div>
-      <div class="order-topay">提交订单</div>
+      <div class="order-topay" @click="goPayment">提交订单</div>
     </footer>
   </div>
 </template>
@@ -68,6 +68,8 @@
 <script>
 import { mapGetters, mapMutations, mapState } from 'vuex'
 import http from '@/common/api/request.js'
+import { Toast } from 'vant'
+import bus from '@/common/bus.js'
 export default {
   name: 'Order',
   data() {
@@ -88,53 +90,84 @@ export default {
     ...mapGetters(['defaultPath'])
   },
   created() {
+    this.goodsList = JSON.parse(this.$route.query.goodsList)
+    this.selectAddress()
+  },
+  methods: {
+    ...mapMutations(['initData', 'initOrder']),
+    // 查询到地址
+    selectAddress() {
+      http
+        .$axios({
+          url: '/api/selectAddress',
+          method: 'POST',
+          headers: {
+            token: true
+          }
+        })
+        .then((res) => {
+          this.initData(res.data)
+          // 有默认收货地址
+          if (this.defaultPath.length) {
+            this.path = this.defaultPath[0]
+          } else {
+            // 没有默认收货地址
+            this.path = res.data[0]
+          }
+        })
+    },
+    // 选择收货地址
+    goPath() {
+      this.$router.push({
+        path: '/path',
+        query: {
+          type: 'select'
+        }
+      })
+    },
+    // 查询订单
+    selectOrder() {
+      http
+        .$axios({
+          url: '/api/selectOrder',
+          method: 'POST',
+          headers: {
+            token: true
+          },
+          data: {
+            order_id: this.order_id
+          }
+        })
+        .then((res) => {
+          // 存储订单号
+          this.initOrder(res.data)
+          this.total = {
+            price: parseFloat(res.data[0].goods_price).toFixed(2),
+            num: res.data[0].goods_num
+          }
+        })
+    },
+    // 提交订单
+    goPayment() {
+      // 判断是否选择了收货地址
+      if (!this.path) {
+        Toast('请填写收货地址')
+        return
+      }
+    }
+  },
+  activated() {
+    bus.$on(
+      'selectPath',
+      function (data) {
+        this.path = JSON.parse(data)
+      }.bind(this)
+    )
     // 选中的商品id号
     this.item = JSON.parse(this.$route.query.detail)
     this.goodsList = JSON.parse(this.$route.query.goodsList)
 
-    // 查询到地址
-    http
-      .$axios({
-        url: '/api/selectAddress',
-        method: 'POST',
-        headers: {
-          token: true
-        }
-      })
-      .then((res) => {
-        this.initData(res.data)
-        // 有默认收货地址
-        if (this.defaultPath.length) {
-          this.path = this.defaultPath[0]
-        } else {
-          // 没有默认收货地址
-          this.path = res.data[0]
-        }
-      })
-
-    // 查询订单
-    http
-      .$axios({
-        url: '/api/selectOrder',
-        method: 'POST',
-        headers: {
-          token: true
-        },
-        data: {
-          order_id: this.order_id
-        }
-      })
-      .then((res) => {
-        // 存储订单号
-        this.initOrder(res.data)
-        this.total = {
-          price: parseFloat(res.data[0].goods_price).toFixed(2),
-          num: res.data[0].goods_num
-        }
-      })
-  },
-  methods: {
-    ...mapMutations(['initData', 'initOrder'])
+    this.selectOrder()
   }
 }
 </script>

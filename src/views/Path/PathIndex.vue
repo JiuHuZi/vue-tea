@@ -30,8 +30,14 @@ import Header from '@/components/path/header.vue'
 import Tabber from '@/components/common/Tabbar.vue'
 import http from '@/common/api/request.js'
 import { mapMutations, mapState } from 'vuex'
+import bus from '@/common/bus.js'
 export default {
   name: 'PathIndex',
+  data() {
+    return {
+      pathStatus: false
+    }
+  },
   components: {
     Header,
     Tabber
@@ -39,6 +45,13 @@ export default {
   methods: {
     ...mapMutations(['initData']),
     goList(options) {
+      // this.pathStatus 为 true，代表从订单页面进入的：选择状态
+      if (this.pathStatus) {
+        bus.$emit('selectPath', JSON.stringify(options))
+        this.$router.back()
+        return
+      }
+
       this.$router.push({
         name: 'pathlist',
         params: {
@@ -62,6 +75,11 @@ export default {
     }
   },
   created() {
+    // 从订单页进来的
+    if (this.$route.query.type == 'select') {
+      this.pathStatus = true
+    }
+
     this.getData()
   },
   computed: {

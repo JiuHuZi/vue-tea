@@ -82,6 +82,9 @@ const routes = [
   {
     path: '/order',
     name: 'Order',
+    meta: {
+      keepAlive: true // 此组件需要被缓存
+    },
     component: () => import('@/views/Order.vue')
   }
 ]

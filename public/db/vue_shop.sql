@@ -55,7 +55,7 @@ CREATE TABLE `goods_cart` (
 
 /*Data for the table `goods_cart` */
 
-insert  into `goods_cart`(`id`,`uid`,`goods_id`,`goods_name`,`goods_price`,`goods_num`,`goods_imgUrl`) values (5,8,9,'2016白毫银针巧克力茶砖',98,2,'/images/goods9.jpeg'),(51,6,6,'高山流水陶瓷旅行茶具',168,1,'/images/goods6.jpeg'),(52,8,8,'浅尝-白牡丹',6.6,4,'/images/goods8.jpeg'),(53,8,6,'高山流水陶瓷旅行茶具',168,1,'/images/goods6.jpeg');
+insert  into `goods_cart`(`id`,`uid`,`goods_id`,`goods_name`,`goods_price`,`goods_num`,`goods_imgUrl`) values (5,8,9,'2016白毫银针巧克力茶砖',98,1,'/images/goods9.jpeg'),(51,6,6,'高山流水陶瓷旅行茶具',168,1,'/images/goods6.jpeg'),(52,8,8,'浅尝-白牡丹',6.6,2,'/images/goods8.jpeg'),(53,8,6,'高山流水陶瓷旅行茶具',168,3,'/images/goods6.jpeg');
 
 /*Table structure for table `goods_list` */
 
@@ -90,11 +90,11 @@ CREATE TABLE `store_order` (
   `order_status` varchar(200) NOT NULL,
   `uid` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4;
 
 /*Data for the table `store_order` */
 
-insert  into `store_order`(`id`,`order_id`,`goods_name`,`goods_price`,`goods_num`,`order_status`,`uid`) values (1,'20220305163351739857','2016白毫银针巧克力茶砖,浅尝-白牡丹,高山流水陶瓷旅行茶具','390.4',7,'1',8);
+insert  into `store_order`(`id`,`order_id`,`goods_name`,`goods_price`,`goods_num`,`order_status`,`uid`) values (1,'20220305163351739857','2016白毫银针巧克力茶砖,浅尝-白牡丹,高山流水陶瓷旅行茶具','390.4',7,'1',8),(2,'20220305213435205192','2016白毫银针巧克力茶砖,高山流水陶瓷旅行茶具','266',2,'1',8),(3,'20220305213854760564','2016白毫银针巧克力茶砖,浅尝-白牡丹,高山流水陶瓷旅行茶具','292.4',6,'1',8),(4,'2022030521430070948','2016白毫银针巧克力茶砖,浅尝-白牡丹,高山流水陶瓷旅行茶具','292.4',6,'1',8),(5,'20220305214316409180','2016白毫银针巧克力茶砖,浅尝-白牡丹,高山流水陶瓷旅行茶具','292.4',6,'1',8),(6,'20220305215146681176','2016白毫银针巧克力茶砖,浅尝-白牡丹,高山流水陶瓷旅行茶具','292.4',6,'1',8),(7,'2022030522000683789','2016白毫银针巧克力茶砖,浅尝-白牡丹','124.4',5,'1',8),(8,'2022030522003457478','高山流水陶瓷旅行茶具','168',1,'1',8),(9,'20220305220042468935','浅尝-白牡丹,高山流水陶瓷旅行茶具','194.4',5,'1',8),(10,'20220305220427984226','2016白毫银针巧克力茶砖','98',1,'1',8),(11,'20220305220433166525','2016白毫银针巧克力茶砖,浅尝-白牡丹,高山流水陶瓷旅行茶具','292.4',6,'1',8),(12,'20220305220548174341','2016白毫银针巧克力茶砖,高山流水陶瓷旅行茶具','266',2,'1',8),(13,'20220305220756770088','浅尝-白牡丹','26.4',4,'1',8),(14,'20220305220810536279','2016白毫银针巧克力茶砖,浅尝-白牡丹,高山流水陶瓷旅行茶具','292.4',6,'1',8),(15,'20220305220826564001','浅尝-白牡丹,高山流水陶瓷旅行茶具','517.2',5,'1',8);
 
 /*Table structure for table `user` */
 
