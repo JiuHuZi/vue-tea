@@ -10,9 +10,122 @@ var jwt = require('jsonwebtoken')
 const alipaySdk = require('../db/alipay.js')
 const AlipayFormData = require('alipay-sdk/lib/form').default
 
+// 引入axios
+const axios = require('axios')
+
 /* GET home page. */
 router.get('/', function (req, res, next) {
   res.render('index', { title: 'Express' })
+})
+
+// 支付状态
+router.post('/api/successPayment', function (req, res, next) {
+  // token
+  let token = req.headers.token
+  let tokenObj = jwt.decode(token)
+  // 订单号
+  let out_trade_no = req.body.out_trade_no
+  let trade_no = req.body.trade_no
+
+  //支付宝配置
+  const formData = new AlipayFormData()
+  // 调用 setMethod 并传入 get，会返回可以跳转到支付页面的 url
+  formData.setMethod('get')
+  // 支付时的信息
+  formData.addField('bizContent', {
+    out_trade_no,
+    trade_no
+  })
+  // 返回promise
+  const result = alipaySdk.exec('alipay.trade.query', {}, { formData: formData })
+  // 后端请求支付宝
+  result.then((resData) => {
+    axios({
+      method: 'GET',
+      url: resData
+    })
+      .then((data) => {
+        // console.log(data)
+        let responseCode = data.data.alipay_trade_query_response
+        if (responseCode.code == '10000') {
+          switch (responseCode.trade_status) {
+            case 'WAIT_BUYER_PAY':
+              res.send({
+                data: {
+                  code: 0,
+                  msg: '支付宝有交易,没付款'
+                }
+              })
+              break
+
+            case 'TRADE_CLOSED':
+              res.send({
+                data: {
+                  code: 1,
+                  msg: '交易关闭'
+                }
+              })
+              break
+
+            case 'TRADE_FINISHED':
+              // 查询用户
+              connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
+                // 用户id
+                let uid = results[0].id
+                connection.query(`select * from store_order where uid = ${uid} and order_id = ${out_trade_no}`, function (err, result) {
+                  let id = result[0].id
+                  // 订单的状态改成  2==>3
+                  connection.query(`update store_order set order_status = replace(order_status,'2','3') where id = ${id}`, function (e, r) {
+                    res.send({
+                      data: {
+                        code: 2,
+                        msg: '交易完成'
+                      }
+                    })
+                  })
+                })
+              })
+              break
+
+            case 'TRADE_SUCCESS':
+              // 查询用户
+              connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
+                // 用户id
+                let uid = results[0].id
+                connection.query(`select * from store_order where uid = ${uid} and order_id = ${out_trade_no}`, function (err, result) {
+                  let id = result[0].id
+                  // 订单的状态改成  2==>3
+                  connection.query(`update store_order set order_status = replace(order_status,'2','3') where id = ${id}`, function (e, r) {
+                    res.send({
+                      data: {
+                        code: 2,
+                        msg: '交易完成'
+                      }
+                    })
+                  })
+                })
+              })
+              break
+          }
+        } else if (responseCode.code == '40004') {
+          res.send({
+            data: {
+              code: 4,
+              msg: '交易不存在'
+            }
+          })
+        }
+      })
+      .catch((err) => {
+        res.send({
+          data: {
+            code: 500,
+            msg: '交易失败',
+            err
+          }
+        })
+      })
+  })
 })
 
 // 发起支付
@@ -73,14 +186,13 @@ router.post('/api/submitOrder', function (req, res, next) {
       connection.query(`update store_order set order_status = replace(order_status,'1','2') where id = ${id}`, function (e, r) {
         // 购物车数据删除
         shopArr.forEach((v) => {
-          connection.query(`delete from goods_cart where id = ${v}`, function () {
-            res.send({
-              data: {
-                code: 200,
-                success: true
-              }
-            })
-          })
+          connection.query(`delete from goods_cart where id = ${v}`, function () {})
+        })
+        res.send({
+          data: {
+            code: 200,
+            success: true
+          }
         })
       })
     })
