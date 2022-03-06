@@ -1,7 +1,7 @@
 <template>
   <div class="payment">
-    <div v-if="payStatus">恭喜您,支付成功</div>
-    <div v-else>很遗憾,支付失败</div>
+    <div v-if="payStatus">恭喜您,支付成功,<router-link to="/home">返回首页</router-link></div>
+    <div v-else>很遗憾,支付失败,<router-link to="/home">返回首页</router-link></div>
   </div>
 </template>
 
