@@ -70,6 +70,7 @@ import { mapGetters, mapMutations, mapState } from 'vuex'
 import http from '@/common/api/request.js'
 import { Toast } from 'vant'
 import bus from '@/common/bus.js'
+import qs from 'qs'
 export default {
   name: 'Order',
   data() {
@@ -85,7 +86,8 @@ export default {
   },
   computed: {
     ...mapState({
-      order_id: (state) => state.order.order_id
+      order_id: (state) => state.order.order_id,
+      selectList: (state) => state.cart.selectList
     }),
     ...mapGetters(['defaultPath'])
   },
@@ -154,6 +156,55 @@ export default {
         Toast('请填写收货地址')
         return
       }
+
+      // 发送请求  ==> 1.修改订单状态  2.删除购物车数据
+      http
+        .$axios({
+          url: '/api/submitOrder',
+          method: 'POST',
+          headers: {
+            token: true
+          },
+          data: {
+            order_id: this.order_id,
+            shopArr: this.selectList
+          }
+        })
+        .then((res) => {
+          let newArr = []
+          this.goodsList.forEach((v) => {
+            newArr.push(v.goods_name)
+          })
+
+          // 支付传递的参数
+          let dataOrder = {
+            orderId: this.order_id,
+            name: newArr.join(''),
+            price: this.total.price
+          }
+
+          if (res.success) {
+            // 去支付
+            http
+              .$axios({
+                url: '/api/payment',
+                method: 'POST',
+                headers: {
+                  token: true,
+                  'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                // qs 是增加安全性的序列化
+                data: qs.stringify(dataOrder)
+              })
+              .then((res) => {
+                if (res.success) {
+                  // 打开支付包支付的页面
+                  window.location.href = res.paymentUrl
+                }
+                console.log(res)
+              })
+          }
+        })
     }
   },
   activated() {

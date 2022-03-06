@@ -6,9 +6,85 @@ var QcloudSms = require('qcloudsms_js')
 // 引入 token 包
 var jwt = require('jsonwebtoken')
 
+// 引入支付宝配置文件
+const alipaySdk = require('../db/alipay.js')
+const AlipayFormData = require('alipay-sdk/lib/form').default
+
 /* GET home page. */
 router.get('/', function (req, res, next) {
   res.render('index', { title: 'Express' })
+})
+
+// 发起支付
+router.post('/api/payment', function (req, res, next) {
+  // 订单号
+  let orderId = req.body.orderId
+  // 商品总价
+  let price = req.body.price
+  // 购买商品的名称
+  let name = req.body.name
+
+  // 开始对接支付宝API
+  const formData = new AlipayFormData()
+  // 调用 setMethod 并传入 get，会返回可以跳转到支付页面的 url
+  formData.setMethod('get')
+  // 支付时的信息
+  formData.addField('bizContent', {
+    outTradeNo: orderId, //订单号
+    productCode: 'FAST_INSTANT_TRADE_PAY', //写死的
+    totalAmount: price, //价格
+    subject: name //商品名称
+  })
+  // 支付成功或者失败跳转的链接
+  formData.addField('returnUrl', 'http://localhost:8080/payment')
+  // 返回promise
+  const result = alipaySdk.exec('alipay.trade.page.pay', {}, { formData: formData })
+  // 对接支付宝成功,支付宝方返回的数据
+  result.then((resp) => {
+    res.send({
+      data: {
+        code: 200,
+        success: true,
+        msg: '支付中',
+        paymentUrl: resp
+      }
+    })
+  })
+})
+
+// 修改订单状态
+router.post('/api/submitOrder', function (req, res, next) {
+  // token
+  let token = req.headers.token
+  let tokenObj = jwt.decode(token)
+  // 订单号
+  let orderId = req.body.order_id
+  // 购物车选中的商品id
+  let shopArr = req.body.shopArr
+
+  // 查询用户
+  connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
+    // 用户id
+    let uid = results[0].id
+    connection.query(`select * from store_order where uid = ${uid} and order_id = ${orderId}`, function (err, result) {
+      // 订单的数据库 id
+      let id = result[0].id
+      // 修改订单状态  1 ==> 2
+      connection.query(`update store_order set order_status = replace(order_status,'1','2') where id = ${id}`, function (e, r) {
+        // 购物车数据删除
+        shopArr.forEach((v) => {
+          connection.query(`delete from goods_cart where id = ${v}`, function () {
+            res.send({
+              data: {
+                code: 200,
+                success: true
+              }
+            })
+          })
+        })
+      })
+    })
+  })
 })
 
 // 查询一个订单

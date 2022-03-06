@@ -86,6 +86,11 @@ const routes = [
       keepAlive: true // 此组件需要被缓存
     },
     component: () => import('@/views/Order.vue')
+  },
+  {
+    path: '/payment',
+    name: 'Payment',
+    component: () => import('@/views/Payment.vue')
   }
 ]
 
