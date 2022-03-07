@@ -13,6 +13,13 @@ const AlipayFormData = require('alipay-sdk/lib/form').default
 // 引入axios
 const axios = require('axios')
 
+function getTimeToken(exp) {
+  let getTime = parseInt(new Date().getTime() / 1000)
+  if (getTime - exp > 60) {
+    return true
+  }
+}
+
 /* GET home page. */
 router.get('/', function (req, res, next) {
   res.render('index', { title: 'Express' })
@@ -519,6 +526,16 @@ router.post('/api/addCart', function (req, res, next) {
   let token = req.headers.token
   let tokenObj = jwt.decode(token)
 
+  // 如果执行，整个token过期了
+  console.log(getTimeToken(tokenObj.exp))
+  if (getTimeToken(tokenObj.exp)) {
+    res.send({
+      data: {
+        code: 1000
+      }
+    })
+  }
+
   // 查询用户
   connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
     // 用户id
@@ -626,7 +643,7 @@ router.post('/api/register', function (req, res, next) {
         code: 200,
         data: {
           success: true,
-          msg: '登陆成功',
+          msg: '登录成功',
           data: result[0]
         }
       })
@@ -638,7 +655,7 @@ router.post('/api/register', function (req, res, next) {
             code: 200,
             data: {
               success: true,
-              msg: '登陆成功',
+              msg: '登录成功',
               data: r[0]
             }
           })
@@ -663,7 +680,7 @@ router.post('/api/addUser', function (req, res, next) {
         code: 200,
         data: {
           success: true,
-          msg: '登陆成功',
+          msg: '登录成功',
           data: result[0]
         }
       })
@@ -675,7 +692,7 @@ router.post('/api/addUser', function (req, res, next) {
             code: 200,
             data: {
               success: true,
-              msg: '登陆成功',
+              msg: '登录成功',
               data: r[0]
             }
           })
@@ -736,20 +753,37 @@ router.post('/api/login', function (req, res, next) {
     userPwd: req.body.userPwd
   }
 
+  let userTel = params.userTel
+
+  // 引入 token 包
+  let jwt = require('jsonwebtoken')
+  // 用户信息
+  let payload = { tel: userTel }
+  // 口令
+  let secret = 'jiuhu'
+  // 生成 token
+  let token = jwt.sign(payload, secret, {
+    expiresIn: 60
+  })
+
   // 查询用户手机号是否存在
-  connection.query(user.queryUserTel(params), function (err, results) {
+  connection.query(user.queryUserTel(params), function (err, result) {
     // 手机号存在
-    if (results.length > 0) {
+    if (result.length > 0) {
+      // 记录的id
+      let id = result[0].id
       connection.query(user.queryUserPwd(params), function (err, results) {
         if (results.length > 0) {
-          // 手机号和密码都正确
-          res.send({
-            code: 200,
-            data: {
-              success: true,
-              msg: '登录成功',
-              data: results[0]
-            }
+          connection.query(`update user set token = '${token}' where id = ${id}`, function (e, r) {
+            // 手机号和密码都正确
+            res.send({
+              code: 200,
+              data: {
+                success: true,
+                msg: '登录成功',
+                data: results[0]
+              }
+            })
           })
         } else {
           // 密码不正确

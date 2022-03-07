@@ -28,6 +28,13 @@ export default {
 
     return axios(options).then((v) => {
       let data = v.data.data
+
+      // 如果 token 过期，重新登陆
+      if (data.code == 1000) {
+        Indicator.close()
+        return router.push('/login')
+      }
+
       return new Promise((res, rej) => {
         if (!v) return rej()
         // 结束，关闭加载中
