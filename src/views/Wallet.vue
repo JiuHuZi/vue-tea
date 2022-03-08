@@ -4,9 +4,18 @@
     <section>
       <div class="totalMsg">
         <ul>
-          <li><span>总资产（元）</span><span>100.00</span></li>
-          <li><span>累计充值（元）</span><span>100.00</span></li>
-          <li><span>累计消费（元）</span><span>100.00</span></li>
+          <li>
+            <span>总资产（元）</span>
+            <span>{{ totalList.total_money }}</span>
+          </li>
+          <li>
+            <span>累计充值（元）</span>
+            <span>{{ totalList.Total_top_up }}</span>
+          </li>
+          <li>
+            <span>累计消费（元）</span>
+            <span>{{ totalList.total_consumption }}</span>
+          </li>
         </ul>
       </div>
       <div class="topUp">
@@ -35,11 +44,36 @@
 <script>
 import Header from '@/components/wallet/header.vue'
 import Tabber from '@/components/common/Tabbar.vue'
+import http from '@/common/api/request.js'
 export default {
   name: 'Wallet',
+  data() {
+    return {
+      totalList: {}
+    }
+  },
   components: {
     Header,
     Tabber
+  },
+  methods: {
+    getData() {
+      http
+        .$axios({
+          url: '/api/selectwallet',
+          method: 'POST',
+          headers: {
+            token: true
+          }
+        })
+        .then((res) => {
+          if (!res.success) return
+          this.totalList = res.data
+        })
+    }
+  },
+  created() {
+    this.getData()
   }
 }
 </script>

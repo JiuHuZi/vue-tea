@@ -114,6 +114,23 @@ CREATE TABLE `user` (
 
 insert  into `user`(`id`,`tel`,`pwd`,`imgUrl`,`nickName`,`token`) values (2,'12345678901','888888','/images/headerImg/header.jpeg','张三',NULL),(3,'13166981478','666666','/images/headerImg/header.jpeg','李四',NULL),(4,'13144112259','999999','/images/headerImg/header.jpeg','王五',NULL),(5,'17345698789','666666','/images/headerImg/header.jpeg','赵六',''),(6,'13144274877','666666','/images/headerImg/header.jpeg','孙七','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0ZWwiOiIxMzE0NDI3NDg3NyIsImlhdCI6MTY0NjAzNTUzMn0.SBcn8kcsSfJQIZD7aDNnpgCsaN29ht6AcEJHTsdcCrI'),(7,'12345678999','666666','/images/headerImg/header.jpeg','12345678999','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0ZWwiOiIxMjM0NTY3ODk5OSIsImlhdCI6MTY0NjA0NTY0NX0.no5zXsIsie5jXTE-SlxPF96yPnrJg8i718RpnD70df8'),(8,'13144274876','666666','/images/headerImg/header.jpeg','13144274876','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0ZWwiOiIxMzE0NDI3NDg3NiIsImlhdCI6MTY0NjA1MzM3Mn0.jzO2m4exthzFXo5ZnLP_hx3O0Rt87SGoReNBEfPEtec'),(9,'17166589988','666666','/images/headerImg/header.jpeg','17166589988','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0ZWwiOiIxNzE2NjU4OTk4OCIsImlhdCI6MTY0NjYzOTQxNCwiZXhwIjoxNjQ2NjM5NDc0fQ.4vSxaNjHTkXDi1m_iMGp6Mt2PHtWzeYY7oPKN6BHJm8');
 
+/*Table structure for table `wallet` */
+
+DROP TABLE IF EXISTS `wallet`;
+
+CREATE TABLE `wallet` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uid` int(11) NOT NULL,
+  `total_money` varchar(200) NOT NULL COMMENT '总资产',
+  `Total_top_up` varchar(200) NOT NULL COMMENT '总充值金额',
+  `total_consumption` varchar(200) NOT NULL COMMENT '总消费金额',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
+
+/*Data for the table `wallet` */
+
+insert  into `wallet`(`id`,`uid`,`total_money`,`Total_top_up`,`total_consumption`) values (1,8,'0','0','0');
+
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;

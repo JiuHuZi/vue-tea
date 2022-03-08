@@ -25,6 +25,41 @@ router.get('/', function (req, res, next) {
   res.render('index', { title: 'Express' })
 })
 
+// 查询钱包
+router.post('/api/selectwallet', function (req, res, next) {
+  // token
+  let token = req.headers.token
+  let tokenObj = jwt.decode(token)
+
+  // 查询用户
+  connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
+    // 用户id
+    let uid = results[0].id
+
+    connection.query(`select * from wallet where uid = ${uid}`, function (err, result) {
+      if (result.length <= 0) {
+        connection.query(`insert into wallet (uid,total_money,Total_top_up,total_consumption) values(${uid},'0','0','0')`, function (e, r) {
+          res.send({
+            data: {
+              code: 200,
+              success: true,
+              data: r[0]
+            }
+          })
+        })
+      } else {
+        res.send({
+          data: {
+            code: 200,
+            success: true,
+            data: result[0]
+          }
+        })
+      }
+    })
+  })
+})
+
 // 支付状态
 router.post('/api/successPayment', function (req, res, next) {
   // token
