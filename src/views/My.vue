@@ -17,6 +17,13 @@
           </div>
           <i class="iconfont icon-fanhui go-out"></i>
         </li>
+        <li @click="goWallet">
+          <div>
+            <i class="iconfont icon-licai icons"></i>
+            <span>我的钱包</span>
+          </div>
+          <i class="iconfont icon-fanhui go-out"></i>
+        </li>
         <li v-if="loginStatus" @click="loginOut">
           <div>
             <i class="iconfont icon-tuichu icons"></i>
@@ -46,6 +53,10 @@ export default {
     // 进入地址管理
     goPath() {
       this.$router.push('/path')
+    },
+    // 进入我的钱包
+    goWallet() {
+      this.$router.push('/wallet')
     }
   },
   computed: {
