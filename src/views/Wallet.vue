@@ -25,14 +25,14 @@
               <i class="iconfont icon-shouye1"></i>
               <span>充值￥100 赠送￥10</span>
             </div>
-            <div class="topUpBtn">充值</div>
+            <div class="topUpBtn" @click="topUp(100)">充值</div>
           </li>
           <li>
             <div>
               <i class="iconfont icon-shouye1"></i>
               <span>充值￥1000 赠送￥100</span>
             </div>
-            <div class="topUpBtn">充值</div>
+            <div class="topUpBtn" @click="topUp(1000)">充值</div>
           </li>
         </ul>
       </div>
@@ -45,6 +45,7 @@
 import Header from '@/components/wallet/header.vue'
 import Tabber from '@/components/common/Tabbar.vue'
 import http from '@/common/api/request.js'
+import qs from 'qs'
 export default {
   name: 'Wallet',
   data() {
@@ -69,6 +70,55 @@ export default {
         .then((res) => {
           if (!res.success) return
           this.totalList = res.data
+        })
+    },
+    topUp(val) {
+      let name = ''
+      if (val == 100) {
+        name = '充值￥100 赠送￥10'
+      } else if (val == 1000) {
+        name = '充值￥1000 赠送￥100'
+      }
+
+      http
+        .$axios({
+          url: '/api/addWalletOrder',
+          method: 'POST',
+          headers: {
+            token: true
+          },
+          data: {
+            goods_name: name,
+            goods_price: val
+          }
+        })
+        .then((res) => {
+          console.log(res.data)
+          if (!res.success) return
+
+          // 支付传递的参数
+          let dataOrder = {
+            orderId: res.data.order_id,
+            name: res.data.goods_name,
+            price: res.data.goods_price
+          }
+
+          http
+            .$axios({
+              url: '/api/topUp',
+              method: 'POST',
+              headers: {
+                token: true,
+                'Content-Type': 'application/x-www-form-urlencoded'
+              },
+              data: qs.stringify(dataOrder)
+            })
+            .then((res) => {
+              console.log(res)
+              if (!res.success) return
+              // 打开支付包支付的页面
+              window.location.href = res.paymentUrl
+            })
         })
     }
   },

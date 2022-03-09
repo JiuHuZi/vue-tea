@@ -20,9 +20,232 @@ function getTimeToken(exp) {
   }
 }
 
+// 生成订单号 order_id,规则：时间戳 + 6位随机数
+function setTimeDateFmt(s) {
+  return s < 10 ? '0' + s : s
+}
+function randomNumber() {
+  const now = new Date()
+  let month = now.getMonth() + 1
+  let day = now.getDate()
+  let hour = now.getHours()
+  let minutes = now.getMinutes()
+  let seconds = now.getSeconds()
+
+  month = setTimeDateFmt(month)
+  day = setTimeDateFmt(day)
+  hour = setTimeDateFmt(hour)
+  minutes = setTimeDateFmt(minutes)
+  seconds = setTimeDateFmt(seconds)
+
+  let orderCode = now.getFullYear().toString() + month.toString() + day.toString() + hour.toString() + minutes.toString() + seconds.toString() + Math.round(Math.random() * 1000000).toString()
+
+  return orderCode
+}
+
 /* GET home page. */
 router.get('/', function (req, res, next) {
   res.render('index', { title: 'Express' })
+})
+
+// 支付状态
+router.post('/api/successTopUp', function (req, res, next) {
+  // token
+  let token = req.headers.token
+  let tokenObj = jwt.decode(token)
+  // 订单号
+  let out_trade_no = req.body.out_trade_no
+  let trade_no = req.body.trade_no
+
+  //支付宝配置
+  const formData = new AlipayFormData()
+  // 调用 setMethod 并传入 get，会返回可以跳转到支付页面的 url
+  formData.setMethod('get')
+  // 支付时的信息
+  formData.addField('bizContent', {
+    out_trade_no,
+    trade_no
+  })
+  // 返回promise
+  const result = alipaySdk.exec('alipay.trade.query', {}, { formData: formData })
+  // 后端请求支付宝
+  result.then((resData) => {
+    axios({
+      method: 'GET',
+      url: resData
+    })
+      .then((data) => {
+        // console.log(data)
+        let responseCode = data.data.alipay_trade_query_response
+        if (responseCode.code == '10000') {
+          switch (responseCode.trade_status) {
+            case 'WAIT_BUYER_PAY':
+              res.send({
+                data: {
+                  code: 0,
+                  msg: '支付宝有交易,没付款'
+                }
+              })
+              break
+
+            case 'TRADE_CLOSED':
+              res.send({
+                data: {
+                  code: 1,
+                  msg: '交易关闭'
+                }
+              })
+              break
+
+            case 'TRADE_FINISHED':
+              // 查询用户
+              connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
+                // 用户id
+                let uid = results[0].id
+                connection.query(`select * from store_order where uid = ${uid} and order_id = ${out_trade_no}`, function (err, result) {
+                  let id = result[0].id
+                  let price = result[0].goods_price
+                  // 订单的状态改成  2==>3
+                  connection.query(`update store_order set order_status = replace(order_status,'2','3') where id = ${id}`, function () {
+                    connection.query(`select * from wallet where uid = ${uid} `, function (e, r) {
+                      console.log(r)
+                      // 总资产
+                      let total_money = parseFloat(r[0].total_money) + parseFloat(price)
+                      // 总充值金额
+                      let Total_top_up = parseFloat(r[0].Total_top_up) + parseFloat(price)
+                      // 总消费金额
+                      let total_consumption = r[0].total_consumption
+                      connection.query(`update wallet set total_money = ${total_money} , Total_top_up = ${Total_top_up}  where uid = ${uid}`, function () {
+                        res.send({
+                          data: {
+                            code: 2,
+                            msg: '交易完成'
+                          }
+                        })
+                      })
+                    })
+                  })
+                })
+              })
+              break
+
+            case 'TRADE_SUCCESS':
+              // 查询用户
+              connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
+                // 用户id
+                let uid = results[0].id
+                connection.query(`select * from store_order where uid = ${uid} and order_id = ${out_trade_no}`, function (err, result) {
+                  let id = result[0].id
+                  let price = result[0].goods_price
+                  // 订单的状态改成  2==>3
+                  connection.query(`update store_order set order_status = replace(order_status,'2','3') where id = ${id}`, function () {
+                    connection.query(`select * from wallet where uid = ${uid} `, function (e, r) {
+                      console.log(r)
+                      // 总资产
+                      let total_money = parseFloat(r[0].total_money) + parseFloat(price)
+                      // 总充值金额
+                      let Total_top_up = parseFloat(r[0].Total_top_up) + parseFloat(price)
+                      // 总消费金额
+                      let total_consumption = r[0].total_consumption
+                      connection.query(`update wallet set total_money = ${total_money} , Total_top_up = ${Total_top_up}  where uid = ${uid}`, function () {
+                        res.send({
+                          data: {
+                            code: 2,
+                            msg: '交易完成'
+                          }
+                        })
+                      })
+                    })
+                  })
+                })
+              })
+              break
+          }
+        } else if (responseCode.code == '40004') {
+          res.send({
+            data: {
+              code: 4,
+              msg: '交易不存在'
+            }
+          })
+        }
+      })
+      .catch((err) => {
+        res.send({
+          data: {
+            code: 500,
+            msg: '交易失败',
+            err
+          }
+        })
+      })
+  })
+})
+
+// 发起支付
+router.post('/api/topUp', function (req, res, next) {
+  // 订单号
+  let orderId = req.body.orderId
+  // 商品总价
+  let price = req.body.price
+  // 购买商品的名称
+  let name = req.body.name
+
+  // 开始对接支付宝API
+  const formData = new AlipayFormData()
+  // 调用 setMethod 并传入 get，会返回可以跳转到支付页面的 url
+  formData.setMethod('get')
+  // 支付时的信息
+  formData.addField('bizContent', {
+    outTradeNo: orderId, //订单号
+    productCode: 'FAST_INSTANT_TRADE_PAY', //写死的
+    totalAmount: price, //价格
+    subject: name //商品名称
+  })
+  // 支付成功或者失败跳转的链接
+  formData.addField('returnUrl', 'http://localhost:8080/topUp')
+  // 返回promise
+  const result = alipaySdk.exec('alipay.trade.page.pay', {}, { formData: formData })
+  // 对接支付宝成功,支付宝方返回的数据
+  result.then((resp) => {
+    res.send({
+      data: {
+        code: 200,
+        success: true,
+        msg: '支付中',
+        paymentUrl: resp
+      }
+    })
+  })
+})
+
+// 钱包充值
+router.post('/api/addWalletOrder', function (req, res, next) {
+  // token
+  let token = req.headers.token
+  let tokenObj = jwt.decode(token)
+  //  前端给后端的数据
+  let goodsName = req.body.goods_name
+  let goodsPrice = req.body.goods_price
+  // 订单号
+  let orderId = randomNumber()
+
+  // 查询用户
+  connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
+    // 用户id
+    let uid = results[0].id
+    connection.query(`insert into store_order (order_id,goods_name,goods_price,goods_num,order_status,uid) values('${orderId}', '${goodsName}','${goodsPrice}',1,'2',${uid})`, function () {
+      connection.query(`select * from store_order where uid = ${uid} and order_id = '${orderId}'`, function (err, result) {
+        res.send({
+          data: {
+            code: 200,
+            data: result[0],
+            success: true
+          }
+        })
+      })
+    })
+  })
 })
 
 // 查询钱包
@@ -265,29 +488,6 @@ router.post('/api/addOrder', function (req, res, next) {
 
   //  前端给后端的数据
   let goodsArr = req.body.arr
-
-  // 生成订单号 order_id,规则：时间戳 + 6位随机数
-  function setTimeDateFmt(s) {
-    return s < 10 ? '0' + s : s
-  }
-  function randomNumber() {
-    const now = new Date()
-    let month = now.getMonth() + 1
-    let day = now.getDate()
-    let hour = now.getHours()
-    let minutes = now.getMinutes()
-    let seconds = now.getSeconds()
-
-    month = setTimeDateFmt(month)
-    day = setTimeDateFmt(day)
-    hour = setTimeDateFmt(hour)
-    minutes = setTimeDateFmt(minutes)
-    seconds = setTimeDateFmt(seconds)
-
-    let orderCode = now.getFullYear().toString() + month.toString() + day.toString() + hour.toString() + minutes.toString() + seconds.toString() + Math.round(Math.random() * 1000000).toString()
-
-    return orderCode
-  }
 
   /**
    * 未支付：1

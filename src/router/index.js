@@ -110,6 +110,11 @@ const routes = [
     path: '/wallet',
     name: 'Wallet',
     component: () => import('@/views/Wallet.vue')
+  },
+  {
+    path: '/topUp',
+    name: 'Topup',
+    component: () => import('@/views/Topup.vue')
   }
 ]
 
