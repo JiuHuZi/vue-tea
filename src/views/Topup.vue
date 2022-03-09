@@ -36,7 +36,6 @@ export default {
           data: qs.stringify(data)
         })
         .then((res) => {
-          console.log(res)
           if (res.code == 2) {
             this.payStatus = true
           }

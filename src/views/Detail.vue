@@ -58,8 +58,20 @@
     </section>
 
     <footer>
-      <div class="add-cart" @click="addCart">加入购物车</div>
-      <div>立即购买</div>
+      <div class="leftBtn">
+        <div class="cart" @click="$router.push('/cart')">
+          <i class="iconfont icon-gouwuche"></i>
+          <span>购物车</span>
+        </div>
+        <div class="start">
+          <i class="iconfont icon-shoucang"></i>
+          <span>收藏</span>
+        </div>
+      </div>
+      <div class="rightBtn">
+        <div class="add-cart" @click="addCart">加入购物车</div>
+        <div>立即购买</div>
+      </div>
     </footer>
   </div>
 </template>
@@ -91,7 +103,7 @@ export default {
           type: 'fraction'
         }
       },
-      swiperList: [{ imgUrl: '/images/goods-list1.jpeg' }, { imgUrl: '/images/goods-list2.png' }, { imgUrl: '/images/goods-list3.jpeg' }, { imgUrl: '/images/goods-list4.jpeg' }, { imgUrl: '/images/goods-list5.jpeg' }]
+      swiperList: []
     }
   },
   mounted() {
@@ -139,8 +151,11 @@ export default {
         params: { id }
       })
 
-      // console.log(res)
+      console.log(res)
       this.goods = res
+
+      this.swiperList = [{ imgUrl: '/images/goods-list1.jpeg' }, { imgUrl: '/images/goods-list2.png' }, { imgUrl: '/images/goods-list3.jpeg' }, { imgUrl: '/images/goods-list4.jpeg' }, { imgUrl: '/images/goods-list5.jpeg' }]
+      this.swiperList.unshift({ imgUrl: res.imgUrl })
     },
     // 加入购物车
     addCart() {
@@ -294,6 +309,24 @@ footer {
   display: flex;
   justify-content: center;
   align-items: center;
+  .leftBtn {
+    flex: 1;
+    div {
+      display: flex;
+      flex-direction: column;
+      background-color: #fff;
+      color: #000;
+      i {
+        font-size: 24px;
+      }
+      span {
+        font-size: 14px;
+      }
+    }
+  }
+  .rightBtn {
+    flex: 2;
+  }
   div {
     width: 50%;
     height: 100%;
