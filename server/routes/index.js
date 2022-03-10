@@ -1212,9 +1212,19 @@ router.get('/api/index_list/1/data/1', function (req, res, next) {
         id: 2,
         type: 'likeList',
         data: [
-          { id: 1, imgUrl: './images/like.jpeg', name: '建盏茶具套装 红色芝麻毫 12件套', price: 299 },
-          { id: 2, imgUrl: './images/like2.jpeg', name: '建盏茶具套装 红色芝麻毫 12件套', price: 299 },
-          { id: 3, imgUrl: './images/like3.jpeg', name: '建盏茶具套装 红色芝麻毫 12件套', price: 299 }
+          { id: 1, imgUrl: '/images/goods/goods1.jpeg', name: '浅尝-金牡丹（武夷岩茶）', price: 14.6 },
+          { id: 2, imgUrl: '/images/goods/goods2.jpeg', name: '2016南糯山古树普洱生茶', price: 98 },
+          { id: 3, imgUrl: '/images/goods/goods3.jpeg', name: '黄山太平猴魁绿茶1号', price: 99 },
+          { id: 4, imgUrl: '/images/goods/goods4.jpeg', name: '绿茶-无瑕黄金芽礼盒', price: 188 },
+          { id: 5, imgUrl: '/images/goods/goods5.jpeg', name: '黑金茶具套装', price: 458 },
+          { id: 6, imgUrl: '/images/goods/goods6.jpeg', name: '高山流水陶瓷旅行茶具', price: 168 },
+          { id: 7, imgUrl: '/images/goods/goods7.jpeg', name: '金油滴建盏', price: 298 },
+          { id: 8, imgUrl: '/images/goods/goods8.jpeg', name: '浅尝-白牡丹', price: 6.6 },
+          { id: 9, imgUrl: '/images/goods/goods9.jpeg', name: '2016白毫银针巧克力茶砖', price: 98 },
+          { id: 10, imgUrl: '/images/goods/goods10.jpeg', name: '云南凤庆经典蜜香滇红', price: 88 },
+          { id: 11, imgUrl: '/images/goods/goods11.jpeg', name: '传统工艺茉莉花茶-春毫', price: 68 },
+          { id: 12, imgUrl: '/images/goods/goods12.jpeg', name: '笔花堂桐木关金骏眉', price: 794 },
+          { id: 13, imgUrl: '/images/goods/goods13.jpeg', name: '林沧淇白水兰香铁观音', price: 118 }
         ]
       }
     ]
@@ -1239,9 +1249,19 @@ router.get('/api/index_list/2/data/1', function (req, res, next) {
         id: 2,
         type: 'likeList',
         data: [
-          { id: 1, imgUrl: './images/like.jpeg', name: '建盏茶具套装 红色芝麻毫 12件套', price: 299 },
-          { id: 2, imgUrl: './images/like2.jpeg', name: '建盏茶具套装 红色芝麻毫 12件套', price: 299 },
-          { id: 3, imgUrl: './images/like3.jpeg', name: '建盏茶具套装 红色芝麻毫 12件套', price: 299 }
+          { id: 1, imgUrl: '/images/goods/goods1.jpeg', name: '浅尝-金牡丹（武夷岩茶）', price: 14.6 },
+          { id: 2, imgUrl: '/images/goods/goods2.jpeg', name: '2016南糯山古树普洱生茶', price: 98 },
+          { id: 3, imgUrl: '/images/goods/goods3.jpeg', name: '黄山太平猴魁绿茶1号', price: 99 },
+          { id: 4, imgUrl: '/images/goods/goods4.jpeg', name: '绿茶-无瑕黄金芽礼盒', price: 188 },
+          { id: 5, imgUrl: '/images/goods/goods5.jpeg', name: '黑金茶具套装', price: 458 },
+          { id: 6, imgUrl: '/images/goods/goods6.jpeg', name: '高山流水陶瓷旅行茶具', price: 168 },
+          { id: 7, imgUrl: '/images/goods/goods7.jpeg', name: '金油滴建盏', price: 298 },
+          { id: 8, imgUrl: '/images/goods/goods8.jpeg', name: '浅尝-白牡丹', price: 6.6 },
+          { id: 9, imgUrl: '/images/goods/goods9.jpeg', name: '2016白毫银针巧克力茶砖', price: 98 },
+          { id: 10, imgUrl: '/images/goods/goods10.jpeg', name: '云南凤庆经典蜜香滇红', price: 88 },
+          { id: 11, imgUrl: '/images/goods/goods11.jpeg', name: '传统工艺茉莉花茶-春毫', price: 68 },
+          { id: 12, imgUrl: '/images/goods/goods12.jpeg', name: '笔花堂桐木关金骏眉', price: 794 },
+          { id: 13, imgUrl: '/images/goods/goods13.jpeg', name: '林沧淇白水兰香铁观音', price: 118 }
         ]
       }
     ]

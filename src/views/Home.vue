@@ -8,11 +8,10 @@
     </div>
     <section class="wrapper">
       <div>
-        <div v-for="(item, index) in newData" :key="index">
+        <div v-for="(item, index) in newData" :key="index" style="height: 100%">
           <Swiper v-if="item.type == 'swiperList'" :swiperList="item.data"></Swiper>
           <Icons v-if="item.type == 'iconsList'" :iconsList="item.data"></Icons>
           <Recommend v-if="item.type == 'recommendList'" :recommendList="item.data"></Recommend>
-
           <Ad v-if="item.type == 'adList'" :adList="item.data"></Ad>
           <Like v-if="item.type == 'likeList'" :likeList="likeList"></Like>
         </div>
@@ -34,7 +33,6 @@ import Ad from '@/components/home/Ad.vue'
 // 引入插件
 import BetterScroll from 'better-scroll'
 import http from '@/common/api/request.js'
-
 export default {
   name: 'Home',
   components: {
@@ -117,11 +115,21 @@ export default {
     },
     changeTab(item, index) {
       this.addData(index)
+    },
+    debounce(func, delay) {
+      let timer = null
+      //...args可接收多个参数
+      return function (...args) {
+        if (timer) clearTimeout(timer)
+        timer = setTimeout(() => {
+          func.apply(this, args)
+        }, delay)
+      }
     }
   }
 }
 </script>
-<style scoped>
+<style lang="less" scoped>
 .home {
   height: 100vh;
   width: 100vw;
