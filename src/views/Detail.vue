@@ -63,9 +63,9 @@
           <i class="iconfont icon-gouwuche"></i>
           <span>购物车</span>
         </div>
-        <div class="start">
+        <div class="start" :style="isStart ? 'color:red' : 'color:#000'" @click="startBtn">
           <i class="iconfont icon-shoucang"></i>
-          <span>收藏</span>
+          <span>{{ isStart ? '已收藏' : '收藏' }}</span>
         </div>
       </div>
       <div class="rightBtn">
@@ -95,6 +95,7 @@ export default {
       styleOption: {},
       BetterScroll: '',
       isShow: true,
+      isStart: false,
       swiperOption: {
         autoplay: 3000,
         speed: 1000,
@@ -151,11 +152,30 @@ export default {
         params: { id }
       })
 
-      console.log(res)
       this.goods = res
 
       this.swiperList = [{ imgUrl: '/images/goods-list1.jpeg' }, { imgUrl: '/images/goods-list2.png' }, { imgUrl: '/images/goods-list3.jpeg' }, { imgUrl: '/images/goods-list4.jpeg' }, { imgUrl: '/images/goods-list5.jpeg' }]
       this.swiperList.unshift({ imgUrl: res.imgUrl })
+
+      // 查看该商品是否收藏过
+      http
+        .$axios({
+          url: '/api/selectLike',
+          method: 'POST',
+          data: {
+            goodsId: id
+          },
+          headers: {
+            token: true
+          }
+        })
+        .then((res) => {
+          if (res.code == 200) {
+            this.isStart = true
+          } else if (res.code == 210) {
+            this.isStart = false
+          }
+        })
     },
     // 加入购物车
     addCart() {
@@ -176,6 +196,22 @@ export default {
             Toast(res.msg)
           }
         })
+    },
+    // 点击收藏
+    startBtn() {
+      this.isStart = !this.isStart
+      let id = this.$route.query.id
+      http.$axios({
+        url: '/api/like',
+        method: 'POST',
+        data: {
+          goodsId: id,
+          isStart: this.isStart
+        },
+        headers: {
+          token: true
+        }
+      })
     }
   }
 }

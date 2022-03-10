@@ -14,7 +14,7 @@
           <Recommend v-if="item.type == 'recommendList'" :recommendList="item.data"></Recommend>
 
           <Ad v-if="item.type == 'adList'" :adList="item.data"></Ad>
-          <Like v-if="item.type == 'likeList'" :likeList="item.data"></Like>
+          <Like v-if="item.type == 'likeList'" :likeList="likeList"></Like>
         </div>
       </div>
     </section>
@@ -51,6 +51,7 @@ export default {
       selectedId: 0,
       items: [],
       newData: [],
+      likeList: [],
       options: {
         activeColor: '#ff585d'
       },
@@ -69,6 +70,21 @@ export default {
 
       this.items = Object.freeze(res.topBar)
       this.newData = Object.freeze(res.data)
+
+      // 随机生成8个商品
+      let randomArr = []
+
+      for (let i = 0; i < this.newData[3].data.length; i++) {
+        let random = Math.floor(Math.random() * this.newData[3].data.length)
+        if (randomArr.indexOf(random) != -1) {
+          i--
+          continue
+        }
+        randomArr.push(random)
+      }
+      for (let j = 0; j < 8; j++) {
+        this.likeList.push(this.newData[3].data[randomArr[j]])
+      }
 
       // 当 DOM 加载完毕再执行
       this.$nextTick(() => {

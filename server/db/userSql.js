@@ -21,7 +21,7 @@ const User = {
     let secret = 'jiuhu'
     // 生成 token
     let token = jwt.sign(payload, secret, {
-      expiresIn: 60
+      expiresIn: 3600 * 24
     })
 
     return 'insert into user (tel,pwd,imgUrl,nickName,token) values(' + userTel + ',' + userPwd + ',"/images/headerImg/header.jpeg","' + userTel + '","' + token + '")'

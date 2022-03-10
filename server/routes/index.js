@@ -15,7 +15,7 @@ const axios = require('axios')
 
 function getTimeToken(exp) {
   let getTime = parseInt(new Date().getTime() / 1000)
-  if (getTime - exp > 60) {
+  if (getTime - exp > 3600 * 24) {
     return true
   }
 }
@@ -46,6 +46,76 @@ function randomNumber() {
 /* GET home page. */
 router.get('/', function (req, res, next) {
   res.render('index', { title: 'Express' })
+})
+
+// 查看是否收藏过商品
+router.post('/api/selectLike', function (req, res, next) {
+  // token
+  let token = req.headers.token
+  let tokenObj = jwt.decode(token)
+  // 商品id
+  let goodId = req.body.goodsId
+  // 查询用户
+  connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
+    // 用户id
+    let uid = results[0].id
+    connection.query(`select * from start_list where uid = ${uid} and goods_id = ${goodId}`, function (err, result) {
+      if (result.length > 0) {
+        res.send({
+          data: {
+            code: 200,
+            success: true
+          }
+        })
+      } else {
+        res.send({
+          data: {
+            code: 210,
+            success: true
+          }
+        })
+      }
+    })
+  })
+})
+
+// 收藏商品
+router.post('/api/like', function (req, res, next) {
+  // token
+  let token = req.headers.token
+  let tokenObj = jwt.decode(token)
+  // 商品id
+  let goodId = req.body.goodsId
+  // 是否是收藏
+  let isStart = req.body.isStart
+
+  // 查询用户
+  connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
+    // 用户id
+    let uid = results[0].id
+    // 如果点击了收藏
+    if (isStart) {
+      connection.query(`insert into start_list (uid,goods_id) values(${uid},${goodId})`, function (err, result) {
+        res.send({
+          data: {
+            code: 200,
+            success: true,
+            msg: '收藏成功'
+          }
+        })
+      })
+    } else {
+      connection.query(`delete from start_list where uid = ${uid} and goods_id = ${goodId} `, function (err, result) {
+        res.send({
+          data: {
+            code: 210,
+            success: true,
+            msg: '取消收藏成功'
+          }
+        })
+      })
+    }
+  })
 })
 
 // 支付状态
@@ -1104,15 +1174,19 @@ router.get('/api/index_list/0/data/1', function (req, res, next) {
           id: 3,
           type: 'likeList',
           data: [
-            { id: 1, imgUrl: '/images/goods1.jpeg', name: '浅尝-金牡丹（武夷岩茶）', price: 14.6 },
-            { id: 2, imgUrl: '/images/goods2.jpeg', name: '2016南糯山古树普洱生茶', price: 98 },
-            { id: 3, imgUrl: '/images/goods3.jpeg', name: '黄山太平猴魁绿茶1号', price: 99 },
-            { id: 4, imgUrl: '/images/goods4.jpeg', name: '绿茶-无瑕黄金芽礼盒', price: 188 },
-            { id: 5, imgUrl: '/images/goods5.jpeg', name: '黑金茶具套装', price: 458 },
-            { id: 6, imgUrl: '/images/goods6.jpeg', name: '高山流水陶瓷旅行茶具', price: 168 },
-            { id: 7, imgUrl: '/images/goods7.jpeg', name: '金油滴建盏', price: 298 },
-            { id: 8, imgUrl: '/images/goods8.jpeg', name: '浅尝-白牡丹', price: 6.6 },
-            { id: 9, imgUrl: '/images/goods9.jpeg', name: '2016白毫银针巧克力茶砖', price: 98 }
+            { id: 1, imgUrl: '/images/goods/goods1.jpeg', name: '浅尝-金牡丹（武夷岩茶）', price: 14.6 },
+            { id: 2, imgUrl: '/images/goods/goods2.jpeg', name: '2016南糯山古树普洱生茶', price: 98 },
+            { id: 3, imgUrl: '/images/goods/goods3.jpeg', name: '黄山太平猴魁绿茶1号', price: 99 },
+            { id: 4, imgUrl: '/images/goods/goods4.jpeg', name: '绿茶-无瑕黄金芽礼盒', price: 188 },
+            { id: 5, imgUrl: '/images/goods/goods5.jpeg', name: '黑金茶具套装', price: 458 },
+            { id: 6, imgUrl: '/images/goods/goods6.jpeg', name: '高山流水陶瓷旅行茶具', price: 168 },
+            { id: 7, imgUrl: '/images/goods/goods7.jpeg', name: '金油滴建盏', price: 298 },
+            { id: 8, imgUrl: '/images/goods/goods8.jpeg', name: '浅尝-白牡丹', price: 6.6 },
+            { id: 9, imgUrl: '/images/goods/goods9.jpeg', name: '2016白毫银针巧克力茶砖', price: 98 },
+            { id: 10, imgUrl: '/images/goods/goods10.jpeg', name: '云南凤庆经典蜜香滇红', price: 88 },
+            { id: 11, imgUrl: '/images/goods/goods11.jpeg', name: '传统工艺茉莉花茶-春毫', price: 68 },
+            { id: 12, imgUrl: '/images/goods/goods12.jpeg', name: '笔花堂桐木关金骏眉', price: 794 },
+            { id: 13, imgUrl: '/images/goods/goods13.jpeg', name: '林沧淇白水兰香铁观音', price: 118 }
           ]
         }
       ]
