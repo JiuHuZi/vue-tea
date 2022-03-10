@@ -8,7 +8,7 @@
     </div>
     <section class="wrapper">
       <div>
-        <div v-for="(item, index) in newData" :key="index" style="height: 100%">
+        <div v-for="(item, index) in newData" :key="index">
           <Swiper v-if="item.type == 'swiperList'" :swiperList="item.data"></Swiper>
           <Icons v-if="item.type == 'iconsList'" :iconsList="item.data"></Icons>
           <Recommend v-if="item.type == 'recommendList'" :recommendList="item.data"></Recommend>
@@ -115,16 +115,6 @@ export default {
     },
     changeTab(item, index) {
       this.addData(index)
-    },
-    debounce(func, delay) {
-      let timer = null
-      //...args可接收多个参数
-      return function (...args) {
-        if (timer) clearTimeout(timer)
-        timer = setTimeout(() => {
-          func.apply(this, args)
-        }, delay)
-      }
     }
   }
 }
