@@ -115,6 +115,11 @@ const routes = [
     path: '/topUp',
     name: 'Topup',
     component: () => import('@/views/Topup.vue')
+  },
+  {
+    path: '/start',
+    name: 'Start',
+    component: () => import('@/views/Start.vue')
   }
 ]
 

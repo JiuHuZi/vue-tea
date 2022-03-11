@@ -8,22 +8,30 @@
       </div>
     </header>
     <section>
-      <div class="section_title">个人中心</div>
+      <div class="section_title" v-if="loginStatus">个人中心</div>
       <ul>
-        <li @click="goPath">
+        <li v-if="loginStatus" @click="goStart">
+          <div>
+            <i class="iconfont icon-shoucang icons"></i>
+            <span>我的收藏</span>
+          </div>
+          <i class="iconfont icon-fanhui go-out"></i>
+        </li>
+        <li v-if="loginStatus" @click="goPath">
           <div>
             <i class="iconfont icon-dizhi icons"></i>
             <span>地址管理</span>
           </div>
           <i class="iconfont icon-fanhui go-out"></i>
         </li>
-        <li @click="goWallet">
+        <li v-if="loginStatus" @click="goWallet">
           <div>
             <i class="iconfont icon-licai icons"></i>
             <span>我的钱包</span>
           </div>
           <i class="iconfont icon-fanhui go-out"></i>
         </li>
+
         <li v-if="loginStatus" @click="loginOut">
           <div>
             <i class="iconfont icon-tuichu icons"></i>
@@ -57,6 +65,10 @@ export default {
     // 进入我的钱包
     goWallet() {
       this.$router.push('/wallet')
+    },
+    // 进入我的收藏
+    goStart() {
+      this.$router.push('/start')
     }
   },
   computed: {

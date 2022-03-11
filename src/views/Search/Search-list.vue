@@ -12,8 +12,8 @@
         </li>
       </ul>
     </div>
-    <section ref="sectionMain">
-      <div>
+    <section class="wrapper" ref="wrapper">
+      <div style="min-height: 980px">
         <ul v-if="goodsList.length">
           <li v-for="(item, index) in goodsList" :key="index">
             <img v-lazy="item.imgUrl" alt="" />
@@ -77,7 +77,16 @@ export default {
 
       // 当 DOM 加载完毕再执行
       this.$nextTick(() => {
-        new BetterScroll(this.$refs.sectionMain)
+        // this.oBetterScroll = new BetterScroll('.wrapper', {
+        //   movable: true,
+        //   zoom: true,
+        //   click: true
+        // })
+        this.oBetterScroll = new BetterScroll(this.$refs.wrapper, {
+          click: true,
+          movable: true,
+          zoom: true
+        })
       })
     },
     changeTab(index) {
