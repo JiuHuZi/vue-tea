@@ -85,12 +85,15 @@ CREATE TABLE `start_list` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `uid` int(11) NOT NULL,
   `goods_id` int(11) NOT NULL,
+  `goods_name` varchar(255) NOT NULL,
+  `goods_price` double NOT NULL,
+  `imgUrl` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
 
 /*Data for the table `start_list` */
 
-insert  into `start_list`(`id`,`uid`,`goods_id`) values (1,8,6),(2,8,5),(3,8,4);
+insert  into `start_list`(`id`,`uid`,`goods_id`,`goods_name`,`goods_price`,`imgUrl`) values (1,8,5,'黑金茶具套装',458,'/images/goods/goods5.jpeg');
 
 /*Table structure for table `store_order` */
 
