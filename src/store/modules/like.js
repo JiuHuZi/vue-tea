@@ -1,4 +1,4 @@
-import { CART_LIST, CHECK_ALL, UN_CHECK_ALL, CHECK_ITEM } from './mutations-types.js'
+import { LIKE_LIST, CHECK_LIKE_ALL, UN_CHECK_LIKE_ALL, CHECK_LIKE_ITEM } from './mutations-types'
 import { Toast, Dialog } from 'vant'
 import http from '@/common/api/request.js'
 export default {
@@ -9,47 +9,30 @@ export default {
     selectList: []
   },
   getters: {
-    isCheckedAll(state) {
+    isCheckedLikeAll(state) {
       return state.list.length == state.selectList.length
-    },
-    total(state) {
-      let total = {
-        num: 0,
-        price: 0
-      }
-      state.list.forEach((v) => {
-        if (v.checked) {
-          total.price += v.goods_price * v.goods_num
-          total.num += parseInt(v.goods_num)
-        }
-      })
-      return total
     }
   },
   mutations: {
-    [CART_LIST](state, cartArr) {
-      state.list = cartArr
-
-      state.selectList = state.list.map((v) => {
-        return v.id
-      })
+    [LIKE_LIST](state, likeList) {
+      state.list = likeList
     },
     // 全选
-    [CHECK_ALL](state) {
+    [CHECK_LIKE_ALL](state) {
       state.selectList = state.list.map((v) => {
         v.checked = true
         return v.id
       })
     },
     // 全不选
-    [UN_CHECK_ALL](state) {
+    [UN_CHECK_LIKE_ALL](state) {
       state.list.forEach((v) => {
         v.checked = false
       })
       state.selectList = []
     },
     // 单选
-    [CHECK_ITEM](state, index) {
+    [CHECK_LIKE_ITEM](state, index) {
       let id = state.list[index].id
       let i = state.selectList.indexOf(id)
 
@@ -62,18 +45,18 @@ export default {
       }
     },
     // 删除
-    delGoods(state) {
+    delLikes(state) {
       state.list = state.list.filter((v) => {
         return state.selectList.indexOf(v.id) == -1
       })
     }
   },
   actions: {
-    checkAllFn({ commit, getters }) {
-      getters.isCheckedAll ? commit('unCheckAll') : commit('checkAll')
+    checkLikeAllFn({ commit, getters }) {
+      getters.isCheckedLikeAll ? commit('unCheckLikeAll') : commit('checkLikeAll')
     },
     // 删除操作
-    delGoodsFn({ commit, state }, id) {
+    delLikesFn({ commit, state }, id) {
       // 如果点击编辑后，没有选中商品，则提示信息
       if (state.selectList.length == 0) {
         Toast('请选择商品')
@@ -98,12 +81,12 @@ export default {
           // 多选删除
           arrCart = state.selectList
 
-          commit('delGoods')
+          commit('delLikes')
         }
 
         http
           .$axios({
-            url: '/api/deleteCart',
+            url: '/api/deleteLike',
             method: 'POST',
             data: {
               arrId: arrCart

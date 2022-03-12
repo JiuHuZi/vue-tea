@@ -156,7 +156,7 @@ export default {
 
       this.swiperList = [{ imgUrl: '/images/goods-list1.jpeg' }, { imgUrl: '/images/goods-list2.png' }, { imgUrl: '/images/goods-list3.jpeg' }, { imgUrl: '/images/goods-list4.jpeg' }, { imgUrl: '/images/goods-list5.jpeg' }]
       this.swiperList.unshift({ imgUrl: res.imgUrl })
-
+      console.log(res)
       // 查看该商品是否收藏过
       http
         .$axios({
@@ -206,6 +206,9 @@ export default {
         method: 'POST',
         data: {
           goodsId: id,
+          goodsName: this.goods.name,
+          goodsPrice: this.goods.price,
+          imgUrl: this.goods.imgUrl,
           isStart: this.isStart
         },
         headers: {

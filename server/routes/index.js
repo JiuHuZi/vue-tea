@@ -48,6 +48,56 @@ router.get('/', function (req, res, next) {
   res.render('index', { title: 'Express' })
 })
 
+// 删除我的收藏数据
+router.post('/api/deleteLike', function (req, res, next) {
+  let arrId = req.body.arrId
+
+  for (let i = 0; i < arrId.length; i++) {
+    connection.query(`delete from start_list where id = ${arrId[i]}`, function (error, results) {
+      res.send({
+        data: {
+          code: 200,
+          msg: '删除成功',
+          success: true
+        }
+      })
+    })
+  }
+})
+
+// 我的收藏
+router.post('/api/startList', function (req, res, next) {
+  // token
+  let token = req.headers.token
+  let tokenObj = jwt.decode(token)
+
+  // 查询用户
+  connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
+    // 用户id
+    let uid = results[0].id
+    connection.query(`select * from start_list where uid = ${uid}`, function (err, result) {
+      if (result.length > 0) {
+        res.send({
+          data: {
+            code: 200,
+            msg: '查询成功',
+            success: true,
+            data: result
+          }
+        })
+      } else {
+        res.send({
+          data: {
+            code: 210,
+            msg: '查询无数据',
+            success: false
+          }
+        })
+      }
+    })
+  })
+})
+
 // 查看是否收藏过商品
 router.post('/api/selectLike', function (req, res, next) {
   // token
@@ -86,6 +136,12 @@ router.post('/api/like', function (req, res, next) {
   let tokenObj = jwt.decode(token)
   // 商品id
   let goodId = req.body.goodsId
+  // 商品名称
+  let goodsName = req.body.goodsName
+  // 商品价格
+  let goodsPrice = req.body.goodsPrice
+  // 商品图片
+  let imgUrl = req.body.imgUrl
   // 是否是收藏
   let isStart = req.body.isStart
 
@@ -95,7 +151,7 @@ router.post('/api/like', function (req, res, next) {
     let uid = results[0].id
     // 如果点击了收藏
     if (isStart) {
-      connection.query(`insert into start_list (uid,goods_id) values(${uid},${goodId})`, function (err, result) {
+      connection.query(`insert into start_list (uid,goods_id,goods_name,goods_price,imgUrl) values(${uid},${goodId},'${goodsName}',${goodsPrice},'${imgUrl}')`, function (err, result) {
         res.send({
           data: {
             code: 200,

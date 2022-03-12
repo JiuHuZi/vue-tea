@@ -2,53 +2,86 @@
   <div class="start container">
     <Header></Header>
     <section>
+      <div class="navBtn" @click="isNavBar">
+        <span>{{ isNavStatus ? '取消' : '管理' }}</span>
+      </div>
       <ul>
-        <li>
-          <van-checkbox :value="true" checked-color="#ee0a24"></van-checkbox>
-          <img src="/images/goods/goods1.jpeg" alt="" />
-          <h3>11111</h3>
+        <li v-for="(item, index) in list" :key="index">
+          <van-checkbox @click="checkLikeItem(index)" v-model="item.checked" checked-color="#ee0a24" v-if="isNavStatus"></van-checkbox>
+          <img :src="item.imgUrl" alt="" />
+          <h3>{{ item.goods_name }}</h3>
           <div class="price">
-            <div><span>￥</span><b>123</b></div>
-          </div>
-        </li>
-        <li>
-          <van-checkbox :value="true" checked-color="#ee0a24"></van-checkbox>
-          <img src="/images/goods/goods1.jpeg" alt="" />
-          <h3>11111</h3>
-          <div class="price">
-            <div><span>￥</span><b>123</b></div>
-          </div>
-        </li>
-        <li>
-          <van-checkbox :value="true" checked-color="#ee0a24"></van-checkbox>
-          <img src="/images/goods/goods1.jpeg" alt="" />
-          <h3>11111</h3>
-          <div class="price">
-            <div><span>￥</span><b>123</b></div>
+            <div>
+              <span>￥</span><b>{{ item.goods_price }}</b>
+            </div>
           </div>
         </li>
       </ul>
     </section>
-    <footer>
+    <footer v-if="isNavStatus">
       <div class="radio">
-        <van-checkbox :value="isCheckedAll" checked-color="#ee0a24">全选</van-checkbox>
+        <van-checkbox @click="checkLikeAllFn" :value="isCheckedLikeAll" checked-color="#ee0a24">全选</van-checkbox>
       </div>
-      <div class="remove">删除</div>
+      <div class="remove" @click="delLikesFn">删除</div>
     </footer>
   </div>
 </template>
 
 <script>
 import Header from '@/components/start/header.vue'
+import http from '@/common/api/request.js'
+import { mapState, mapMutations, mapActions, mapGetters } from 'vuex'
 export default {
   name: 'Start',
   data() {
     return {
-      isCheckedAll: false
+      isNavStatus: false,
+      startList: []
     }
   },
   components: {
     Header
+  },
+  methods: {
+    ...mapMutations(['likeList', 'checkLikeItem', 'unCheckLikeAll']),
+    ...mapActions(['checkLikeAllFn', 'delLikesFn']),
+    getData() {
+      http
+        .$axios({
+          url: '/api/startList',
+          method: 'POST',
+          headers: {
+            token: true
+          }
+        })
+        .then((res) => {
+          if (res.success) {
+            res.data.forEach((v) => {
+              v['checked'] = false
+            })
+            this.likeList(res.data)
+          }
+        })
+    },
+    isNavBar() {
+      this.isNavStatus = !this.isNavStatus
+      this.unCheckLikeAll()
+    }
+  },
+  created() {
+    this.getData()
+  },
+  computed: {
+    ...mapState({
+      list: (state) => state.like.list,
+      selectList: (state) => state.like.selectList
+    }),
+    ...mapGetters(['isCheckedLikeAll']),
+    LikeList() {
+      return this.selectList.map((id) => {
+        return this.list.find((v) => v.id == id)
+      })
+    }
   }
 }
 </script>
@@ -56,6 +89,12 @@ export default {
 <style lang="less" scoped>
 section {
   background-color: #f7f7f7;
+  .navBtn {
+    font-size: 16px;
+    color: #999;
+    text-align: right;
+    padding: 10px;
+  }
   ul {
     display: flex;
     flex-wrap: wrap;

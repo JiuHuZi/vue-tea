@@ -10,3 +10,8 @@ export const CHECK_ITEM = 'checkItem'
 export const INIT_DATA = 'initData'
 // 订单
 export const INIT_ORDER = 'initOrder'
+// 我的喜欢
+export const LIKE_LIST = 'likeList'
+export const CHECK_LIKE_ITEM = 'checkLikeItem'
+export const CHECK_LIKE_ALL = 'checkLikeAll'
+export const UN_CHECK_LIKE_ALL = 'unCheckLikeAll'
