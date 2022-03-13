@@ -3,7 +3,7 @@
     <div @click="$router.back()"><i class="iconfont icon-fanhui"></i></div>
     <div>
       <slot>
-        <span>我的收藏</span>
+        <span>积分商品</span>
       </slot>
     </div>
     <div @click="$router.push('/home')"><i class="iconfont icon-shouye"></i></div>

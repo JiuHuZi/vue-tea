@@ -120,6 +120,11 @@ const routes = [
     path: '/start',
     name: 'Start',
     component: () => import('@/views/Start.vue')
+  },
+  {
+    path: '/integral',
+    name: 'Integral',
+    component: () => import('@/views/Integral.vue')
   }
 ]
 

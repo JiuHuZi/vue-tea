@@ -1,5 +1,5 @@
 <template>
-  <div class="search-list">
+  <div class="integral">
     <div class="headers">
       <Header></Header>
       <ul>
@@ -20,9 +20,9 @@
             <h3>{{ item.name }}</h3>
             <div class="price">
               <div>
-                <span>￥</span><b>{{ item.price }}</b>
+                <span>积分：</span><b>{{ item.price }}</b>
               </div>
-              <div>立即购买</div>
+              <div>立即兑换</div>
             </div>
           </li>
         </ul>
@@ -34,12 +34,12 @@
 </template>
 
 <script>
-import Header from '@/components/search/Header.vue'
+import Header from '@/components/integral/header.vue'
 import Tabbar from '@/components/common/Tabbar.vue'
 import http from '@/common/api/request.js'
 import BetterScroll from 'better-scroll'
 export default {
-  name: 'search-list',
+  name: 'Integral',
   components: { Header, Tabbar },
   data() {
     return {
@@ -66,15 +66,13 @@ export default {
         .$axios({
           url: '/api/goods/shopList',
           params: {
-            searchName: this.$route.query.key,
+            searchName: '',
             ...this.orderBy
           }
         })
         .then((res) => {
           this.goodsList = res
-          // console.log(res)
         })
-
       // 当 DOM 加载完毕再执行
       this.$nextTick(() => {
         this.oBetterScroll = new BetterScroll(this.$refs.wrapper, {
@@ -107,11 +105,6 @@ export default {
       this.$router.push(`/detail?id=${val}`)
     }
   },
-  watch: {
-    $route() {
-      this.getData()
-    }
-  },
   computed: {
     orderBy() {
       // 知道当前是哪个对象
@@ -125,7 +118,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.search-list {
+.integral {
   width: 100vw;
   height: 100vh;
   overflow: hidden;

@@ -1,22 +1,25 @@
 <template>
   <div class="start container">
     <Header></Header>
-    <section>
-      <div class="navBtn" @click="isNavBar">
-        <span>{{ isNavStatus ? '取消' : '管理' }}</span>
-      </div>
-      <ul>
-        <li v-for="(item, index) in list" :key="index">
-          <van-checkbox @click="checkLikeItem(index)" v-model="item.checked" checked-color="#ee0a24" v-if="isNavStatus"></van-checkbox>
-          <img :src="item.imgUrl" alt="" />
-          <h3>{{ item.goods_name }}</h3>
-          <div class="price">
-            <div>
-              <span>￥</span><b>{{ item.goods_price }}</b>
+    <div class="navBtn" @click="isNavBar">
+      <span>{{ isNavStatus ? '取消' : '管理' }}</span>
+    </div>
+    <section class="wrapper">
+      <div>
+        <ul v-if="list.length > 0">
+          <li v-for="(item, index) in list" :key="index" @click="goDetail(item.goods_id)">
+            <van-checkbox @click="checkLikeItem(index)" v-model="item.checked" checked-color="#ee0a24" v-if="isNavStatus"></van-checkbox>
+            <img :src="item.imgUrl" alt="" />
+            <h3>{{ item.goods_name }}</h3>
+            <div class="price">
+              <div>
+                <span>￥</span><b>{{ item.goods_price }}</b>
+              </div>
             </div>
-          </div>
-        </li>
-      </ul>
+          </li>
+        </ul>
+        <div v-else>暂无收藏商品，前往<router-link to="/home">首页</router-link>逛逛吧</div>
+      </div>
     </section>
     <footer v-if="isNavStatus">
       <div class="radio">
@@ -31,12 +34,14 @@
 import Header from '@/components/start/header.vue'
 import http from '@/common/api/request.js'
 import { mapState, mapMutations, mapActions, mapGetters } from 'vuex'
+import BetterScroll from 'better-scroll'
 export default {
   name: 'Start',
   data() {
     return {
       isNavStatus: false,
-      startList: []
+      startList: [],
+      oBetterScroll: ''
     }
   },
   components: {
@@ -62,10 +67,24 @@ export default {
             this.likeList(res.data)
           }
         })
+
+      // 当 DOM 加载完毕再执行
+      this.$nextTick(() => {
+        this.oBetterScroll = new BetterScroll('.wrapper', {
+          movable: true,
+          zoom: true,
+          click: true
+        })
+      })
     },
     isNavBar() {
       this.isNavStatus = !this.isNavStatus
       this.unCheckLikeAll()
+    },
+    // 点击商品前往详情页
+    goDetail(val) {
+      let id = val
+      this.$router.push(`/detail?id=${id}`)
     }
   },
   created() {
@@ -87,14 +106,14 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.navBtn {
+  font-size: 16px;
+  color: #999;
+  text-align: right;
+  padding: 10px;
+}
 section {
   background-color: #f7f7f7;
-  .navBtn {
-    font-size: 16px;
-    color: #999;
-    text-align: right;
-    padding: 10px;
-  }
   ul {
     display: flex;
     flex-wrap: wrap;

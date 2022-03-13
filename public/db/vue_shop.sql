@@ -89,11 +89,11 @@ CREATE TABLE `start_list` (
   `goods_price` double NOT NULL,
   `imgUrl` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4;
 
 /*Data for the table `start_list` */
 
-insert  into `start_list`(`id`,`uid`,`goods_id`,`goods_name`,`goods_price`,`imgUrl`) values (1,8,5,'黑金茶具套装',458,'/images/goods/goods5.jpeg');
+insert  into `start_list`(`id`,`uid`,`goods_id`,`goods_name`,`goods_price`,`imgUrl`) values (3,8,6,'高山流水陶瓷旅行茶具',168,'/images/goods/goods6.jpeg'),(4,8,8,'浅尝-白牡丹',6.6,'/images/goods/goods8.jpeg'),(5,8,5,'黑金茶具套装',458,'/images/goods/goods5.jpeg'),(6,8,13,'林沧淇白水兰香铁观音',118,'/images/goods/goods13.jpeg'),(7,8,1,'浅尝-金牡丹（武夷岩茶）',14.6,'/images/goods/goods1.jpeg'),(8,8,10,'云南凤庆经典蜜香滇红',88,'/images/goods/goods10.jpeg'),(9,8,3,'黄山太平猴魁绿茶1号',99,'/images/goods/goods3.jpeg');
 
 /*Table structure for table `store_order` */
 

@@ -1208,11 +1208,11 @@ router.get('/api/index_list/0/data/1', function (req, res, next) {
           id: 1,
           type: 'iconsList',
           data: [
-            { id: 1, title: '自饮茶', imgUrl: './images/icons1.png' },
-            { id: 2, title: '茶具', imgUrl: './images/icons2.png' },
-            { id: 3, title: '茶礼盒', imgUrl: './images/icons3.png' },
-            { id: 4, title: '领福利', imgUrl: './images/icons4.png' },
-            { id: 5, title: '官方验证', imgUrl: './images/icons5.png' }
+            { id: 1, title: '自饮茶', imgUrl: './images/icons1.png', path: '' },
+            { id: 2, title: '茶具', imgUrl: './images/icons2.png', path: '' },
+            { id: 3, title: '茶礼盒', imgUrl: './images/icons3.png', path: '' },
+            { id: 4, title: '积分兑换', imgUrl: './images/icons4.png', path: '/integral' },
+            { id: 5, title: '官方验证', imgUrl: './images/icons5.png', path: '' }
           ]
         },
         // 爆款推荐
@@ -1329,7 +1329,7 @@ router.get('/api/goods/shopList', function (req, res, next) {
   // 前端给后端的数据
   let [searchName, orderName] = Object.keys(req.query)
   let [name, order] = Object.values(req.query)
-
+  console.log('select * from goods_list where name like "%' + name + '%" order by ' + orderName + ' ' + order + '')
   connection.query('select * from goods_list where name like "%' + name + '%" order by ' + orderName + ' ' + order + '', function (err, results) {
     res.send({
       code: 0,

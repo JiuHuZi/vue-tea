@@ -1,8 +1,9 @@
 <template>
   <ul class="icons">
-    <li v-for="(item, index) in iconsList" :key="index">
+    <li v-for="(item, index) in iconsList" :key="index" @click="goIntegral(item.path)">
       <img :src="item.imgUrl" alt="" />
       <span>{{ item.title }}</span>
+      <slot></slot>
     </li>
   </ul>
 </template>
@@ -12,6 +13,12 @@ export default {
   name: 'icons',
   props: {
     iconsList: Array
+  },
+  methods: {
+    goIntegral(path) {
+      if (!path) return
+      this.$router.push(path)
+    }
   }
 }
 </script>
