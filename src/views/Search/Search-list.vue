@@ -13,21 +13,23 @@
       </ul>
     </div>
     <section class="wrapper" ref="wrapper">
-      <div style="min-height: 980px">
-        <ul v-if="goodsList.length">
-          <li v-for="(item, index) in goodsList" :key="index" @click="goDetail(item.id)">
-            <img v-lazy="item.imgUrl" alt="" />
-            <h3>{{ item.name }}</h3>
-            <div class="price">
-              <div>
-                <span>￥</span><b>{{ item.price }}</b>
+      <van-pull-refresh v-model="isLoading" :disabled="finished">
+        <van-list v-model="loading" :finished="finished" finished-text="没有更多了">
+          <ul v-if="goodsList.length">
+            <li v-for="(item, index) in goodsList" :key="index" @click="goDetail(item.id)">
+              <img v-lazy="item.imgUrl" alt="" />
+              <h3>{{ item.name }}</h3>
+              <div class="price">
+                <div>
+                  <span>￥</span><b>{{ item.price }}</b>
+                </div>
+                <div>立即购买</div>
               </div>
-              <div>立即购买</div>
-            </div>
-          </li>
-        </ul>
-        <h5 v-else>暂无数据……</h5>
-      </div>
+            </li>
+          </ul>
+          <h5 v-else>暂无数据……</h5>
+        </van-list>
+      </van-pull-refresh>
     </section>
     <Tabbar></Tabbar>
   </div>
@@ -37,13 +39,14 @@
 import Header from '@/components/search/Header.vue'
 import Tabbar from '@/components/common/Tabbar.vue'
 import http from '@/common/api/request.js'
-import BetterScroll from 'better-scroll'
 export default {
   name: 'search-list',
   components: { Header, Tabbar },
   data() {
     return {
-      oBetterScroll: '',
+      loading: true,
+      finished: true,
+      isLoading: false,
       goodsList: [],
       searchList: {
         currentIndex: 0,
@@ -74,15 +77,6 @@ export default {
           this.goodsList = res
           // console.log(res)
         })
-
-      // 当 DOM 加载完毕再执行
-      this.$nextTick(() => {
-        this.oBetterScroll = new BetterScroll(this.$refs.wrapper, {
-          click: true,
-          movable: true,
-          zoom: true
-        })
-      })
     },
     changeTab(index) {
       this.searchList.currentIndex = index
@@ -206,5 +200,10 @@ section ul li .price div:first-child b {
 }
 .active {
   color: red;
+}
+.van-pull-refresh {
+  width: 100%;
+  height: 100%;
+  overflow: scroll;
 }
 </style>

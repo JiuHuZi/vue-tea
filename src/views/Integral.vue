@@ -12,23 +12,6 @@
         </li>
       </ul>
     </div>
-    <!-- <section class="wrapper" ref="wrapper">
-      <van-pull-refresh v-model="isLoading" @refresh="onRefresh" :disabled="finished">
-        <ul v-if="goodsList.length">
-          <li v-for="(item, index) in goodsList" :key="index" @click="goDetail(item.id)">
-            <img v-lazy="item.imgUrl" alt="" />
-            <h3>{{ item.name }}</h3>
-            <div class="price">
-              <div>
-                <span>积分：</span><b>{{ item.integral }}</b>
-              </div>
-              <div>立即兑换</div>
-            </div>
-          </li>
-        </ul>
-        <h5 v-else>暂无数据……</h5>
-      </van-pull-refresh>
-    </section> -->
 
     <section>
       <van-pull-refresh v-model="isLoading" @refresh="onRefresh" :disabled="finished">

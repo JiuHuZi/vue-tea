@@ -6,17 +6,21 @@
         <ly-tab v-model="selectedId" :items="items" :options="options" @change="changeTab"> </ly-tab>
       </div>
     </div>
-    <section class="wrapper">
-      <div>
-        <div v-for="(item, index) in newData" :key="index">
-          <Swiper v-if="item.type == 'swiperList'" :swiperList="item.data"></Swiper>
-          <Icons v-if="item.type == 'iconsList'" :iconsList="item.data"></Icons>
-          <Recommend v-if="item.type == 'recommendList'" :recommendList="item.data"></Recommend>
-          <Ad v-if="item.type == 'adList'" :adList="item.data"></Ad>
-          <Like v-if="item.type == 'likeList'" :likeList="likeList"></Like>
-        </div>
-      </div>
+
+    <section>
+      <van-pull-refresh v-model="isLoading" :disabled="finished">
+        <van-list v-model="loading" :finished="finished" finished-text="没有更多了">
+          <div v-for="(item, index) in newData" :key="index">
+            <Swiper v-if="item.type == 'swiperList'" :swiperList="item.data"></Swiper>
+            <Icons v-if="item.type == 'iconsList'" :iconsList="item.data"></Icons>
+            <Recommend v-if="item.type == 'recommendList'" :recommendList="item.data"></Recommend>
+            <Ad v-if="item.type == 'adList'" :adList="item.data"></Ad>
+            <Like v-if="item.type == 'likeList'" :likeList="likeList"></Like>
+          </div>
+        </van-list>
+      </van-pull-refresh>
     </section>
+
     <Tabbar></Tabbar>
   </div>
 </template>
@@ -31,7 +35,6 @@ import Like from '@/components/home/Like.vue'
 import Ad from '@/components/home/Ad.vue'
 
 // 引入插件
-import BetterScroll from 'better-scroll'
 import http from '@/common/api/request.js'
 export default {
   name: 'Home',
@@ -46,15 +49,20 @@ export default {
   },
   data() {
     return {
+      // 是否正在加载下一页数据，如果 loading 为 true，则不会反复触发 load 事件
+      // 每当下一页数据请求回来之后，千万要记得，把 loading 改成 false
+      loading: true,
+      // 所有数据是否加载完毕，如果没有更多数据，一定要把 finished 改成true
+      finished: true,
+      // 是否正在下拉刷新
+      isLoading: false,
       selectedId: 0,
       items: [],
       newData: [],
       likeList: [],
       options: {
         activeColor: '#ff585d'
-      },
-      oBetterScroll: '',
-      tBetterScroll: ''
+      }
     }
   },
   created() {
@@ -83,15 +91,6 @@ export default {
       for (let j = 0; j < 8; j++) {
         this.likeList.push(this.newData[3].data[randomArr[j]])
       }
-
-      // 当 DOM 加载完毕再执行
-      this.$nextTick(() => {
-        this.oBetterScroll = new BetterScroll('.wrapper', {
-          movable: true,
-          zoom: true,
-          click: true
-        })
-      })
     },
     async addData(index) {
       let res = await http.$axios({
@@ -103,15 +102,6 @@ export default {
       } else {
         this.newData = res
       }
-
-      // 当 DOM 加载完毕再执行
-      this.$nextTick(() => {
-        this.tBetterScroll = new BetterScroll('.wrapper', {
-          movable: true,
-          zoom: true,
-          click: true
-        })
-      })
     },
     changeTab(item, index) {
       this.addData(index)
@@ -143,5 +133,10 @@ export default {
 section {
   flex: 1;
   overflow: hidden;
+  .van-pull-refresh {
+    width: 100%;
+    height: 100%;
+    overflow: scroll;
+  }
 }
 </style>

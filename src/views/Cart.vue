@@ -11,25 +11,29 @@
         <van-checkbox @click="checkAllFn" :value="isCheckedAll" checked-color="#ee0a24"></van-checkbox>
         <span>商品</span>
       </div>
-      <ul>
-        <li v-for="(item, index) in list" :key="index">
-          <div class="check">
-            <van-checkbox @click="checkItem(index)" v-model="item.checked" checked-color="#ee0a24"></van-checkbox>
-          </div>
-          <h2><img :src="item.goods_imgUrl" alt="" /></h2>
+      <van-pull-refresh v-model="isLoading" :disabled="finished">
+        <van-list v-model="loading" :finished="finished" finished-text="没有更多了">
+          <ul>
+            <li v-for="(item, index) in list" :key="index">
+              <div class="check">
+                <van-checkbox @click="checkItem(index)" v-model="item.checked" checked-color="#ee0a24"></van-checkbox>
+              </div>
+              <h2><img :src="item.goods_imgUrl" alt="" /></h2>
 
-          <div class="goods">
-            <div class="goods-title">
-              <span>{{ item.goods_name }}</span>
-              <i class="iconfont icon-shanchu" @click="delGoodsFn(item.id)"></i>
-            </div>
-            <div class="goods-price">
-              <span>¥{{ item.goods_price }}</span>
-              <van-stepper @change="changeNum($event, item)" v-model="item.goods_num" integer />
-            </div>
-          </div>
-        </li>
-      </ul>
+              <div class="goods">
+                <div class="goods-title">
+                  <span>{{ item.goods_name }}</span>
+                  <i class="iconfont icon-shanchu" @click="delGoodsFn(item.id)"></i>
+                </div>
+                <div class="goods-price">
+                  <span>¥{{ item.goods_price }}</span>
+                  <van-stepper @change="changeNum($event, item)" v-model="item.goods_num" integer />
+                </div>
+              </div>
+            </li>
+          </ul>
+        </van-list>
+      </van-pull-refresh>
     </section>
     <section v-else>
       <h5>
@@ -65,6 +69,9 @@ export default {
   name: 'Cart',
   data() {
     return {
+      loading: true,
+      finished: true,
+      isLoading: false,
       isNavState: false
     }
   },
@@ -198,49 +205,54 @@ section {
       font-weight: bold;
     }
   }
-  ul {
-    display: flex;
-    flex-direction: column;
-    li {
-      background-color: #fff;
-      padding: 6px 20px;
+  .van-pull-refresh {
+    width: 100%;
+    height: 100%;
+    overflow: scroll;
+    ul {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin: 3px 0;
-      .check {
-        padding-right: 10px;
-      }
-      h2 {
-        width: 74;
-        height: 74px;
-        padding: 0 10px;
-        img {
-          width: 74px;
-          height: 74px;
-        }
-      }
-      .goods {
+      flex-direction: column;
+      li {
+        background-color: #fff;
+        padding: 6px 20px;
         display: flex;
-        flex-direction: column;
-        flex: 1;
-        padding-left: 0.4rem;
-        font-size: 0.32rem;
-        .goods-title {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          i {
-            font-size: 22px;
+        justify-content: space-between;
+        align-items: center;
+        margin: 3px 0;
+        .check {
+          padding-right: 10px;
+        }
+        h2 {
+          width: 74;
+          height: 74px;
+          padding: 0 10px;
+          img {
+            width: 74px;
+            height: 74px;
           }
         }
-        .goods-price {
-          padding: 15px 0;
-          font-size: 16px;
-          color: red;
-        }
-        ::v-deep .van-stepper {
-          text-align: right;
+        .goods {
+          display: flex;
+          flex-direction: column;
+          flex: 1;
+          padding-left: 0.4rem;
+          font-size: 0.32rem;
+          .goods-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            i {
+              font-size: 22px;
+            }
+          }
+          .goods-price {
+            padding: 15px 0;
+            font-size: 16px;
+            color: red;
+          }
+          ::v-deep .van-stepper {
+            text-align: right;
+          }
         }
       }
     }

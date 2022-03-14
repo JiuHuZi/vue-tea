@@ -867,16 +867,15 @@ router.post('/api/deleteCart', function (req, res, next) {
   let arrId = req.body.arrId
 
   for (let i = 0; i < arrId.length; i++) {
-    connection.query(`delete from goods_cart where id = ${arrId[i]}`, function (error, results) {
-      res.send({
-        data: {
-          code: 200,
-          msg: '删除成功',
-          success: true
-        }
-      })
-    })
+    connection.query(`delete from goods_cart where id = ${arrId[i]}`, function (error, results) {})
   }
+  res.send({
+    data: {
+      code: 200,
+      msg: '删除成功',
+      success: true
+    }
+  })
 })
 
 // 查询购物车
@@ -912,14 +911,14 @@ router.post('/api/addCart', function (req, res, next) {
   let tokenObj = jwt.decode(token)
 
   // 如果执行，整个token过期了
-  console.log(getTimeToken(tokenObj.exp))
-  if (getTimeToken(tokenObj.exp)) {
-    res.send({
-      data: {
-        code: 1000
-      }
-    })
-  }
+  // console.log(getTimeToken(tokenObj.exp))
+  // if (getTimeToken(tokenObj.exp)) {
+  // }
+  // res.send({
+  //   data: {
+  //     code: 1000
+  //   }
+  // })
 
   // 查询用户
   connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
