@@ -40,8 +40,7 @@ export default {
         // 结束，关闭加载中
         setTimeout(() => {
           Indicator.close()
-        }, 500)
-
+        }, 300)
         res(data)
       })
     })

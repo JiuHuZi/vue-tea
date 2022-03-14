@@ -48,6 +48,23 @@ router.get('/', function (req, res, next) {
   res.render('index', { title: 'Express' })
 })
 
+// 查询商品数据接口
+router.get('/api/goods/integralList', function (req, res, next) {
+  // 前端给后端的数据
+  let [limit, page, orderName] = Object.keys(req.query)
+  let [limits, pages, order] = Object.values(req.query)
+  // console.log(limit, page)
+  // console.log(limits, pages)
+  // console.log('select * from goods_list order by ' + orderName + ' ' + order + '')
+  // console.log(`select * from goods_list order by ${orderName} ${order} limit ${pages * limits},${limits} `)
+  connection.query(`select * from goods_list order by ${orderName} ${order} limit ${pages * limits},${limits} `, function (err, results) {
+    res.send({
+      code: 0,
+      data: results
+    })
+  })
+})
+
 // 删除我的收藏数据
 router.post('/api/deleteLike', function (req, res, next) {
   let arrId = req.body.arrId

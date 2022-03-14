@@ -125,6 +125,14 @@ const routes = [
     path: '/integral',
     name: 'Integral',
     component: () => import('@/views/Integral.vue')
+  },
+  {
+    path: '/integralDetail',
+    name: 'IntegralDetail',
+    meta: {
+      keepAlive: true // 此组件需要被缓存
+    },
+    component: () => import('@/views/Integral/Detail.vue')
   }
 ]
 

@@ -12,23 +12,41 @@
         </li>
       </ul>
     </div>
-    <section class="wrapper" ref="wrapper">
-      <div style="min-height: 980px">
+    <!-- <section class="wrapper" ref="wrapper">
+      <van-pull-refresh v-model="isLoading" @refresh="onRefresh" :disabled="finished">
         <ul v-if="goodsList.length">
           <li v-for="(item, index) in goodsList" :key="index" @click="goDetail(item.id)">
             <img v-lazy="item.imgUrl" alt="" />
             <h3>{{ item.name }}</h3>
             <div class="price">
               <div>
-                <span>积分：</span><b>{{ item.price }}</b>
+                <span>积分：</span><b>{{ item.integral }}</b>
               </div>
               <div>立即兑换</div>
             </div>
           </li>
         </ul>
         <h5 v-else>暂无数据……</h5>
-      </div>
+      </van-pull-refresh>
+    </section> -->
+
+    <section>
+      <van-pull-refresh v-model="isLoading" @refresh="onRefresh" :disabled="finished">
+        <van-list v-model="loading" :finished="finished" finished-text="没有更多了" @load="onLoad">
+          <li v-for="(item, index) in goodsList" :key="index" @click="goDetail(item.id)">
+            <img v-lazy="item.imgUrl" alt="" />
+            <h3>{{ item.name }}</h3>
+            <div class="price">
+              <div>
+                <span>积分：</span><b>{{ item.integral }}</b>
+              </div>
+              <div>立即兑换</div>
+            </div>
+          </li>
+        </van-list>
+      </van-pull-refresh>
     </section>
+
     <Tabbar></Tabbar>
   </div>
 </template>
@@ -37,13 +55,21 @@
 import Header from '@/components/integral/header.vue'
 import Tabbar from '@/components/common/Tabbar.vue'
 import http from '@/common/api/request.js'
-import BetterScroll from 'better-scroll'
 export default {
   name: 'Integral',
   components: { Header, Tabbar },
   data() {
     return {
-      oBetterScroll: '',
+      // 是否正在加载下一页数据，如果 loading 为 true，则不会反复触发 load 事件
+      // 每当下一页数据请求回来之后，千万要记得，把 loading 改成 false
+      loading: true,
+      // 所有数据是否加载完毕，如果没有更多数据，一定要把 finished 改成true
+      finished: false,
+      // 是否正在下拉刷新
+      isLoading: false,
+      limit: 8,
+      page: 0,
+      // oBetterScroll: '',
       goodsList: [],
       searchList: {
         currentIndex: 0,
@@ -57,30 +83,41 @@ export default {
       }
     }
   },
-  created() {
-    this.getData()
-  },
   methods: {
-    getData() {
+    getData(isRefresh) {
       http
         .$axios({
-          url: '/api/goods/shopList',
+          url: '/api/goods/integralList',
           params: {
-            searchName: '',
+            limit: this.limit,
+            page: this.page,
             ...this.orderBy
           }
         })
         .then((res) => {
-          this.goodsList = res
+          console.log(res)
+          if (isRefresh) {
+            // 证明是下拉刷新,新数据在前,旧数据在后
+            this.goodsList = [...res, ...this.goodsList]
+            this.isLoading = false
+          } else {
+            // 如果是上拉加载更多，那么就是
+            // this.goodsList = [旧数据,新数据]
+            this.goodsList = [...this.goodsList, ...res]
+
+            this.loading = false
+          }
+
+          if (res.length === 0) {
+            // 证明没有下一页数据了，直接把 finished 改成 true,表示数据加载完了
+            this.finished = true
+          }
+          // this.goodsList.unshift(...res)
+          // this.goodsList = res
+          this.goodsList.forEach((v) => {
+            v['integral'] = v.price * 20
+          })
         })
-      // 当 DOM 加载完毕再执行
-      this.$nextTick(() => {
-        this.oBetterScroll = new BetterScroll(this.$refs.wrapper, {
-          click: true,
-          movable: true,
-          zoom: true
-        })
-      })
     },
     changeTab(index) {
       this.searchList.currentIndex = index
@@ -99,11 +136,34 @@ export default {
       }
 
       // 发送请求进行数据排序
+      this.page = 0
+      if (this.page == 0) {
+        this.goodsList = []
+        this.finished = false
+      }
       this.getData()
     },
     goDetail(val) {
-      this.$router.push(`/detail?id=${val}`)
+      this.$router.push(`/integralDetail?id=${val}`)
+    },
+    onLoad() {
+      console.log('触发了 load 事件')
+      // 1.让页码值 +1
+      this.page++
+      // 2. 重新请求接口获取数据
+      this.getData()
+    },
+    // 下拉刷新的处理函数
+    onRefresh() {
+      console.log('触发 下拉刷新 事件')
+      // 1.页码值 +1
+      this.page++
+      // 2.重新请求接口获取数据
+      this.getData(true)
     }
+  },
+  created() {
+    this.getData()
   },
   computed: {
     orderBy() {
@@ -145,29 +205,35 @@ export default {
 section {
   flex: 1;
   overflow: hidden;
-  ul {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    li {
-      width: 50%;
-      padding: 10px;
-      box-sizing: border-box;
+  .van-pull-refresh {
+    width: 100%;
+    height: 100%;
+    overflow: scroll;
+    .van-list {
       display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      img {
-        width: 170px;
-        height: 170px;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      padding-bottom: 30px;
+      li {
+        width: 50%;
+        padding: 10px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        img {
+          width: 170px;
+          height: 170px;
+        }
       }
     }
   }
 }
-section ul li img[lazy='loading'] {
+section .van-list li img[lazy='loading'] {
   background-color: #f7f7f7;
 }
-section ul li h3 {
+section .van-list li h3 {
   width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -176,28 +242,31 @@ section ul li h3 {
   color: #222;
   font-weight: 500;
 }
-section ul li .price {
+section .van-list li .price {
   width: 100%;
   display: flex;
   justify-content: space-between;
   font-size: 14px;
   padding: 10px 0;
 }
-section ul li .price div:last-child {
+section .van-list li .price div:last-child {
   color: #fff;
   background-color: red;
   padding: 3px 6px;
   border-radius: 6px;
 }
-section ul li .price div:first-child span {
+section .van-list li .price div:first-child span {
   color: red;
   font-size: 12px;
 }
-section ul li .price div:first-child b {
+section .van-list li .price div:first-child b {
   color: red;
   font-size: 16px;
 }
 .active {
   color: red;
+}
+::v-deep .van-list__finished-text {
+  flex: 1;
 }
 </style>
