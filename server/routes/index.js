@@ -48,6 +48,16 @@ router.get('/', function (req, res, next) {
   res.render('index', { title: 'Express' })
 })
 
+// 修改用户信息
+router.get('/api/set', function (req, res, next) {
+  console.log(req.body)
+  res.send({
+    data: {
+      a: 1
+    }
+  })
+})
+
 // 查询商品数据接口
 router.get('/api/goods/integralList', function (req, res, next) {
   // 前端给后端的数据

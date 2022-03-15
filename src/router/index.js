@@ -133,6 +133,11 @@ const routes = [
       keepAlive: true // 此组件需要被缓存
     },
     component: () => import('@/views/Integral/Detail.vue')
+  },
+  {
+    path: '/set',
+    name: 'Set',
+    component: () => import('@/views/Set.vue')
   }
 ]
 
