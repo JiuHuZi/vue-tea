@@ -5,6 +5,7 @@
       <div class="user-info" v-else>
         <img :src="userInfo.imgUrl" alt="" />
         <span>{{ userInfo.nickName }}</span>
+        <i class="iconfont icon-shezhi icons" @click="$router.push('/set')"></i>
       </div>
     </header>
     <section>
@@ -89,6 +90,7 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative;
     .login {
       font-size: 16px;
       background-color: #f6ab32;
@@ -110,6 +112,14 @@ export default {
         color: #fff;
         font-size: 18px;
         padding: 20px 0;
+      }
+      .icons {
+        font-size: 30px;
+        color: #fff;
+        font-weight: bold;
+        position: absolute;
+        top: 10px;
+        right: 10px;
       }
     }
   }

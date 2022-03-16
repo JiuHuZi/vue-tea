@@ -4,7 +4,7 @@
       <van-field v-model="username" name="用户名" label="用户名" placeholder="用户名" :rules="[{ required: true, message: '请填写用户名' }]" />
       <van-field name="uploader" label="文件上传">
         <template #input>
-          <van-uploader v-model="uploader" multiple :max-count="2" />
+          <van-uploader v-model="uploader" />
         </template>
       </van-field>
       <div style="margin: 16px">
@@ -15,6 +15,7 @@
 </template>
 
 <script>
+import http from '@/common/api/request.js'
 export default {
   name: 'Set',
   data() {
@@ -25,7 +26,21 @@ export default {
   },
   methods: {
     onSubmit(values) {
-      console.log(values)
+      console.log(values.uploader[0].file)
+      const formData = new FormData()
+      formData.append('file', values.uploader[0].file)
+
+      http
+        .$axios({
+          url: '/api/set',
+          method: 'POST',
+          headers: {
+            token: true
+          }
+        })
+        .then((res) => {
+          console.log(res)
+        })
     }
   }
 }

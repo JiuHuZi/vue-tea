@@ -3,6 +3,9 @@ var router = express.Router()
 var connection = require('../db/sql.js')
 var user = require('../db/userSql.js')
 var QcloudSms = require('qcloudsms_js')
+var path = require('path')
+var fs = require('fs')
+
 // 引入 token 包
 var jwt = require('jsonwebtoken')
 
@@ -13,12 +16,10 @@ const AlipayFormData = require('alipay-sdk/lib/form').default
 // 引入axios
 const axios = require('axios')
 
-function getTimeToken(exp) {
-  let getTime = parseInt(new Date().getTime() / 1000)
-  if (getTime - exp > 3600 * 24) {
-    return true
-  }
-}
+const multer = require('multer')
+const upload = multer({
+  dest: path.join(process.cwd(), '../public/images/test')
+})
 
 // 生成订单号 order_id,规则：时间戳 + 6位随机数
 function setTimeDateFmt(s) {
@@ -49,12 +50,19 @@ router.get('/', function (req, res, next) {
 })
 
 // 修改用户信息
-router.get('/api/set', function (req, res, next) {
-  console.log(req.body)
-  res.send({
-    data: {
-      a: 1
+router.post('/api/set', upload.single('file'), function (req, res, next) {
+  // console.log(req.file)
+  fs.readFile(req.file.path, function (error, results) {
+    if (error) {
+      res.send('图片上传失败')
     }
+    fs.writeFile(path.join(process.cwd(), '../public/images/test', req.file.originalname), results, function (err) {
+      if (err) {
+        res.send('图片写入失败')
+      }
+      fs.unlinkSync(req.file.path)
+      res.send('图片上传成功')
+    })
   })
 })
 
