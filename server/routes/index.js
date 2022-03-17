@@ -18,7 +18,7 @@ const axios = require('axios')
 
 const multer = require('multer')
 const upload = multer({
-  dest: path.join(process.cwd(), '../public/images/test')
+  dest: path.join(process.cwd(), '../public/images/headerImg')
 })
 
 // 生成订单号 order_id,规则：时间戳 + 6位随机数
@@ -50,18 +50,59 @@ router.get('/', function (req, res, next) {
 })
 
 // 修改用户信息
+router.post('/api/updateUser', upload.single('file'), function (req, res, next) {
+  // token
+  let token = req.headers.token
+  let tokenObj = jwt.decode(token)
+  let phone = tokenObj.tel
+  let imgUrl = req.body.imgUrl
+  let name = req.body.username
+  // console.log(`select * from user where nickName = '${name}'`)
+  // 查询用户
+  connection.query(`select * from user where nickName = '${name}'`, function (err, result) {
+    if (result.length > 0) {
+      res.send({
+        data: {
+          code: 0,
+          msg: '用户名已被使用'
+        }
+      })
+    } else {
+      // 修改用户
+      connection.query(`update user set nickName ='${name}' , imgUrl ='${imgUrl}' where tel ='${phone}'`, function (error, results) {
+        connection.query(`select * from user where tel = '${phone}'`, function (e, r) {
+          res.send({
+            data: {
+              code: 200,
+              success: true,
+              msg: '修改成功',
+              data: r
+            }
+          })
+        })
+      })
+    }
+  })
+})
+
+// 获取更新的头像
 router.post('/api/set', upload.single('file'), function (req, res, next) {
-  // console.log(req.file)
+  let username = req.body.uname
   fs.readFile(req.file.path, function (error, results) {
     if (error) {
       res.send('图片上传失败')
     }
-    fs.writeFile(path.join(process.cwd(), '../public/images/test', req.file.originalname), results, function (err) {
+    let filename = username + '-' + Date.now() + path.parse(req.file.originalname).ext
+    fs.writeFile(path.join(process.cwd(), '../public/images/headerImg', filename), results, function (err) {
       if (err) {
         res.send('图片写入失败')
       }
       fs.unlinkSync(req.file.path)
-      res.send('图片上传成功')
+      res.json({
+        code: 200,
+        results: `/images/headerImg/${filename}`,
+        msg: '图片上传成功'
+      })
     })
   })
 })
