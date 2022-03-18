@@ -91,7 +91,7 @@ const routes = [
       { path: '/', name: 'pathindex', component: () => import('@/views/Path/PathIndex.vue') },
       { path: 'pathlist', name: 'pathlist', component: () => import('@/views/Path/PathList.vue') }
     ],
-    component: () => import('@/views/Path.vue')
+    component: () => import('@/views/My/Path.vue')
   },
   {
     path: '/order',
@@ -109,7 +109,7 @@ const routes = [
   {
     path: '/wallet',
     name: 'Wallet',
-    component: () => import('@/views/Wallet.vue')
+    component: () => import('@/views/My/Wallet.vue')
   },
   {
     path: '/topUp',
@@ -119,7 +119,7 @@ const routes = [
   {
     path: '/start',
     name: 'Start',
-    component: () => import('@/views/Start.vue')
+    component: () => import('@/views/My/Start.vue')
   },
   {
     path: '/integral',
@@ -137,7 +137,12 @@ const routes = [
   {
     path: '/set',
     name: 'Set',
-    component: () => import('@/views/Set.vue')
+    component: () => import('@/views/My/Set.vue')
+  },
+  {
+    path: '/editPassword',
+    name: 'EditPassword',
+    component: () => import('@/views/My/Edit.vue')
   }
 ]
 

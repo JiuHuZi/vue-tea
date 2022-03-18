@@ -49,8 +49,40 @@ router.get('/', function (req, res, next) {
   res.render('index', { title: 'Express' })
 })
 
+// 修改密码
+router.post('/api/editPassword', function (req, res, next) {
+  let { Opassword, Npassword } = req.body
+  // token
+  let token = req.headers.token
+  let tokenObj = jwt.decode(token)
+
+  // 查询用户
+  connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
+    // 用户id
+    let pwd = results[0].pwd
+    if (pwd != Opassword) {
+      res.send({
+        data: {
+          code: 0,
+          msg: '旧密码不正确，请重试！'
+        }
+      })
+    } else {
+      connection.query(`update user set pwd = replace(pwd,'${pwd}','${Npassword}') where tel = ${tokenObj.tel}`, function (err, result) {
+        res.send({
+          data: {
+            code: 200,
+            msg: '密码修改成功！',
+            success: true
+          }
+        })
+      })
+    }
+  })
+})
+
 // 修改用户信息
-router.post('/api/updateUser', upload.single('file'), function (req, res, next) {
+router.post('/api/updateUser', function (req, res, next) {
   // token
   let token = req.headers.token
   let tokenObj = jwt.decode(token)

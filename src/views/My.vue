@@ -32,14 +32,15 @@
           </div>
           <i class="iconfont icon-fanhui go-out"></i>
         </li>
-
-        <li v-if="loginStatus" @click="loginOut">
+        <li v-if="loginStatus" @click="goEdit">
           <div>
-            <i class="iconfont icon-tuichu icons"></i>
-            <span>退出登录</span>
+            <i class="iconfont icon-shezhi icons"></i>
+            <span>修改密码</span>
           </div>
           <i class="iconfont icon-fanhui go-out"></i>
         </li>
+
+        <li v-if="loginStatus" @click="loginOut" class="loginout">退出登录</li>
       </ul>
     </section>
     <Tabbar></Tabbar>
@@ -70,6 +71,10 @@ export default {
     // 进入我的收藏
     goStart() {
       this.$router.push('/start')
+    },
+    // 进入修改密码
+    goEdit() {
+      this.$router.push('/editPassword')
     }
   },
   computed: {
@@ -150,6 +155,13 @@ export default {
         }
       }
     }
+  }
+  .loginout {
+    background-color: red;
+    margin: 15px;
+    border-radius: 5px;
+    color: #fff;
+    justify-content: center;
   }
 }
 </style>
