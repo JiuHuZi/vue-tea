@@ -78,7 +78,7 @@ export default {
           }
         })
         .then((res) => {
-          console.log(res)
+          // console.log(res)
           if (isRefresh) {
             // 证明是下拉刷新,新数据在前,旧数据在后
             this.goodsList = [...res, ...this.goodsList]
@@ -130,7 +130,7 @@ export default {
       this.$router.push(`/integralDetail?id=${val}`)
     },
     onLoad() {
-      console.log('触发了 load 事件')
+      // console.log('触发了 load 事件')
       // 1.让页码值 +1
       this.page++
       // 2. 重新请求接口获取数据
@@ -138,7 +138,7 @@ export default {
     },
     // 下拉刷新的处理函数
     onRefresh() {
-      console.log('触发 下拉刷新 事件')
+      // console.log('触发 下拉刷新 事件')
       // 1.页码值 +1
       this.page++
       // 2.重新请求接口获取数据

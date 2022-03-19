@@ -135,11 +135,6 @@ const routes = [
     component: () => import('@/views/Integral/Detail.vue')
   },
   {
-    path: '/set',
-    name: 'Set',
-    component: () => import('@/views/My/Set.vue')
-  },
-  {
     path: '/editPassword',
     name: 'EditPassword',
     component: () => import('@/views/My/Edit.vue')

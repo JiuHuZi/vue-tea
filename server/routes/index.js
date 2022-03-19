@@ -81,13 +81,35 @@ router.post('/api/editPassword', function (req, res, next) {
   })
 })
 
-// 修改用户信息
-router.post('/api/updateUser', function (req, res, next) {
+// 修改用户头像信息
+router.post('/api/updateheaderImg', function (req, res, next) {
   // token
   let token = req.headers.token
   let tokenObj = jwt.decode(token)
   let phone = tokenObj.tel
   let imgUrl = req.body.imgUrl
+  // console.log(`select * from user where nickName = '${name}'`)
+
+  // 修改用户
+  connection.query(`update user set imgUrl ='${imgUrl}' where tel ='${phone}'`, function (error, results) {
+    connection.query(`select * from user where tel = '${phone}'`, function (e, r) {
+      res.send({
+        data: {
+          code: 200,
+          success: true,
+          msg: '修改成功',
+          data: r
+        }
+      })
+    })
+  })
+})
+// 修改用户名称信息
+router.post('/api/updateUser', function (req, res, next) {
+  // token
+  let token = req.headers.token
+  let tokenObj = jwt.decode(token)
+  let phone = tokenObj.tel
   let name = req.body.username
   // console.log(`select * from user where nickName = '${name}'`)
   // 查询用户
@@ -101,7 +123,7 @@ router.post('/api/updateUser', function (req, res, next) {
       })
     } else {
       // 修改用户
-      connection.query(`update user set nickName ='${name}' , imgUrl ='${imgUrl}' where tel ='${phone}'`, function (error, results) {
+      connection.query(`update user set nickName ='${name}' where tel ='${phone}'`, function (error, results) {
         connection.query(`select * from user where tel = '${phone}'`, function (e, r) {
           res.send({
             data: {

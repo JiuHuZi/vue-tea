@@ -59,7 +59,7 @@ export default {
     let res = await http.$axios({
       url: '/api/goods/list'
     })
-    console.log(res)
+    // console.log(res)
 
     let leftArr = []
     let rightArr = []
