@@ -522,7 +522,7 @@ router.post('/api/selectwallet', function (req, res, next) {
     connection.query(`select * from wallet where uid = ${uid}`, function (err, result) {
       console.log(result.length)
       if (result.length == 0) {
-        connection.query(`insert into wallet (uid,total_money,Total_top_up,total_consumption) values(${uid},'0','0','0')`, function () {
+        connection.query(`insert into wallet (uid,total_money,Total_top_up,total_consumption,integral) values(${uid},'0','0','0','0')`, function () {
           connection.query(`select * from wallet where uid = ${uid}`, function (e, r) {
             res.send({
               data: {
@@ -602,13 +602,16 @@ router.post('/api/successPayment', function (req, res, next) {
                 let uid = results[0].id
                 connection.query(`select * from store_order where uid = ${uid} and order_id = ${out_trade_no}`, function (err, result) {
                   let id = result[0].id
+                  let integral = Math.floor(result[0].goods_price / 10)
                   // 订单的状态改成  2==>3
                   connection.query(`update store_order set order_status = replace(order_status,'2','3') where id = ${id}`, function (e, r) {
-                    res.send({
-                      data: {
-                        code: 2,
-                        msg: '交易完成'
-                      }
+                    connection.query(`update wallet set integral = ${integral} where uid = ${uid}`, function () {
+                      res.send({
+                        data: {
+                          code: 2,
+                          msg: '交易完成'
+                        }
+                      })
                     })
                   })
                 })
@@ -622,13 +625,16 @@ router.post('/api/successPayment', function (req, res, next) {
                 let uid = results[0].id
                 connection.query(`select * from store_order where uid = ${uid} and order_id = ${out_trade_no}`, function (err, result) {
                   let id = result[0].id
+                  let integral = Math.floor(result[0].goods_price / 10)
                   // 订单的状态改成  2==>3
                   connection.query(`update store_order set order_status = replace(order_status,'2','3') where id = ${id}`, function (e, r) {
-                    res.send({
-                      data: {
-                        code: 2,
-                        msg: '交易完成'
-                      }
+                    connection.query(`update wallet set integral = ${integral} where uid = ${uid}`, function () {
+                      res.send({
+                        data: {
+                          code: 2,
+                          msg: '交易完成'
+                        }
+                      })
                     })
                   })
                 })

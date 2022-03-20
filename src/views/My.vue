@@ -37,7 +37,6 @@
             </van-form>
           </van-popup>
         </div>
-        <!-- <i class="iconfont icon-shezhi icons" @click="$router.push('/set')"></i> -->
       </div>
     </header>
     <section>
@@ -72,7 +71,10 @@
           <i class="iconfont icon-fanhui go-out"></i>
         </li>
 
-        <li v-if="loginStatus" @click="loginOut" class="loginout">退出登录</li>
+        <li v-if="loginStatus" @click="loginOut" class="loginout">
+          <i class="iconfont icon-tuichu" style="padding-right: 5px"></i>
+          <span>退出登录</span>
+        </li>
       </ul>
     </section>
     <Tabbar></Tabbar>

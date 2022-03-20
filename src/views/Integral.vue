@@ -98,7 +98,7 @@ export default {
           // this.goodsList.unshift(...res)
           // this.goodsList = res
           this.goodsList.forEach((v) => {
-            v['integral'] = v.price * 20
+            v['integral'] = v.price * 10
           })
         })
     },

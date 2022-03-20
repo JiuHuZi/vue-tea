@@ -66,7 +66,7 @@
       </div>
       <div class="rightBtn">
         <!-- <div class="add-cart" @click="addCart">加入购物车</div> -->
-        <div>立即购买</div>
+        <div>立即兑换</div>
       </div>
     </footer>
   </div>
@@ -77,7 +77,6 @@ import 'swiper/dist/css/swiper.css'
 import { swiper, swiperSlide } from 'vue-awesome-swiper'
 import BetterScroll from 'better-scroll'
 import http from '@/common/api/request.js'
-import { Toast } from 'mint-ui'
 export default {
   name: 'Detail',
   components: {
@@ -169,26 +168,6 @@ export default {
             this.isStart = true
           } else if (res.code == 210) {
             this.isStart = false
-          }
-        })
-    },
-    // 加入购物车
-    addCart() {
-      let id = this.$route.query.id
-      http
-        .$axios({
-          url: '/api/addCart',
-          method: 'POST',
-          data: {
-            goodsId: id
-          },
-          headers: {
-            token: true
-          }
-        })
-        .then((res) => {
-          if (res.success) {
-            Toast(res.msg)
           }
         })
     },

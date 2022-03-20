@@ -18,6 +18,18 @@
           </li>
         </ul>
       </div>
+      <div class="totalMsg" style="margin-top: 5px">
+        <ul>
+          <li>
+            <span>我的积分</span>
+            <span>{{ totalList.integral }}</span>
+          </li>
+          <li>
+            <span>优惠券</span>
+            <span>0张</span>
+          </li>
+        </ul>
+      </div>
       <div class="topUp">
         <ul>
           <li>
@@ -136,7 +148,8 @@ section {
     width: 100%;
     height: 80px;
     background-color: #000;
-    color: orange;
+    background-image: linear-gradient(60deg, #222931 30%, #1b1f24 100%);
+    color: #daa520;
     border-radius: 12px;
     font-size: 14px;
     ul {

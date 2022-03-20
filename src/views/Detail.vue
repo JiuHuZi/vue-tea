@@ -48,6 +48,9 @@
             <span>价格：</span>
             <del>{{ goods.price + 10 }}</del>
           </div>
+          <!-- <div class="oprice">
+            <span>购买可获得 {{ goods.price > 100 ? Math.floor(goods.price / 10) : 10 }} 积分</span>
+          </div> -->
         </div>
 
         <div class="detail-list">
