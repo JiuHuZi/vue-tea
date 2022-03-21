@@ -1370,7 +1370,7 @@ router.get('/api/index_list/0/data/1', function (req, res, next) {
           {
             id: 3,
             type: 'likeList',
-            data
+            data: data
           }
         ]
       }

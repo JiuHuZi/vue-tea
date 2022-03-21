@@ -41,13 +41,15 @@ export default {
 .like ul {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
 }
 .like ul li {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: 50%;
+  /* width: 50%; */
 }
 .like h3 {
   width: 176px;
@@ -68,7 +70,7 @@ export default {
   text-align: left;
   padding: 0 6px 6px;
   color: red;
-  margin-top: -5px;
+  margin-top: -10px;
 }
 .price span {
   font-size: 12px;

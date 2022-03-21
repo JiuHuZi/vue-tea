@@ -26,7 +26,7 @@ export default {
 header {
   background-color: #ff585d;
   height: 44px;
-  width: 100%;
+  width: 100vw;
   display: flex;
   justify-content: space-around;
   align-items: center;

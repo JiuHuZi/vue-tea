@@ -23,9 +23,14 @@
           </van-popup>
         </div>
         <div>
-          <div class="userName" @click="changeName">
-            <span>{{ userInfo.nickName }}</span>
-            <i class="iconfont icon-xiugai"></i>
+          <div class="userName">
+            <div class="userName-content">
+              <van-badge :content="isMember ? '大会员' : '正式会员'" :class="isMember ? 'member' : 'notMember'" />
+              <div @click="changeName">
+                <span>{{ userInfo.nickName }}</span>
+                <i class="iconfont icon-xiugai"></i>
+              </div>
+            </div>
           </div>
           <van-popup v-model="isShowName" round position="bottom" :style="{ height: '30%' }">
             <van-form @submit="onSubmitName" class="changeNameForm">
@@ -99,7 +104,8 @@ export default {
       isShowImg: false,
       isShowName: false,
       username: '',
-      uploader: []
+      uploader: [],
+      isMember: false
     }
   },
   methods: {
@@ -245,6 +251,31 @@ export default {
       }
       .userName {
         position: relative;
+        .userName-content {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          div {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+          .member {
+            background-color: rgb(251, 114, 153);
+            color: #fff;
+          }
+          .notMember {
+            background-color: #ccd0d7;
+            color: #99a2aa;
+          }
+          .van-badge {
+            border: none;
+            padding: 2px 5px;
+            text-align: center;
+            margin-right: 5px;
+            margin-top: 3px;
+          }
+        }
         span {
           color: #fff;
           font-size: 18px;
@@ -254,8 +285,7 @@ export default {
           color: #fff;
           font-size: 16px;
           font-weight: bold;
-          position: absolute;
-          bottom: 5px;
+          margin-top: 5px;
         }
       }
     }
