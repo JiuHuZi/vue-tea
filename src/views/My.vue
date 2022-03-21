@@ -38,6 +38,9 @@
           </van-popup>
         </div>
       </div>
+      <div class="uid">
+        <span>UID:{{ userInfo.id }}</span>
+      </div>
     </header>
     <section>
       <div class="section_title" v-if="loginStatus">个人中心</div>
@@ -255,6 +258,13 @@ export default {
           bottom: 5px;
         }
       }
+    }
+    .uid {
+      position: absolute;
+      right: 10px;
+      bottom: 10px;
+      font-size: 14px;
+      color: #fff;
     }
   }
   section {

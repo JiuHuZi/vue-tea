@@ -17,6 +17,7 @@ const AlipayFormData = require('alipay-sdk/lib/form').default
 const axios = require('axios')
 
 const multer = require('multer')
+const { log } = require('console')
 const upload = multer({
   dest: path.join(process.cwd(), '../public/images/headerImg')
 })
@@ -1314,148 +1315,121 @@ router.post('/api/login', function (req, res, next) {
 
 // 首页推荐的数据
 router.get('/api/index_list/0/data/1', function (req, res, next) {
-  res.send({
-    code: 0,
-    data: {
-      topBar: [
-        { id: 0, label: '推荐' },
-        { id: 0, label: '大红袍' },
-        { id: 0, label: '铁观音' },
-        { id: 0, label: '绿茶' },
-        { id: 0, label: '普洱' },
-        { id: 0, label: '单枞' },
-        { id: 0, label: '花茶' },
-        { id: 0, label: '茶具' }
-      ],
-      data: [
-        // 这是 swiper
-        {
-          id: 0,
-          type: 'swiperList',
-          data: [
-            { id: 0, imgUrl: './images/swiper1.jpeg' },
-            { id: 1, imgUrl: './images/swiper2.jpeg' },
-            { id: 2, imgUrl: './images/swiper3.jpeg' }
-          ]
-        },
-        // 这是 icons
-        {
-          id: 1,
-          type: 'iconsList',
-          data: [
-            { id: 1, title: '自饮茶', imgUrl: './images/icons1.png', path: '' },
-            { id: 2, title: '茶具', imgUrl: './images/icons2.png', path: '' },
-            { id: 3, title: '茶礼盒', imgUrl: './images/icons3.png', path: '' },
-            { id: 4, title: '积分兑换', imgUrl: './images/icons4.png', path: '/integral' },
-            { id: 5, title: '官方验证', imgUrl: './images/icons5.png', path: '' }
-          ]
-        },
-        // 爆款推荐
-        {
-          id: 2,
-          type: 'recommendList',
-          data: [
-            { id: 1, name: '龙井1号铁罐250g', content: '鲜爽甘醇 口粮首选', price: '68', imgUrl: './images/recommend.jpeg' },
-            { id: 2, name: '龙井1号铁罐250g', content: '鲜爽甘醇 口粮首选', price: '68', imgUrl: './images/recommend.jpeg' },
-            { id: 3, name: '龙井1号铁罐250g', content: '鲜爽甘醇 口粮首选', price: '68', imgUrl: './images/recommend.jpeg' }
-          ]
-        },
-        // 猜你喜欢
-        {
-          id: 3,
-          type: 'likeList',
-          data: [
-            { id: 1, imgUrl: '/images/goods/goods1.jpeg', name: '浅尝-金牡丹（武夷岩茶）', price: 14.6 },
-            { id: 2, imgUrl: '/images/goods/goods2.jpeg', name: '2016南糯山古树普洱生茶', price: 98 },
-            { id: 3, imgUrl: '/images/goods/goods3.jpeg', name: '黄山太平猴魁绿茶1号', price: 99 },
-            { id: 4, imgUrl: '/images/goods/goods4.jpeg', name: '绿茶-无瑕黄金芽礼盒', price: 188 },
-            { id: 5, imgUrl: '/images/goods/goods5.jpeg', name: '黑金茶具套装', price: 458 },
-            { id: 6, imgUrl: '/images/goods/goods6.jpeg', name: '高山流水陶瓷旅行茶具', price: 168 },
-            { id: 7, imgUrl: '/images/goods/goods7.jpeg', name: '金油滴建盏', price: 298 },
-            { id: 8, imgUrl: '/images/goods/goods8.jpeg', name: '浅尝-白牡丹', price: 6.6 },
-            { id: 9, imgUrl: '/images/goods/goods9.jpeg', name: '2016白毫银针巧克力茶砖', price: 98 },
-            { id: 10, imgUrl: '/images/goods/goods10.jpeg', name: '云南凤庆经典蜜香滇红', price: 88 },
-            { id: 11, imgUrl: '/images/goods/goods11.jpeg', name: '传统工艺茉莉花茶-春毫', price: 68 },
-            { id: 12, imgUrl: '/images/goods/goods12.jpeg', name: '笔花堂桐木关金骏眉', price: 794 },
-            { id: 13, imgUrl: '/images/goods/goods13.jpeg', name: '林沧淇白水兰香铁观音', price: 118 }
-          ]
-        }
-      ]
-    }
+  connection.query(`select * from goods_list`, function (error, results) {
+    var dataString = JSON.stringify(results)
+    var data = JSON.parse(dataString)
+    // console.log(data)
+
+    res.send({
+      code: 0,
+      data: {
+        topBar: [
+          { id: 0, label: '推荐' },
+          { id: 0, label: '大红袍' },
+          { id: 0, label: '铁观音' },
+          { id: 0, label: '绿茶' },
+          { id: 0, label: '普洱' },
+          { id: 0, label: '单枞' },
+          { id: 0, label: '花茶' },
+          { id: 0, label: '茶具' }
+        ],
+        data: [
+          // 这是 swiper
+          {
+            id: 0,
+            type: 'swiperList',
+            data: [
+              { id: 0, imgUrl: './images/swiper1.jpeg' },
+              { id: 1, imgUrl: './images/swiper2.jpeg' },
+              { id: 2, imgUrl: './images/swiper3.jpeg' }
+            ]
+          },
+          // 这是 icons
+          {
+            id: 1,
+            type: 'iconsList',
+            data: [
+              { id: 1, title: '自饮茶', imgUrl: './images/icons1.png', path: '' },
+              { id: 2, title: '茶具', imgUrl: './images/icons2.png', path: '' },
+              { id: 3, title: '茶礼盒', imgUrl: './images/icons3.png', path: '' },
+              { id: 4, title: '积分兑换', imgUrl: './images/icons4.png', path: '/integral' },
+              { id: 5, title: '官方验证', imgUrl: './images/icons5.png', path: '' }
+            ]
+          },
+          // 爆款推荐
+          {
+            id: 2,
+            type: 'recommendList',
+            data: [
+              { id: 1, name: '龙井1号铁罐250g', content: '鲜爽甘醇 口粮首选', price: '68', imgUrl: './images/recommend.jpeg' },
+              { id: 2, name: '龙井1号铁罐250g', content: '鲜爽甘醇 口粮首选', price: '68', imgUrl: './images/recommend.jpeg' },
+              { id: 3, name: '龙井1号铁罐250g', content: '鲜爽甘醇 口粮首选', price: '68', imgUrl: './images/recommend.jpeg' }
+            ]
+          },
+          // 猜你喜欢
+          {
+            id: 3,
+            type: 'likeList',
+            data
+          }
+        ]
+      }
+    })
   })
 })
 
 // 首页大红袍数据
 router.get('/api/index_list/1/data/1', function (req, res, next) {
-  res.send({
-    code: 0,
-    data: [
-      {
-        id: 1,
-        type: 'adList',
-        data: [
-          { id: 1, imgUrl: './images/dhp.jpeg' },
-          { id: 2, imgUrl: './images/dhp.jpeg' }
-        ]
-      },
-      // 猜你喜欢
-      {
-        id: 2,
-        type: 'likeList',
-        data: [
-          { id: 1, imgUrl: '/images/goods/goods1.jpeg', name: '浅尝-金牡丹（武夷岩茶）', price: 14.6 },
-          { id: 2, imgUrl: '/images/goods/goods2.jpeg', name: '2016南糯山古树普洱生茶', price: 98 },
-          { id: 3, imgUrl: '/images/goods/goods3.jpeg', name: '黄山太平猴魁绿茶1号', price: 99 },
-          { id: 4, imgUrl: '/images/goods/goods4.jpeg', name: '绿茶-无瑕黄金芽礼盒', price: 188 },
-          { id: 5, imgUrl: '/images/goods/goods5.jpeg', name: '黑金茶具套装', price: 458 },
-          { id: 6, imgUrl: '/images/goods/goods6.jpeg', name: '高山流水陶瓷旅行茶具', price: 168 },
-          { id: 7, imgUrl: '/images/goods/goods7.jpeg', name: '金油滴建盏', price: 298 },
-          { id: 8, imgUrl: '/images/goods/goods8.jpeg', name: '浅尝-白牡丹', price: 6.6 },
-          { id: 9, imgUrl: '/images/goods/goods9.jpeg', name: '2016白毫银针巧克力茶砖', price: 98 },
-          { id: 10, imgUrl: '/images/goods/goods10.jpeg', name: '云南凤庆经典蜜香滇红', price: 88 },
-          { id: 11, imgUrl: '/images/goods/goods11.jpeg', name: '传统工艺茉莉花茶-春毫', price: 68 },
-          { id: 12, imgUrl: '/images/goods/goods12.jpeg', name: '笔花堂桐木关金骏眉', price: 794 },
-          { id: 13, imgUrl: '/images/goods/goods13.jpeg', name: '林沧淇白水兰香铁观音', price: 118 }
-        ]
-      }
-    ]
+  connection.query(`select * from goods_list`, function (error, results) {
+    var dataString = JSON.stringify(results)
+    var data = JSON.parse(dataString)
+
+    res.send({
+      code: 0,
+      data: [
+        {
+          id: 1,
+          type: 'adList',
+          data: [
+            { id: 1, imgUrl: './images/dhp.jpeg' },
+            { id: 2, imgUrl: './images/dhp.jpeg' }
+          ]
+        },
+        // 猜你喜欢
+        {
+          id: 2,
+          type: 'likeList',
+          data
+        }
+      ]
+    })
   })
 })
 
 // 首页铁观音数据
 router.get('/api/index_list/2/data/1', function (req, res, next) {
-  res.send({
-    code: 0,
-    data: [
-      {
-        id: 1,
-        type: 'adList',
-        data: [
-          { id: 1, imgUrl: './images/tgy.jpeg' },
-          { id: 2, imgUrl: './images/tgy.jpeg' }
-        ]
-      },
-      // 猜你喜欢
-      {
-        id: 2,
-        type: 'likeList',
-        data: [
-          { id: 1, imgUrl: '/images/goods/goods1.jpeg', name: '浅尝-金牡丹（武夷岩茶）', price: 14.6 },
-          { id: 2, imgUrl: '/images/goods/goods2.jpeg', name: '2016南糯山古树普洱生茶', price: 98 },
-          { id: 3, imgUrl: '/images/goods/goods3.jpeg', name: '黄山太平猴魁绿茶1号', price: 99 },
-          { id: 4, imgUrl: '/images/goods/goods4.jpeg', name: '绿茶-无瑕黄金芽礼盒', price: 188 },
-          { id: 5, imgUrl: '/images/goods/goods5.jpeg', name: '黑金茶具套装', price: 458 },
-          { id: 6, imgUrl: '/images/goods/goods6.jpeg', name: '高山流水陶瓷旅行茶具', price: 168 },
-          { id: 7, imgUrl: '/images/goods/goods7.jpeg', name: '金油滴建盏', price: 298 },
-          { id: 8, imgUrl: '/images/goods/goods8.jpeg', name: '浅尝-白牡丹', price: 6.6 },
-          { id: 9, imgUrl: '/images/goods/goods9.jpeg', name: '2016白毫银针巧克力茶砖', price: 98 },
-          { id: 10, imgUrl: '/images/goods/goods10.jpeg', name: '云南凤庆经典蜜香滇红', price: 88 },
-          { id: 11, imgUrl: '/images/goods/goods11.jpeg', name: '传统工艺茉莉花茶-春毫', price: 68 },
-          { id: 12, imgUrl: '/images/goods/goods12.jpeg', name: '笔花堂桐木关金骏眉', price: 794 },
-          { id: 13, imgUrl: '/images/goods/goods13.jpeg', name: '林沧淇白水兰香铁观音', price: 118 }
-        ]
-      }
-    ]
+  connection.query(`select * from goods_list`, function (error, results) {
+    var dataString = JSON.stringify(results)
+    var data = JSON.parse(dataString)
+    res.send({
+      code: 0,
+      data: [
+        {
+          id: 1,
+          type: 'adList',
+          data: [
+            { id: 1, imgUrl: './images/tgy.jpeg' },
+            { id: 2, imgUrl: './images/tgy.jpeg' }
+          ]
+        },
+        // 猜你喜欢
+        {
+          id: 2,
+          type: 'likeList',
+          data
+        }
+      ]
+    })
   })
 })
 
