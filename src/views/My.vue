@@ -47,44 +47,61 @@
         <span>UID:{{ userInfo.id }}</span>
       </div>
     </header>
-    <section>
-      <div class="section_title" v-if="loginStatus">个人中心</div>
-      <ul>
-        <li v-if="loginStatus" @click="goStart">
-          <div>
-            <i class="iconfont icon-shoucang icons"></i>
-            <span>我的收藏</span>
-          </div>
-          <i class="iconfont icon-fanhui go-out"></i>
-        </li>
-        <li v-if="loginStatus" @click="goPath">
-          <div>
-            <i class="iconfont icon-dizhi icons"></i>
-            <span>地址管理</span>
-          </div>
-          <i class="iconfont icon-fanhui go-out"></i>
-        </li>
-        <li v-if="loginStatus" @click="goWallet">
-          <div>
-            <i class="iconfont icon-licai icons"></i>
-            <span>我的钱包</span>
-          </div>
-          <i class="iconfont icon-fanhui go-out"></i>
-        </li>
-        <li v-if="loginStatus" @click="goEdit">
-          <div>
-            <i class="iconfont icon-shezhi icons"></i>
-            <span>修改密码</span>
-          </div>
-          <i class="iconfont icon-fanhui go-out"></i>
-        </li>
 
-        <li v-if="loginStatus" @click="loginOut" class="loginout">
-          <i class="iconfont icon-tuichu" style="padding-right: 5px"></i>
-          <span>退出登录</span>
-        </li>
-      </ul>
+    <section>
+      <div style="background-color: #fff">
+        <div class="section_title" v-if="loginStatus">个人中心</div>
+        <ul>
+          <li v-if="loginStatus" @click="goStart">
+            <div>
+              <i class="iconfont icon-shoucang icons"></i>
+              <span>我的收藏</span>
+            </div>
+            <i class="iconfont icon-fanhui go-out"></i>
+          </li>
+          <li v-if="loginStatus" @click="goPath">
+            <div>
+              <i class="iconfont icon-dizhi icons"></i>
+              <span>地址管理</span>
+            </div>
+            <i class="iconfont icon-fanhui go-out"></i>
+          </li>
+          <li v-if="loginStatus" @click="goWallet">
+            <div>
+              <i class="iconfont icon-licai icons"></i>
+              <span>我的钱包</span>
+            </div>
+            <i class="iconfont icon-fanhui go-out"></i>
+          </li>
+          <li v-if="loginStatus" @click="goEdit">
+            <div>
+              <i class="iconfont icon-shezhi icons"></i>
+              <span>修改密码</span>
+            </div>
+            <i class="iconfont icon-fanhui go-out"></i>
+          </li>
+        </ul>
+      </div>
+
+      <div style="background-color: #fff; margin-top: 10px">
+        <div class="section_title" v-if="loginStatus">优惠福利</div>
+        <ul>
+          <li v-if="loginStatus">
+            <div>
+              <i class="iconfont icon-youhuiquan icons"></i>
+              <span>优惠券</span>
+            </div>
+            <i class="iconfont icon-fanhui go-out"></i>
+          </li>
+        </ul>
+      </div>
+
+      <div v-if="loginStatus" @click="loginOut" class="loginout">
+        <i class="iconfont icon-tuichu" style="padding-right: 5px"></i>
+        <span>退出登录</span>
+      </div>
     </section>
+
     <Tabbar></Tabbar>
   </div>
 </template>
@@ -295,9 +312,11 @@ export default {
       bottom: 10px;
       font-size: 14px;
       color: #fff;
+      opacity: 0.7;
     }
   }
   section {
+    background-color: #f5f5f5;
     .section_title {
       font-size: 14px;
       color: #999;
@@ -310,10 +329,12 @@ export default {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      border-bottom: 1px solid #f5f5f5;
       .go-out {
         transform: rotate(180deg);
       }
       div {
+        display: flex;
         .icons {
           color: red;
           margin-right: 10px;
@@ -326,11 +347,17 @@ export default {
     }
   }
   .loginout {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 45px;
     background-color: red;
     margin: 15px;
     border-radius: 5px;
     color: #fff;
-    justify-content: center;
+    span {
+      font-size: 16px;
+    }
   }
 }
 .changeNameForm {
