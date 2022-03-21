@@ -66,11 +66,12 @@ export default {
   height: 176px;
 }
 .price {
+  display: flex;
   width: 176px;
   text-align: left;
   padding: 0 6px 6px;
   color: red;
-  margin-top: -10px;
+  margin-top: 5px;
 }
 .price span {
   font-size: 12px;
