@@ -35,14 +35,14 @@
           <li>
             <div>
               <i class="iconfont icon-shouye1"></i>
-              <span>充值￥100 赠送￥10</span>
+              <span>充值￥100 赠送 10积分</span>
             </div>
             <div class="topUpBtn" @click="topUp(100)">充值</div>
           </li>
           <li>
             <div>
               <i class="iconfont icon-shouye1"></i>
-              <span>充值￥1000 赠送￥100</span>
+              <span>充值￥1000 赠送 100积分</span>
             </div>
             <div class="topUpBtn" @click="topUp(1000)">充值</div>
           </li>
@@ -87,9 +87,9 @@ export default {
     topUp(val) {
       let name = ''
       if (val == 100) {
-        name = '充值￥100 赠送￥10'
+        name = '充值￥100 赠送 10积分'
       } else if (val == 1000) {
-        name = '充值￥1000 赠送￥100'
+        name = '充值￥1000 赠送 100积分'
       }
 
       http

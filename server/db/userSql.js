@@ -24,7 +24,8 @@ const User = {
       expiresIn: 3600 * 24
     })
 
-    return 'insert into user (tel,pwd,imgUrl,nickName,token) values(' + userTel + ',' + userPwd + ',"/images/headerImg/header.jpeg","' + userTel + '","' + token + '")'
+    // return 'insert into user (tel,pwd,imgUrl,nickName,token,member) values(' + userTel + ',' + userPwd + ',"/images/headerImg/header.jpeg","' + userTel + '","' + token + '")'
+    return `insert into user (tel,pwd,imgUrl,nickName,token,member) values( '${userTel}' , '${userPwd}' ,"/images/headerImg/header.jpeg", '${userTel}' , '${token}' ,'0')`
   }
 }
 

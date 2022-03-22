@@ -150,8 +150,9 @@ section {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
+    align-items: center;
     li {
-      width: 50%;
+      width: 190px;
       padding: 10px;
       box-sizing: border-box;
       display: flex;

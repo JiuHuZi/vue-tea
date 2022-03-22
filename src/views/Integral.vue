@@ -16,16 +16,18 @@
     <section>
       <van-pull-refresh v-model="isLoading" @refresh="onRefresh" :disabled="finished">
         <van-list v-model="loading" :finished="finished" finished-text="没有更多了" @load="onLoad">
-          <li v-for="(item, index) in goodsList" :key="index" @click="goDetail(item.id)">
-            <img v-lazy="item.imgUrl" alt="" />
-            <h3>{{ item.name }}</h3>
-            <div class="price">
-              <div>
-                <span>积分：</span><b>{{ item.integral }}</b>
+          <ul>
+            <li v-for="(item, index) in goodsList" :key="index" @click="goDetail(item.id)">
+              <img v-lazy="item.imgUrl" alt="" />
+              <h3>{{ item.name }}</h3>
+              <div class="price">
+                <div>
+                  <span>积分：</span><b>{{ item.integral }}</b>
+                </div>
+                <div>立即兑换</div>
               </div>
-              <div>立即兑换</div>
-            </div>
-          </li>
+            </li>
+          </ul>
         </van-list>
       </van-pull-refresh>
     </section>
@@ -193,21 +195,26 @@ section {
     height: 100%;
     overflow: scroll;
     .van-list {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      padding-bottom: 30px;
-      li {
-        width: 50%;
-        padding: 10px;
-        box-sizing: border-box;
+      ul {
         display: flex;
-        flex-direction: column;
-        justify-content: center;
+        flex-wrap: wrap;
+        justify-content: space-between;
         align-items: center;
-        img {
-          width: 170px;
-          height: 170px;
+        padding-bottom: 30px;
+
+        li {
+          width: 190px;
+          padding: 10px;
+          box-sizing: border-box;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          overflow: hidden;
+          img {
+            width: 170px;
+            height: 170px;
+          }
         }
       }
     }

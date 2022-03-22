@@ -361,18 +361,25 @@ router.post('/api/successTopUp', function (req, res, next) {
                 let uid = results[0].id
                 connection.query(`select * from store_order where uid = ${uid} and order_id = ${out_trade_no}`, function (err, result) {
                   let id = result[0].id
-                  let price = result[0].goods_price
+                  let price = parseFloat(result[0].goods_price)
+                  let integral = 0
+                  if (price == 100) {
+                    integral = 10
+                  } else if (price == 1000) {
+                    integral = 100
+                  }
                   // 订单的状态改成  2==>3
                   connection.query(`update store_order set order_status = replace(order_status,'2','3') where id = ${id}`, function () {
                     connection.query(`select * from wallet where uid = ${uid} `, function (e, r) {
-                      console.log(r)
                       // 总资产
-                      let total_money = parseFloat(r[0].total_money) + parseFloat(price)
+                      let total_money = parseFloat(r[0].total_money) + price
                       // 总充值金额
-                      let Total_top_up = parseFloat(r[0].Total_top_up) + parseFloat(price)
+                      let Total_top_up = parseFloat(r[0].Total_top_up) + price
                       // 总消费金额
                       let total_consumption = r[0].total_consumption
-                      connection.query(`update wallet set total_money = ${total_money} , Total_top_up = ${Total_top_up}  where uid = ${uid}`, function () {
+                      // 当期积分
+                      let total_integral = parseFloat(r[0].integral) + integral
+                      connection.query(`update wallet set total_money = ${total_money} , Total_top_up = ${Total_top_up}, integral = ${total_integral} where uid = ${uid}`, function () {
                         res.send({
                           data: {
                             code: 2,
@@ -394,10 +401,11 @@ router.post('/api/successTopUp', function (req, res, next) {
                 connection.query(`select * from store_order where uid = ${uid} and order_id = ${out_trade_no}`, function (err, result) {
                   let id = result[0].id
                   let price = parseFloat(result[0].goods_price)
+                  let integral = 0
                   if (price == 100) {
-                    price += 10
+                    integral = 10
                   } else if (price == 1000) {
-                    price += 100
+                    integral = 100
                   }
                   // 订单的状态改成  2==>3
                   connection.query(`update store_order set order_status = replace(order_status,'2','3') where id = ${id}`, function () {
@@ -408,7 +416,9 @@ router.post('/api/successTopUp', function (req, res, next) {
                       let Total_top_up = parseFloat(r[0].Total_top_up) + price
                       // 总消费金额
                       let total_consumption = r[0].total_consumption
-                      connection.query(`update wallet set total_money = ${total_money} , Total_top_up = ${Total_top_up}  where uid = ${uid}`, function () {
+                      // 当期积分
+                      let total_integral = parseFloat(r[0].integral) + integral
+                      connection.query(`update wallet set total_money = ${total_money} , Total_top_up = ${Total_top_up}, integral = ${total_integral} where uid = ${uid}`, function () {
                         res.send({
                           data: {
                             code: 2,
@@ -1116,7 +1126,8 @@ router.post('/api/selectUser', function (req, res, next) {
       res.send({
         code: 200,
         data: {
-          success: true
+          success: true,
+          data: result
         }
       })
     } else {

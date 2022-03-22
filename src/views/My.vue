@@ -3,6 +3,8 @@
     <header>
       <div class="login" @click="goLogin" v-if="!loginStatus">登录 / 注册</div>
       <div class="user-info" v-else>
+        <i class="iconfont icon-youxiang email"></i>
+
         <div>
           <div class="imgUrl" @click="changeImg">
             <img :src="userInfo.imgUrl" alt="" />
@@ -22,12 +24,13 @@
             </van-form>
           </van-popup>
         </div>
+
         <div>
           <div class="userName">
             <div class="userName-content">
               <van-badge :content="isMember ? '大会员' : '正式会员'" :class="isMember ? 'member' : 'notMember'" />
               <div @click="changeName">
-                <span>{{ userInfo.nickName }}</span>
+                <span :class="isMember ? 'memberName' : ''">{{ userInfo.nickName }}</span>
                 <i class="iconfont icon-xiugai"></i>
               </div>
             </div>
@@ -146,6 +149,21 @@ export default {
     goEdit() {
       this.$router.push('/editPassword')
     },
+    getData() {
+      http
+        .$axios({
+          url: '/api/selectUser',
+          method: 'POST',
+          data: {
+            phone: JSON.parse(localStorage.getItem('teauserInfo')).tel
+          }
+        })
+        .then((res) => {
+          // console.log(res.data[0])
+          this.USER_LOGIN(res.data[0])
+          this.isMember = this.userInfo.member == '1' ? true : false
+        })
+    },
     // 点击名字显示弹出层
     changeName() {
       this.isShowName = true
@@ -222,6 +240,9 @@ export default {
       userInfo: (state) => state.user.userInfo,
       loginStatus: (state) => state.user.loginStatus
     })
+  },
+  created() {
+    this.getData()
   }
 }
 </script>
@@ -236,6 +257,14 @@ export default {
     justify-content: center;
     align-items: center;
     position: relative;
+    .email {
+      position: absolute;
+      right: 5px;
+      top: 5px;
+      font-size: 26px;
+      color: #fff;
+      font-weight: 500;
+    }
     .login {
       font-size: 16px;
       background-color: #f6ab32;
@@ -370,5 +399,8 @@ export default {
 .van-button--info {
   background-color: #ff585d;
   border-color: #ff585d;
+}
+.memberName {
+  color: #fde000 !important;
 }
 </style>
