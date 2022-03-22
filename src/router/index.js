@@ -135,6 +135,19 @@ const routes = [
     component: () => import('@/views/Integral/Detail.vue')
   },
   {
+    path: '/integralOrder',
+    name: 'IntegralOrder',
+    meta: {
+      keepAlive: true // 此组件需要被缓存
+    },
+    component: () => import('@/views/Integral/Order.vue')
+  },
+  {
+    path: '/successExchange',
+    name: 'successExchange',
+    component: () => import('@/views/exchangeResult.vue')
+  },
+  {
     path: '/editPassword',
     name: 'EditPassword',
     component: () => import('@/views/My/Edit.vue')

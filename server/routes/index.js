@@ -50,6 +50,75 @@ router.get('/', function (req, res, next) {
   res.render('index', { title: 'Express' })
 })
 
+// 兑换商品
+router.post('/api/successExchange', function (req, res, next) {
+  let order_id = req.body.order_id
+  // console.log(`select * from store_order where order_id = '${order_id}'`)
+  connection.query(`select * from store_order where order_id = '${order_id}'`, function (error, results) {
+    if (results[0].order_status == '3') {
+      res.send({
+        data: {
+          code: 200,
+          success: true
+        }
+      })
+    } else if (results[0].order_status == '0') {
+      res.send({
+        data: {
+          code: 0,
+          success: false
+        }
+      })
+    }
+  })
+})
+
+// 兑换商品
+router.post('/api/exchange', function (req, res, next) {
+  let order_id = req.body.order_id
+  connection.query(`select * from store_order where order_id = ${order_id}`, function (error, results) {
+    let price = parseFloat(results[0].goods_price)
+    let uid = results[0].uid
+    connection.query(`select * from wallet where uid = ${uid}`, function (err, result) {
+      if (price > parseFloat(result[0].integral)) {
+        res.send({
+          data: {
+            code: 0,
+            success: false,
+            msg: '积分不足'
+          }
+        })
+      } else {
+        let integral = parseFloat(result[0].integral) - parseFloat(price)
+        connection.query(`update store_order set order_status = replace(order_status,'2','3')  where order_id = ${order_id}`, function () {
+          connection.query(`update wallet set integral = '${integral}'  where uid = ${uid}`, function () {
+            res.send({
+              data: {
+                code: 200,
+                success: true,
+                msg: '兑换成功'
+              }
+            })
+          })
+        })
+      }
+    })
+  })
+})
+
+// 修改兑换商品的订单状态
+router.post('/api/submitExchange', function (req, res, next) {
+  let order_id = req.body.order_id
+  connection.query(`update store_order set order_status = '2' where order_id = ${order_id}`, function (err, result) {
+    res.send({
+      data: {
+        code: 200,
+        success: true
+      }
+    })
+  })
+})
+
 // 修改密码
 router.post('/api/editPassword', function (req, res, next) {
   let { Opassword, Npassword } = req.body
@@ -769,6 +838,9 @@ router.post('/api/addOrder', function (req, res, next) {
   //  前端给后端的数据
   let goodsArr = req.body.arr
 
+  // 区分是积分兑换还是电子货币购买
+  let mode = req.body.mode
+
   /**
    * 未支付：1
    * 待支付：2
@@ -795,7 +867,7 @@ router.post('/api/addOrder', function (req, res, next) {
   connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
     // 用户id
     let uid = results[0].id
-    connection.query(`insert into store_order (order_id,goods_name,goods_price,goods_num,order_status,uid) values('${orderId}', '${goodsName}','${goodsPrice}',${goodsNum},'1',${uid})`, function (error, results) {
+    connection.query(`insert into store_order (order_id,goods_name,goods_price,goods_num,order_status,uid,mode) values('${orderId}', '${goodsName}','${goodsPrice}',${goodsNum},'1',${uid},'${mode}')`, function (error, results) {
       connection.query(`select * from store_order where uid = ${uid} and order_id = '${orderId}'`, function (err, result) {
         res.send({
           data: {

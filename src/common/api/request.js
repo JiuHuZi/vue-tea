@@ -22,6 +22,7 @@ export default {
     if (options.headers.token) {
       options.headers.token = store.state.user.token
       if (!options.headers.token) {
+        Indicator.close()
         router.push('/login')
       }
     }
@@ -40,7 +41,7 @@ export default {
         // 结束，关闭加载中
         setTimeout(() => {
           Indicator.close()
-        }, 300)
+        }, 200)
         res(data)
       })
     })

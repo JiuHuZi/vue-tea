@@ -45,9 +45,9 @@
             </van-form>
           </van-popup>
         </div>
-      </div>
-      <div class="uid">
-        <span>UID:{{ userInfo.id }}</span>
+        <div class="uid">
+          <span>UID:{{ userInfo.id }}</span>
+        </div>
       </div>
     </header>
 

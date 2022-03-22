@@ -42,7 +42,7 @@
         <div class="goods-price">
           <div class="oprice">
             <span>积分：</span>
-            <b>{{ goods.price * 20 }}</b>
+            <b>{{ goods.price * 10 }}</b>
           </div>
         </div>
 
@@ -66,7 +66,7 @@
       </div>
       <div class="rightBtn">
         <!-- <div class="add-cart" @click="addCart">加入购物车</div> -->
-        <div>立即兑换</div>
+        <div @click="exchange">立即兑换</div>
       </div>
     </footer>
   </div>
@@ -77,6 +77,7 @@ import 'swiper/dist/css/swiper.css'
 import { swiper, swiperSlide } from 'vue-awesome-swiper'
 import BetterScroll from 'better-scroll'
 import http from '@/common/api/request.js'
+import { mapMutations } from 'vuex'
 export default {
   name: 'Detail',
   components: {
@@ -99,7 +100,8 @@ export default {
           type: 'fraction'
         }
       },
-      swiperList: []
+      swiperList: [],
+      newList: []
     }
   },
   mounted() {
@@ -139,6 +141,7 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['initOrder']),
     async getData() {
       let id = this.$route.query.id
 
@@ -146,6 +149,7 @@ export default {
         url: '/api/goods/id',
         params: { id }
       })
+      // console.log(res)
 
       this.goods = res
 
@@ -169,6 +173,46 @@ export default {
           } else if (res.code == 210) {
             this.isStart = false
           }
+        })
+      let newArr = [
+        {
+          id: this.goods.id,
+          goods_name: this.goods.name,
+          goods_imgUrl: this.goods.imgUrl,
+          goods_num: 1,
+          goods_price: this.goods.price * 10
+        }
+      ]
+      // console.log(newArr)
+      this.newList = newArr
+    },
+    // 点击兑换
+    exchange() {
+      // 生成一个订单
+      http
+        .$axios({
+          url: '/api/addOrder',
+          method: 'POST',
+          headers: {
+            token: true
+          },
+          data: {
+            arr: this.newList,
+            mode: '积分'
+          }
+        })
+        .then((res) => {
+          // console.log(res)
+          if (!res.success) return
+          res.data[0]['goods_imgUrl'] = this.goods.imgUrl
+          this.initOrder(res.data)
+          this.$router.push({
+            path: '/integralOrder',
+            query: {
+              detail: JSON.stringify(res.data[0].id),
+              goodsList: JSON.stringify(res.data[0])
+            }
+          })
         })
     },
     // 点击收藏

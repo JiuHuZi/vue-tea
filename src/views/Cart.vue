@@ -129,7 +129,7 @@ export default {
           }
         })
       })
-
+      console.log(newList)
       // 生成一个订单
       http
         .$axios({
@@ -139,7 +139,8 @@ export default {
             token: true
           },
           data: {
-            arr: newList
+            arr: newList,
+            mode: '电子货币'
           }
         })
         .then((res) => {
