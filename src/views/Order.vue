@@ -91,6 +91,14 @@ export default {
     }),
     ...mapGetters(['defaultPath'])
   },
+  beforeRouteEnter(to, from, next) {
+    next((vm) => {
+      // 通过 `vm` 访问组件实例,将值传入fromPath
+      vm.fromPath = from.path
+      // console.log(to)
+      // console.log(from)
+    })
+  },
   created() {
     this.goodsList = JSON.parse(this.$route.query.goodsList)
     function toFix(num1) {
@@ -104,7 +112,7 @@ export default {
     this.selectAddress()
   },
   methods: {
-    ...mapMutations(['initData', 'initOrder']),
+    ...mapMutations(['initData', 'initOrder', 'cleaerSelectList']),
     // 查询到地址
     selectAddress() {
       http
@@ -164,6 +172,12 @@ export default {
         Toast('请填写收货地址')
         return
       }
+
+      // console.log(this.fromPath)
+      if (this.fromPath == '/detail') {
+        this.cleaerSelectList()
+      }
+      console.log(this.selectList)
 
       // 发送请求  ==> 1.修改订单状态  2.删除购物车数据
       http

@@ -144,7 +144,7 @@ export default {
           // 存储订单号
           this.initOrder(res.data)
           this.total = {
-            price: this.goodsList.goods_price,
+            price: this.goodsList[0].goods_price,
             num: 1
           }
         })

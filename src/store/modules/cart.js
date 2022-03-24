@@ -66,6 +66,10 @@ export default {
       state.list = state.list.filter((v) => {
         return state.selectList.indexOf(v.id) == -1
       })
+    },
+    // 清除selectList
+    cleaerSelectList(state) {
+      return (state.selectList = [])
     }
   },
   actions: {
