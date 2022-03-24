@@ -150,19 +150,21 @@ export default {
       this.$router.push('/editPassword')
     },
     getData() {
-      http
-        .$axios({
-          url: '/api/selectUser',
-          method: 'POST',
-          data: {
-            phone: JSON.parse(localStorage.getItem('teauserInfo')).tel
-          }
-        })
-        .then((res) => {
-          // console.log(res.data[0])
-          this.USER_LOGIN(res.data[0])
-          this.isMember = this.userInfo.member == '1' ? true : false
-        })
+      if (localStorage.getItem('teauserInfo') != null) {
+        http
+          .$axios({
+            url: '/api/selectUser',
+            method: 'POST',
+            data: {
+              phone: JSON.parse(localStorage.getItem('teauserInfo')).tel
+            }
+          })
+          .then((res) => {
+            // console.log(res.data[0])
+            this.USER_LOGIN(res.data[0])
+            this.isMember = this.userInfo.member == '1' ? true : false
+          })
+      }
     },
     // 点击名字显示弹出层
     changeName() {

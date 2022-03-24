@@ -176,7 +176,7 @@ export default {
         })
       let newArr = [
         {
-          id: this.goods.id,
+          goods_id: this.goods.id,
           goods_name: this.goods.name,
           goods_imgUrl: this.goods.imgUrl,
           goods_num: 1,
@@ -205,12 +205,13 @@ export default {
           // console.log(res)
           if (!res.success) return
           res.data[0]['goods_imgUrl'] = this.goods.imgUrl
+          res.data[0]['goods_id'] = this.goods.id
           this.initOrder(res.data)
           this.$router.push({
             path: '/integralOrder',
             query: {
-              detail: JSON.stringify(res.data[0].id),
-              goodsList: JSON.stringify(res.data[0])
+              detail: JSON.stringify([res.data[0].goods_id]),
+              goodsList: JSON.stringify([res.data[0]])
             }
           })
         })

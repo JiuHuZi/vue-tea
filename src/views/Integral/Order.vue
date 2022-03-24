@@ -37,16 +37,16 @@
 
       <div class="goods">
         <ul>
-          <li>
-            <div><img :src="goodsList.goods_imgUrl" alt="" /></div>
+          <lili v-for="(item, index) in goodsList" :key="index">
+            <div><img :src="item.goods_imgUrl" alt="" /></div>
             <div class="goods-content">
-              <h4>{{ goodsList.goods_name }}</h4>
+              <h4>{{ item.goods_name }}</h4>
               <div class="goods-total">
-                <span style="color: red">{{ goodsList.goods_price }} 积分</span>
-                <span>×{{ goodsList.goods_num }}</span>
+                <span style="color: red">{{ item.goods_price }} 积分</span>
+                <span>×{{ item.goods_num }}</span>
               </div>
             </div>
-          </li>
+          </lili>
         </ul>
       </div>
     </section>

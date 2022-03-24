@@ -43,7 +43,7 @@
             <div class="goods-content">
               <h4>{{ item.goods_name }}</h4>
               <div class="goods-total">
-                <span style="color: red">￥{{ item.goods_price.toFixed(2) }}</span>
+                <span style="color: red">￥{{ item.goods_price }}</span>
                 <span>×{{ item.goods_num }}</span>
               </div>
             </div>
@@ -93,6 +93,14 @@ export default {
   },
   created() {
     this.goodsList = JSON.parse(this.$route.query.goodsList)
+    function toFix(num1) {
+      if (typeof num1 == 'undefined') {
+        return num1
+      } else {
+        return Number(num1.toFixed(2))
+      }
+    }
+    this.goodsList.goods_price = toFix(this.goodsList.goods_price)
     this.selectAddress()
   },
   methods: {

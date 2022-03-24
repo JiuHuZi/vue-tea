@@ -73,7 +73,7 @@
       </div>
       <div class="rightBtn">
         <div class="add-cart" @click="addCart">加入购物车</div>
-        <div>立即购买</div>
+        <div @click="goPay">立即购买</div>
       </div>
     </footer>
   </div>
@@ -85,6 +85,7 @@ import { swiper, swiperSlide } from 'vue-awesome-swiper'
 import BetterScroll from 'better-scroll'
 import http from '@/common/api/request.js'
 import { Toast } from 'mint-ui'
+import { mapMutations } from 'vuex'
 export default {
   name: 'Detail',
   components: {
@@ -107,7 +108,8 @@ export default {
           type: 'fraction'
         }
       },
-      swiperList: []
+      swiperList: [],
+      newList: []
     }
   },
   mounted() {
@@ -147,6 +149,7 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['initOrder']),
     async getData() {
       let id = this.$route.query.id
 
@@ -178,6 +181,17 @@ export default {
             this.isStart = false
           }
         })
+      let newArr = [
+        {
+          goods_id: this.goods.id,
+          goods_name: this.goods.name,
+          goods_imgUrl: this.goods.imgUrl,
+          goods_num: 1,
+          goods_price: this.goods.price
+        }
+      ]
+      // console.log(newArr)
+      this.newList = newArr
     },
     // 加入购物车
     addCart() {
@@ -217,6 +231,37 @@ export default {
           token: true
         }
       })
+    },
+    // 立即购买
+    goPay() {
+      // 生成一个订单
+      http
+        .$axios({
+          url: '/api/addOrder',
+          method: 'POST',
+          headers: {
+            token: true
+          },
+          data: {
+            arr: this.newList,
+            mode: '电子货币'
+          }
+        })
+        .then((res) => {
+          // console.log(res)
+          if (!res.success) return
+          res.data[0]['goods_imgUrl'] = this.goods.imgUrl
+          res.data[0]['goods_id'] = this.goods.id
+          // console.log(res.data)
+          this.initOrder(res.data)
+          this.$router.push({
+            path: '/order',
+            query: {
+              detail: JSON.stringify([res.data[0].goods_id]),
+              goodsList: JSON.stringify([res.data[0]])
+            }
+          })
+        })
     }
   }
 }
