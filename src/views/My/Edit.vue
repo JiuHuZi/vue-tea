@@ -91,4 +91,8 @@ header {
     font-weight: 400;
   }
 }
+::v-deep .van-button--info {
+  background-color: #ff585d;
+  border-color: #ff585d;
+}
 </style>

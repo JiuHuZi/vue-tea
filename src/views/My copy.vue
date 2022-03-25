@@ -3,10 +3,7 @@
     <header>
       <div class="login" @click="goLogin" v-if="!loginStatus">登录 / 注册</div>
       <div class="user-info" v-else>
-        <div class="setting">
-          <i class="iconfont icon-shezhi"></i>
-          <i class="iconfont icon-xinxi xinxi" @click="lock"></i>
-        </div>
+        <i class="iconfont icon-xinxi email"></i>
 
         <div>
           <div class="imgUrl" @click="changeImg">
@@ -28,15 +25,13 @@
           </van-popup>
         </div>
 
-        <div class="info-content" v-if="loginStatus">
+        <div>
           <div class="userName">
             <div class="userName-content">
+              <van-badge :content="isMember ? '大会员' : '正式会员'" :class="isMember ? 'member' : 'notMember'" />
               <div @click="changeName">
                 <span :class="isMember ? 'memberName' : ''">{{ userInfo.nickName }}</span>
                 <i class="iconfont icon-xiugai"></i>
-              </div>
-              <div @click="lock">
-                <van-badge :content="isMember ? '大会员' : '正式会员'" :class="isMember ? 'member' : 'notMember'" />
               </div>
             </div>
           </div>
@@ -49,36 +44,60 @@
               </div>
             </van-form>
           </van-popup>
-          <div class="uid">
-            <span>UID:{{ userInfo.id }}</span>
-          </div>
+        </div>
+        <div class="uid">
+          <span>UID:{{ userInfo.id }}</span>
         </div>
       </div>
-      <assets-group v-if="loginStatus"></assets-group>
     </header>
 
     <section>
-      <order-list v-if="loginStatus"></order-list>
-      <div class="make-money" v-if="loginStatus">
-        <h3>天天赚钱</h3>
+      <div style="background-color: #fff">
+        <div class="section_title" v-if="loginStatus">个人中心</div>
         <ul>
-          <li @click="lock">
-            <img src="/images/goods-list1.jpeg" alt="" />
+          <li v-if="loginStatus" @click="goStart">
             <div>
-              <h4>签到领积分</h4>
-              <span>积分兑换商品</span>
+              <i class="iconfont icon-shoucang icons"></i>
+              <span>我的收藏</span>
             </div>
+            <i class="iconfont icon-fanhui go-out"></i>
           </li>
-          <li @click="lock">
-            <img src="/images/goods-list1.jpeg" alt="" />
+          <li v-if="loginStatus" @click="goPath">
             <div>
-              <h4>优惠券大厅</h4>
-              <span>支付立减优惠</span>
+              <i class="iconfont icon-dizhi icons"></i>
+              <span>地址管理</span>
             </div>
+            <i class="iconfont icon-fanhui go-out"></i>
+          </li>
+          <li v-if="loginStatus" @click="goWallet">
+            <div>
+              <i class="iconfont icon-licai icons"></i>
+              <span>我的钱包</span>
+            </div>
+            <i class="iconfont icon-fanhui go-out"></i>
+          </li>
+          <li v-if="loginStatus" @click="goEdit">
+            <div>
+              <i class="iconfont icon-shezhi icons"></i>
+              <span>修改密码</span>
+            </div>
+            <i class="iconfont icon-fanhui go-out"></i>
           </li>
         </ul>
       </div>
-      <nav-box v-if="loginStatus"></nav-box>
+
+      <div style="background-color: #fff; margin-top: 10px">
+        <div class="section_title" v-if="loginStatus">优惠福利</div>
+        <ul>
+          <li v-if="loginStatus">
+            <div>
+              <i class="iconfont icon-youhuiquan icons"></i>
+              <span>优惠券</span>
+            </div>
+            <i class="iconfont icon-fanhui go-out"></i>
+          </li>
+        </ul>
+      </div>
 
       <div v-if="loginStatus" @click="loginOut" class="loginout">
         <i class="iconfont icon-tuichu" style="padding-right: 5px"></i>
@@ -95,16 +114,10 @@ import { mapMutations, mapState } from 'vuex'
 import Tabbar from '@/components/common/Tabbar.vue'
 import http from '@/common/api/request.js'
 import { Toast } from 'vant'
-import assetsGroup from '@/components/my/AssetsGroup.vue'
-import orderList from '@/components/my/OrderList.vue'
-import navBox from '@/components/my/NavBox.vue'
 export default {
   name: 'My',
   components: {
-    Tabbar,
-    assetsGroup,
-    orderList,
-    navBox
+    Tabbar
   },
   data() {
     return {
@@ -119,6 +132,22 @@ export default {
     ...mapMutations(['loginOut', 'USER_LOGIN']),
     goLogin() {
       this.$router.push('/login')
+    },
+    // 进入地址管理
+    goPath() {
+      this.$router.push('/path')
+    },
+    // 进入我的钱包
+    goWallet() {
+      this.$router.push('/wallet')
+    },
+    // 进入我的收藏
+    goStart() {
+      this.$router.push('/start')
+    },
+    // 进入修改密码
+    goEdit() {
+      this.$router.push('/editPassword')
     },
     getData() {
       if (localStorage.getItem('teauserInfo') != null) {
@@ -206,10 +235,6 @@ export default {
             })
         }
       })
-    },
-    // 未开发的功能
-    lock() {
-      Toast.fail('该功能暂未开发，敬请期待')
     }
   },
   computed: {
@@ -227,41 +252,33 @@ export default {
 <style lang="less" scoped>
 .my {
   header {
-    background-color: rgb(254, 81, 85);
+    background-color: #b0352f;
     width: 100%;
-    height: 267px;
+    height: 160px;
     display: flex;
-    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     position: relative;
+    .email {
+      position: absolute;
+      right: 5px;
+      top: 5px;
+      font-size: 26px;
+      color: #fff;
+      font-weight: 500;
+    }
     .login {
-      width: 33vw;
-      line-height: 30px;
-      text-align: center;
       font-size: 16px;
       background-color: #f6ab32;
       color: #fff;
       border-radius: 6px;
       padding: 6px 20px;
-      margin: calc(200px / 2) auto;
     }
     .user-info {
       display: flex;
-      padding: 30px 20px 10px;
-      .setting {
-        display: flex;
-        position: absolute;
-        right: 5px;
-        top: 5px;
-        color: #fff;
-        font-weight: 500;
-        i {
-          font-size: 26px;
-          padding-right: 5px;
-        }
-        .xinxi {
-          transform: rotateY(180deg);
-        }
-      }
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
       .imgUrl {
         position: relative;
         img {
@@ -280,102 +297,82 @@ export default {
           bottom: 10px;
         }
       }
-      .info-content {
-        padding: 0 10px;
-        .userName {
-          position: relative;
-          .userName-content {
+      .userName {
+        position: relative;
+        .userName-content {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          div {
             display: flex;
-            justify-content: center;
             align-items: center;
-            div {
-              display: flex;
-              align-items: center;
-              justify-content: center;
-            }
-            .member {
-              background-color: rgb(251, 114, 153);
-              color: #fff;
-            }
-            .notMember {
-              background-color: #ccd0d7;
-              color: #99a2aa;
-            }
-            .van-badge {
-              border: none;
-              padding: 2px 5px;
-              text-align: center;
-              margin-left: 5px;
-              margin-top: 3px;
-            }
+            justify-content: center;
           }
-          span {
+          .member {
+            background-color: rgb(251, 114, 153);
             color: #fff;
-            font-size: 18px;
-            padding: 10px 0;
           }
-          i {
-            color: #fff;
-            font-size: 16px;
-            font-weight: bold;
-            margin-top: 5px;
+          .notMember {
+            background-color: #ccd0d7;
+            color: #99a2aa;
+          }
+          .van-badge {
+            border: none;
+            padding: 2px 5px;
+            text-align: center;
+            margin-right: 5px;
+            margin-top: 3px;
           }
         }
-        .uid {
-          font-size: 14px;
+        span {
           color: #fff;
+          font-size: 18px;
+          padding: 10px 0;
+        }
+        i {
+          color: #fff;
+          font-size: 16px;
+          font-weight: bold;
+          margin-top: 5px;
         }
       }
     }
+    .uid {
+      position: absolute;
+      right: 10px;
+      bottom: 10px;
+      font-size: 14px;
+      color: #fff;
+      opacity: 0.7;
+    }
   }
   section {
-    position: relative;
     background-color: #f5f5f5;
-    overflow: initial;
-    .make-money {
-      width: 96vw;
-      margin: 60px auto 0;
-      background-color: #fff;
-      border-radius: 15px;
-      h3 {
-        font-size: 18px;
-        letter-spacing: 2px;
-        padding-left: 20px;
-        padding-top: 5px;
-        padding-bottom: 5px;
+    .section_title {
+      font-size: 14px;
+      color: #999;
+      padding: 10px 15px;
+      border-bottom: 1px solid #eee;
+    }
+    ul li {
+      padding: 15px;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #f5f5f5;
+      .go-out {
+        transform: rotate(180deg);
       }
-      ul {
+      div {
         display: flex;
-        justify-content: center;
-        height: 58px;
-        width: 100%;
-        font-size: 12px;
-        padding-bottom: 10px;
-        li {
-          display: flex;
-          align-items: center;
-          width: 150px;
-          border: 1px solid #ccc;
-          border-radius: 5px;
-          margin: 3px 10px;
-          padding: 3px;
-          img {
-            width: 46px;
-            height: 46px;
-            margin-right: 10px;
-          }
-          div {
-            display: flex;
-            flex-direction: column;
-            h4 {
-              font-size: 14px;
-              padding-bottom: 3px;
-            }
-            span {
-              font-size: 12px;
-              color: #999;
-            }
-          }
+        .icons {
+          color: red;
+          margin-right: 10px;
+          font-size: 18px;
+        }
+        span {
+          font-size: 14px;
         }
       }
     }
@@ -384,7 +381,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 30px;
+    height: 45px;
     background-color: red;
     margin: 15px;
     border-radius: 5px;

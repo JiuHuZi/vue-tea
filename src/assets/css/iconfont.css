@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 3192614 */
-  src: url('../fonts/iconfont.woff2?t=1647917934736') format('woff2'),
-       url('../fonts/iconfont.woff?t=1647917934736') format('woff'),
-       url('../fonts/iconfont.ttf?t=1647917934736') format('truetype');
+  src: url('../fonts/iconfont.woff2?t=1648235087843') format('woff2'),
+       url('../fonts/iconfont.woff?t=1648235087843') format('woff'),
+       url('../fonts/iconfont.ttf?t=1648235087843') format('truetype');
 }
 
 .iconfont {
@@ -13,8 +13,44 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-youxiang:before {
-  content: "\e908";
+.icon-xiugaimima:before {
+  content: "\e605";
+}
+
+.icon-xinxi:before {
+  content: "\e763";
+}
+
+.icon-icon2:before {
+  content: "\e669";
+}
+
+.icon-huiyuan:before {
+  content: "\e8a6";
+}
+
+.icon-qiandao:before {
+  content: "\e641";
+}
+
+.icon-shouhoutuikuan:before {
+  content: "\e631";
+}
+
+.icon-daishouhuo:before {
+  content: "\e607";
+}
+
+.icon-daifukuan:before {
+  content: "\e620";
+}
+
+.icon-tubiao_dingdan:before {
+  content: "\e632";
+}
+
+.icon-daipingjia:before {
+  content: "\e772";
 }
 
 .icon-youhuiquan:before {
