@@ -37,7 +37,7 @@
 
       <div class="goods">
         <ul>
-          <lili v-for="(item, index) in goodsList" :key="index">
+          <li v-for="(item, index) in goodsList" :key="index">
             <div><img :src="item.goods_imgUrl" alt="" /></div>
             <div class="goods-content">
               <h4>{{ item.goods_name }}</h4>
@@ -46,7 +46,7 @@
                 <span>×{{ item.goods_num }}</span>
               </div>
             </div>
-          </lili>
+          </li>
         </ul>
       </div>
     </section>

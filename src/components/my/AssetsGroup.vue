@@ -28,7 +28,7 @@ export default {
   methods: {
     // 未开发的功能
     lock() {
-      Toast.fail('该功能暂未开发，敬请期待')
+      Toast.fail('该功能暂未开放，敬请期待')
     }
   }
 }

@@ -4,7 +4,7 @@
       <div class="login" @click="goLogin" v-if="!loginStatus">登录 / 注册</div>
       <div class="user-info" v-else>
         <div class="setting">
-          <i class="iconfont icon-shezhi"></i>
+          <i class="iconfont icon-shezhi" @click="$router.push('/setting')"></i>
           <i class="iconfont icon-xinxi xinxi" @click="lock"></i>
         </div>
 
@@ -79,11 +79,6 @@
         </ul>
       </div>
       <nav-box v-if="loginStatus"></nav-box>
-
-      <div v-if="loginStatus" @click="loginOut" class="loginout">
-        <i class="iconfont icon-tuichu" style="padding-right: 5px"></i>
-        <span>退出登录</span>
-      </div>
     </section>
 
     <Tabbar></Tabbar>
@@ -116,7 +111,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(['loginOut', 'USER_LOGIN']),
+    ...mapMutations(['USER_LOGIN']),
     goLogin() {
       this.$router.push('/login')
     },
@@ -209,7 +204,7 @@ export default {
     },
     // 未开发的功能
     lock() {
-      Toast.fail('该功能暂未开发，敬请期待')
+      Toast.fail('该功能暂未开放，敬请期待')
     }
   },
   computed: {
@@ -378,19 +373,6 @@ export default {
           }
         }
       }
-    }
-  }
-  .loginout {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 30px;
-    background-color: red;
-    margin: 15px;
-    border-radius: 5px;
-    color: #fff;
-    span {
-      font-size: 16px;
     }
   }
 }

@@ -53,7 +53,7 @@
           <i class="iconfont icon-xinxi"></i>
           <span>我的消息</span>
         </li>
-        <li @click="lock">
+        <li @click="goSetting">
           <i class="iconfont icon-shezhi"></i>
           <span>设置</span>
         </li>
@@ -83,9 +83,13 @@ export default {
     goEdit() {
       this.$router.push('/editPassword')
     },
+    // 加入设置
+    goSetting() {
+      this.$router.push('/setting')
+    },
     // 未开发的功能
     lock() {
-      Toast.fail('该功能暂未开发，敬请期待')
+      Toast.fail('该功能暂未开放，敬请期待')
     }
   }
 }

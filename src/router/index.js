@@ -26,7 +26,10 @@ const routes = [
   {
     path: '/home',
     name: 'Home',
-    component: Home
+    component: Home,
+    meta: {
+      title: '九狐茶叶商城'
+    }
   },
   {
     path: '/list',
@@ -151,6 +154,11 @@ const routes = [
     path: '/editPassword',
     name: 'EditPassword',
     component: () => import('@/views/My/Edit.vue')
+  },
+  {
+    path: '/setting',
+    name: 'Setting',
+    component: () => import('@/views/My/Setting.vue')
   }
 ]
 
