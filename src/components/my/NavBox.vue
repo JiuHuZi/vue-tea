@@ -22,7 +22,7 @@
           <span>地址管理</span>
         </li>
         <li @click="goWallet">
-          <i class="iconfont icon-licai"></i>
+          <i class="iconfont icon-qianbao"></i>
           <span>我的钱包</span>
         </li>
         <li @click="goEdit">
@@ -34,11 +34,11 @@
           <span>领券中心</span>
         </li>
         <li @click="lock">
-          <i class="iconfont icon-qiandao"></i>
+          <i class="iconfont icon-qiandao" style="font-weight: bold"></i>
           <span>签到送礼</span>
         </li>
         <li @click="lock">
-          <i class="iconfont icon-huiyuan"></i>
+          <i class="iconfont icon-huiyuan" style="font-weight: bold"></i>
           <span>大会员中心</span>
         </li>
         <li @click="lock">
@@ -46,7 +46,7 @@
           <span>我的评价</span>
         </li>
         <li @click="lock">
-          <i class="iconfont icon-tubiao_dingdan"></i>
+          <i class="iconfont icon-tubiao_dingdan" style="font-weight: bold"></i>
           <span>全部订单</span>
         </li>
         <li @click="lock">
@@ -142,6 +142,7 @@ export default {
         i {
           font-size: 30px;
           padding-bottom: 8px;
+          font-weight: 550;
         }
         span {
           font-size: 12px;

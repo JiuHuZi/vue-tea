@@ -3,7 +3,7 @@
     <h4>我的交易</h4>
     <ul>
       <li @click="lock">
-        <i class="iconfont icon-daifukuan"></i>
+        <i class="iconfont icon-daifukuan" style="font-weight: bold"></i>
         <span>待付款</span>
       </li>
       <li @click="lock">

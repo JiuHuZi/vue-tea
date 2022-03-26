@@ -17,7 +17,6 @@ const AlipayFormData = require('alipay-sdk/lib/form').default
 const axios = require('axios')
 
 const multer = require('multer')
-const { log } = require('console')
 const upload = multer({
   dest: path.join(process.cwd(), '../public/images/headerImg')
 })
@@ -48,6 +47,25 @@ function randomNumber() {
 /* GET home page. */
 router.get('/', function (req, res, next) {
   res.render('index', { title: 'Express' })
+})
+
+// 查看用户各表的数量
+router.post('/api/selectCount', function (req, res, next) {
+  let { phone, table } = req.body
+  connection.query(`select * from user where tel = ${phone}`, function (error, results) {
+    if (results.length > 0) {
+      let uid = results[0].id
+      connection.query(`select count(*) as cartCount from ${table} where uid = ${uid}`, function (err, result) {
+        res.send({
+          data: {
+            code: 200,
+            success: true,
+            data: result
+          }
+        })
+      })
+    }
+  })
 })
 
 // 兑换商品

@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 3192614 */
-  src: url('../fonts/iconfont.woff2?t=1648235087843') format('woff2'),
-       url('../fonts/iconfont.woff?t=1648235087843') format('woff'),
-       url('../fonts/iconfont.ttf?t=1648235087843') format('truetype');
+  src: url('../fonts/iconfont.woff2?t=1648294621552') format('woff2'),
+       url('../fonts/iconfont.woff?t=1648294621552') format('woff'),
+       url('../fonts/iconfont.ttf?t=1648294621552') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,18 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-shoucang:before {
+  content: "\e8bc";
+}
+
+.icon-qianbao:before {
+  content: "\e63e";
+}
+
+.icon-youhuiquan:before {
+  content: "\e623";
 }
 
 .icon-xiugaimima:before {
@@ -53,10 +65,6 @@
   content: "\e772";
 }
 
-.icon-youhuiquan:before {
-  content: "\e61f";
-}
-
 .icon-xiugai:before {
   content: "\e8cf";
 }
@@ -65,20 +73,12 @@
   content: "\e892";
 }
 
-.icon-shoucang:before {
-  content: "\e604";
-}
-
 .icon-gouwuche:before {
   content: "\e70b";
 }
 
 .icon-shouye1:before {
   content: "\e61a";
-}
-
-.icon-licai:before {
-  content: "\e603";
 }
 
 .icon-shanchu:before {

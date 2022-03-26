@@ -71,7 +71,7 @@
           </li>
           <li v-if="loginStatus" @click="goWallet">
             <div>
-              <i class="iconfont icon-licai icons"></i>
+              <i class="iconfont icon-qianbao icons"></i>
               <span>我的钱包</span>
             </div>
             <i class="iconfont icon-fanhui go-out"></i>

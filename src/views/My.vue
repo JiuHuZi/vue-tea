@@ -117,6 +117,7 @@ export default {
     },
     getData() {
       if (localStorage.getItem('teauserInfo') != null) {
+        // 存储用户信息
         http
           .$axios({
             url: '/api/selectUser',
