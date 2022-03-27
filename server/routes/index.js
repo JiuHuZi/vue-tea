@@ -49,6 +49,68 @@ router.get('/', function (req, res, next) {
   res.render('index', { title: 'Express' })
 })
 
+// 浏览详情页加入足迹
+router.post('/api/setHistory', function (req, res, next) {
+  let { goods_id, goods_name, goods_imgUrl, goods_price, time } = req.body[0]
+  console.log(goods_id, goods_name, goods_imgUrl, goods_price, time)
+  // token
+  let token = req.headers.token
+  let tokenObj = jwt.decode(token)
+  // 查询用户
+  connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
+    // 用户id
+    let uid = results[0].id
+    connection.query(`select * from history where uid = ${uid} and goods_id = ${goods_id} and history_time`, function (err, result) {
+      connection.query(`insert into history(uid,goods_id,goods_name,goods_price,imgUrl,history_time) values(${uid},${goods_id},'${goods_name}',${goods_price},'${goods_imgUrl}','${time}')`, function (e, r) {
+        res.send({
+          data: {
+            code: 200,
+            success: true
+          }
+        })
+      })
+    })
+  })
+})
+
+// 查看我的足迹
+router.post('/api/selectHistory', function (req, res, next) {
+  let { phone } = req.body
+  connection.query(`select * from user where tel = ${phone}`, function (error, results) {
+    if (results.length > 0) {
+      let uid = results[0].id
+      connection.query(`select * from history where uid = ${uid}`, function (err, result) {
+        res.send({
+          data: {
+            code: 200,
+            success: true,
+            data: result
+          }
+        })
+      })
+    }
+  })
+})
+
+// 查看用户各表的数量
+router.post('/api/selectHistoryCount', function (req, res, next) {
+  let phone = req.body.phone
+  connection.query(`select * from user where tel = ${phone}`, function (error, results) {
+    if (results.length > 0) {
+      let uid = results[0].id
+      connection.query(`select count(*) as cartCount from history where uid = ${uid} GROUP BY goods_id,history_time`, function (err, result) {
+        res.send({
+          data: {
+            code: 200,
+            success: true,
+            data: result.length
+          }
+        })
+      })
+    }
+  })
+})
+
 // 查看用户各表的数量
 router.post('/api/selectCount', function (req, res, next) {
   let { phone, table } = req.body

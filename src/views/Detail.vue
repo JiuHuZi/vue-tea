@@ -190,8 +190,23 @@ export default {
           goods_price: this.goods.price
         }
       ]
-      // console.log(newArr)
       this.newList = newArr
+
+      // 添加到我的足迹
+      let year = new Date().getFullYear()
+      let month = new Date().getMonth() + 1
+      month = month < 10 ? '0' + month : month
+      let day = new Date().getDate()
+      let time = year + '-' + month + '-' + day
+      newArr[0]['time'] = time
+      http.$axios({
+        url: '/api/setHistory',
+        method: 'POST',
+        data: newArr,
+        headers: {
+          token: true
+        }
+      })
     },
     // 加入购物车
     addCart() {

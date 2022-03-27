@@ -5,7 +5,7 @@
         <b>{{ cartNum }}</b>
         <span>购物车</span>
       </li>
-      <li @click="lock">
+      <li @click="$router.push('/history')">
         <b>{{ historyNum }}</b>
         <span>足迹</span>
       </li>
@@ -71,6 +71,19 @@ export default {
         })
         .then((res) => {
           this.startNum = res.data[0].cartCount
+        })
+
+      // 统计足迹的数量
+      http
+        .$axios({
+          url: '/api/selectHistoryCount',
+          method: 'POST',
+          data: {
+            phone: JSON.parse(localStorage.getItem('teauserInfo')).tel
+          }
+        })
+        .then((res) => {
+          this.historyNum = res.data
         })
     }
   },
