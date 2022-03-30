@@ -24,6 +24,7 @@ header {
   background-color: #ff585d;
   width: 100%;
   height: 44px;
+  position: fixed;
   div {
     display: flex;
     align-items: center;

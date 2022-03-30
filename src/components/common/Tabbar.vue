@@ -62,6 +62,9 @@ export default {
   height: 60px;
   background-color: #fff;
   z-index: 999;
+  position: fixed;
+  left: 0;
+  bottom: 0;
 }
 .tabbar ul {
   display: flex;

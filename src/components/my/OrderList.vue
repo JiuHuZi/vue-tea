@@ -45,10 +45,9 @@ export default {
   height: 110px;
   display: flex;
   flex-direction: column;
-  position: absolute;
-  top: -60px;
+  position: relative;
+  top: 25px;
   left: calc(50% - 96vw / 2);
-  // z-index: 99;
   background-color: #fff;
   border-radius: 15px;
   font-size: 14px;

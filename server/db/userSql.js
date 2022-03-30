@@ -26,6 +26,10 @@ const User = {
 
     // return 'insert into user (tel,pwd,imgUrl,nickName,token,member) values(' + userTel + ',' + userPwd + ',"/images/headerImg/header.jpeg","' + userTel + '","' + token + '")'
     return `insert into user (tel,pwd,imgUrl,nickName,token,member) values( '${userTel}' , '${userPwd}' ,"/images/headerImg/header.jpeg", '${userTel}' , '${token}' ,'0')`
+  },
+  // 查询密码
+  insertWallet(uid) {
+    return `insert into wallet (uid,total_money,Total_top_up,total_consumption,integral) values(${uid},'0','0','0','0')`
   }
 }
 

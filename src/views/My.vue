@@ -18,7 +18,7 @@
               <h5>修改头像</h5>
               <van-field name="uploader" label="文件上传">
                 <template #input>
-                  <van-uploader v-model="uploader" :before-read="beforeRead" :max-count="1" />
+                  <van-uploader v-model="uploader" :accept="'image/*'" :max-count="1" />
                 </template>
               </van-field>
               <div style="margin: 16px">
@@ -43,7 +43,7 @@
           <van-popup v-model="isShowName" round position="bottom" :style="{ height: '30%' }">
             <van-form @submit="onSubmitName" class="changeNameForm">
               <h5>修改用户名</h5>
-              <van-field v-model="username" name="新用户名" label="新用户名" placeholder="新用户名" :rules="[{ required: true, message: '请填写用户名' }]" />
+              <van-field v-model="username" name="新用户名" label="新用户名" placeholder="新用户名" maxlength="8" :rules="[{ required: true, message: '请填写用户名' }]" />
               <div style="margin: 16px">
                 <van-button round block type="info" native-type="submit">提交</van-button>
               </div>
@@ -55,14 +55,14 @@
         </div>
       </div>
       <assets-group v-if="loginStatus"></assets-group>
+      <order-list v-if="loginStatus"></order-list>
     </header>
 
     <section>
-      <order-list v-if="loginStatus"></order-list>
       <div class="make-money" v-if="loginStatus">
         <h3>天天赚钱</h3>
         <ul>
-          <li @click="lock">
+          <li @click="$router.push('/signin')">
             <img src="/images/goods-list1.jpeg" alt="" />
             <div>
               <h4>签到领积分</h4>
@@ -93,6 +93,7 @@ import { Toast } from 'vant'
 import assetsGroup from '@/components/my/AssetsGroup.vue'
 import orderList from '@/components/my/OrderList.vue'
 import navBox from '@/components/my/NavBox.vue'
+import emoji from 'emoji-regex'
 export default {
   name: 'My',
   components: {
@@ -139,6 +140,12 @@ export default {
     },
     // 修改用户名
     onSubmitName() {
+      let match = emoji().exec(this.username)
+      // console.log(match[0])
+      if (match != null) {
+        Toast.fail('存在 emoji 符号，请重试')
+        return
+      }
       http
         .$axios({
           url: '/api/updateUser',
@@ -166,13 +173,14 @@ export default {
       this.isShowImg = true
     },
     // 判断上传的文件是不是图片
-    beforeRead(file) {
-      if (file.type !== 'image/jpeg') {
-        Toast('请上传 jpg 格式图片')
-        return false
-      }
-      return true
-    },
+    // beforeRead(file) {
+    //   console.log(file)
+    //   // if (file.type != 'image/jpeg') {
+    //   //   Toast.fail('请上传 jpg 格式图片')
+    //   //   return false
+    //   // }
+    //   // return true
+    // },
     // 修改头像
     onSubmitImg(values) {
       let name = JSON.parse(localStorage.getItem('teauserInfo')).nickName
@@ -222,13 +230,15 @@ export default {
 
 <style lang="less" scoped>
 .my {
+  overflow: scroll;
   header {
     background-color: rgb(254, 81, 85);
     width: 100%;
-    height: 267px;
+    height: 300px;
     display: flex;
     flex-direction: column;
     position: relative;
+    z-index: 99;
     .login {
       width: 33vw;
       line-height: 30px;
@@ -243,6 +253,7 @@ export default {
     .user-info {
       display: flex;
       padding: 30px 20px 10px;
+      position: relative;
       .setting {
         display: flex;
         position: absolute;
@@ -328,9 +339,10 @@ export default {
     position: relative;
     background-color: #f5f5f5;
     overflow: initial;
+    margin-bottom: 50px;
     .make-money {
       width: 96vw;
-      margin: 60px auto 0;
+      margin: 40px auto 0;
       background-color: #fff;
       border-radius: 15px;
       h3 {

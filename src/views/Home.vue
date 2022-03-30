@@ -119,7 +119,7 @@ export default {
 }
 .headers {
   width: 100%;
-  height: 95px;
+  height: 90px;
 }
 .headers-main {
   position: fixed;
@@ -129,6 +129,9 @@ export default {
 ::v-deep .ly-tabbar {
   box-shadow: none;
   border-bottom: none;
+}
+.ly-tab {
+  background-color: #fff;
 }
 section {
   flex: 1;

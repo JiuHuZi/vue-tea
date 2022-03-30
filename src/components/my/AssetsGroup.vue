@@ -95,6 +95,7 @@ export default {
 
 <style lang="less" scoped>
 .AssetsGroup {
+  position: relative;
   ul {
     display: flex;
     font-size: 16px;

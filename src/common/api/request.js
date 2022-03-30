@@ -7,13 +7,15 @@ export default {
     method: 'GET',
     data: {},
     params: [],
-    headers: {}
+    headers: {},
+    timeout: 10000
   },
   $axios(options = {}) {
     options.method = options.method || this.common.method
     options.data = options.data || this.common.data
     options.params = options.params || this.common.params
     options.headers = options.headers || this.common.headers
+    options.timeout = options.timeout || this.common.timeout
 
     // 请求前，显示加载中
     Indicator.open('加载中...')
@@ -26,6 +28,10 @@ export default {
         router.push('/login')
       }
     }
+
+    setTimeout(() => {
+      Indicator.close()
+    }, options.timeout)
 
     return axios(options).then((v) => {
       let data = v.data.data

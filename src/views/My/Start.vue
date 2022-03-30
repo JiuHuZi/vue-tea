@@ -108,6 +108,8 @@ export default {
 }
 section {
   background-color: #f7f7f7;
+  margin-bottom: 0px;
+  margin-top: 5px;
   .van-pull-refresh {
     width: 100%;
     height: 100%;

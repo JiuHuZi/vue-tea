@@ -3715,6 +3715,11 @@
     "minimalistic-assert" "^1.0.1"
     "minimalistic-crypto-utils" "^1.0.1"
 
+"emoji-regex@^10.0.1":
+  "integrity" "sha512-cLuZzriSWVE+rllzeq4zpUEoCPfYEbQ6ZVhIq+ed6ynWST7Bw9XnOr+bKWgCup4paq72DI21gw9M3aaFkm4HAw=="
+  "resolved" "https://registry.npmmirror.com/emoji-regex/-/emoji-regex-10.0.1.tgz"
+  "version" "10.0.1"
+
 "emoji-regex@^7.0.1":
   "integrity" "sha512-CwBLREIQ7LvYFB0WyRvwhq5N5qPhc6PMjD6bYggFlI5YyDgl+0vxq5VHbMOFqLg7hfWzmu8T5Z1QofhmTIhItA=="
   "resolved" "https://registry.npmmirror.com/emoji-regex/-/emoji-regex-7.0.3.tgz"

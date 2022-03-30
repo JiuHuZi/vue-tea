@@ -20,4 +20,8 @@ input:focus{
 section{
   flex:1;
   overflow: hidden;
+  margin-bottom: 50px;
+}
+header,.headers{
+  z-index: 5;
 }

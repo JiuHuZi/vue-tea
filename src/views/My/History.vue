@@ -1,5 +1,5 @@
 <template>
-  <div class="history">
+  <div class="history container">
     <Header><span>我的足迹</span></Header>
     <section class="wrapper">
       <van-pull-refresh v-model="isLoading" :disabled="finished">
@@ -89,7 +89,8 @@ export default {
             result = []
             obj = {}
           }
-          this.list = dest
+
+          this.list = dest.reverse()
         })
     }
   },
@@ -103,55 +104,63 @@ export default {
 .history {
   background-color: #f2f2f2;
   height: 100vh;
-  .historyList {
-    display: flex;
-    flex-direction: column;
-    font-size: 14px;
-    margin-top: 10px;
-    h3 {
-      margin-bottom: 8px;
-      padding: 0 15px;
-    }
-    ul {
+  section {
+    margin: 44px 0 0;
+    .historyList {
       display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-      width: 100%;
-      li {
-        width: 33.33vw;
+      flex-direction: column;
+      font-size: 14px;
+      margin-top: 10px;
+      h3 {
+        margin-bottom: 8px;
+        padding: 0 15px;
+      }
+      ul {
         display: flex;
-        flex-direction: column;
-        // align-items: center;
-        justify-content: center;
-        margin-bottom: 20px;
-        .goods-img {
-          width: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          img {
-            width: 120px;
-            height: 120px;
-            border-radius: 12px;
-          }
-        }
-        .goods-msg {
+        align-items: center;
+        flex-wrap: wrap;
+        width: 100%;
+        li {
+          width: 33.33vw;
           display: flex;
           flex-direction: column;
-          width: 98%;
-          padding: 0 10px;
-          span {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+          // align-items: center;
+          justify-content: center;
+          margin-bottom: 20px;
+          .goods-img {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            img {
+              width: 120px;
+              height: 120px;
+              border-radius: 12px;
+            }
           }
-          span:last-child {
-            color: red;
-            font-weight: bold;
+          .goods-msg {
+            display: flex;
+            flex-direction: column;
+            width: 98%;
+            padding: 0 10px;
+            span {
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+            }
+            span:last-child {
+              color: red;
+              font-weight: bold;
+            }
           }
         }
       }
     }
+  }
+  .van-pull-refresh {
+    width: 100%;
+    height: 100%;
+    overflow: scroll;
   }
 }
 </style>

@@ -49,6 +49,135 @@ router.get('/', function (req, res, next) {
   res.render('index', { title: 'Express' })
 })
 
+// 查看今天是否已经签到
+router.post('/api/selectSignin', function (req, res, next) {
+  let { yesterday, today } = req.body
+  // token
+  let token = req.headers.token
+  let tokenObj = jwt.decode(token)
+  // 查询用户
+  connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
+    // 用户id
+    let uid = results[0].id
+    connection.query(`select * from sign_in where uid = ${uid} and sign_time = '${today}'`, function (err, result) {
+      if (result.length > 0) {
+        res.send({
+          data: {
+            code: 0,
+            msg: '今天已签到',
+            success: false,
+            data: {
+              total_time: result[0].total_time
+            }
+          }
+        })
+      } else {
+        connection.query(`select * from sign_in where uid=${uid} and sign_time = '${yesterday}'`, function (e, r) {
+          if (r.length > 0) {
+            res.send({
+              data: {
+                code: 0,
+                msg: '昨天已经签到',
+                success: true,
+                data: {
+                  total_time: r[0].total_time == 7 ? 0 : r[0].total_time
+                }
+              }
+            })
+          } else {
+            res.send({
+              data: {
+                code: 0,
+                msg: '昨天未签到',
+                success: true,
+                data: {
+                  total_time: 0
+                }
+              }
+            })
+          }
+        })
+      }
+    })
+  })
+})
+
+// 签到
+router.post('/api/signin', function (req, res, next) {
+  let { yesterday, today } = req.body
+  // token
+  let token = req.headers.token
+  let tokenObj = jwt.decode(token)
+  // 查询用户
+  connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
+    // 用户id
+    let uid = results[0].id
+    connection.query(`select * from sign_in where uid = ${uid} and sign_time = '${today}'`, function (err, result) {
+      if (result.length > 0) {
+        res.send({
+          data: {
+            code: 0,
+            msg: '今天已签到',
+            success: false,
+            data: {
+              total_time: result[0].total_time
+            }
+          }
+        })
+      } else {
+        connection.query(`select * from sign_in where uid=${uid} and sign_time = '${yesterday}'`, function (e, r) {
+          let total = 1
+          let reward = ''
+          if (r.length > 0) {
+            if (r[0].total_time == 7) {
+              total = 1
+            } else {
+              total = r[0].total_time + 1
+            }
+          } else {
+            total = 1
+          }
+          switch (total) {
+            case 1:
+              reward = '3积分'
+              break
+            case 2:
+              reward = '4积分'
+              break
+            case 3:
+              reward = '5积分'
+              break
+            case 4:
+              reward = '8积分'
+              break
+            case 5:
+              reward = '4积分'
+              break
+            case 6:
+              reward = '5积分'
+              break
+            case 7:
+              reward = 8 * Math.floor(Math.random() * 3) + '积分'
+              break
+          }
+          connection.query(`insert into sign_in(uid,sign_time,reward,total_time) values(${uid},'${today}','${reward}',${total})`, function () {
+            res.send({
+              data: {
+                code: 200,
+                msg: '签到成功',
+                success: true,
+                data: {
+                  total_time: total
+                }
+              }
+            })
+          })
+        })
+      }
+    })
+  })
+})
+
 // 浏览详情页加入足迹
 router.post('/api/setHistory', function (req, res, next) {
   let { goods_id, goods_name, goods_imgUrl, goods_price, time } = req.body[0]
@@ -92,7 +221,7 @@ router.post('/api/selectHistory', function (req, res, next) {
   })
 })
 
-// 查看用户各表的数量
+// 查看我的足迹的数量
 router.post('/api/selectHistoryCount', function (req, res, next) {
   let phone = req.body.phone
   connection.query(`select * from user where tel = ${phone}`, function (error, results) {
@@ -680,7 +809,7 @@ router.post('/api/selectwallet', function (req, res, next) {
     let uid = results[0].id
 
     connection.query(`select * from wallet where uid = ${uid}`, function (err, result) {
-      console.log(result.length)
+      // console.log(result.length)
       if (result.length == 0) {
         connection.query(`insert into wallet (uid,total_money,Total_top_up,total_consumption,integral) values(${uid},'0','0','0','0')`, function () {
           connection.query(`select * from wallet where uid = ${uid}`, function (e, r) {
@@ -1275,12 +1404,18 @@ router.post('/api/selectUser', function (req, res, next) {
   connection.query(user.queryUserTel(params), function (err, result) {
     if (err) throw err
     if (result.length > 0) {
-      res.send({
-        code: 200,
-        data: {
-          success: true,
-          data: result
+      let uid = result[0].id
+      connection.query(`select * from wallet where uid = ${uid}`, function (e, r) {
+        if (r.length == 0) {
+          connection.query(user.insertWallet(uid))
         }
+        res.send({
+          code: 200,
+          data: {
+            success: true,
+            data: result
+          }
+        })
       })
     } else {
       res.send({
@@ -1355,6 +1490,7 @@ router.post('/api/addUser', function (req, res, next) {
       // 不存在，新增一条数据
       connection.query(user.insertData(params), function () {
         connection.query(user.queryUserTel(params), function (e, r) {
+          connection.query(user.insertWallet(r[0].id))
           res.send({
             code: 200,
             data: {

@@ -197,6 +197,7 @@ header {
 
 section {
   background-color: #f5f5f5;
+  margin-bottom: 50px;
   .cart-title {
     padding: 20px;
     display: flex;
@@ -264,8 +265,13 @@ footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: fixed;
+  left: 0;
+  bottom: 0;
   height: 48px;
+  width: 100%;
   border-top: 1px solid #eee;
+  background-color: #fff;
   .radio {
     padding: 0 15px;
   }

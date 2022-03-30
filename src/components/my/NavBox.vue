@@ -22,18 +22,18 @@
           <span>地址管理</span>
         </li>
         <li @click="goWallet">
-          <i class="iconfont icon-qianbao"></i>
+          <i class="iconfont icon-qianbao" style="font-weight: bold"></i>
           <span>我的钱包</span>
         </li>
         <li @click="goEdit">
-          <i class="iconfont icon-xiugaimima"></i>
+          <i class="iconfont icon-xiugaimima" style="font-weight: bold"></i>
           <span>修改密码</span>
         </li>
         <li @click="lock">
           <i class="iconfont icon-youhuiquan"></i>
           <span>领券中心</span>
         </li>
-        <li @click="lock">
+        <li @click="goSignin">
           <i class="iconfont icon-qiandao" style="font-weight: bold"></i>
           <span>签到送礼</span>
         </li>
@@ -49,9 +49,9 @@
           <i class="iconfont icon-tubiao_dingdan" style="font-weight: bold"></i>
           <span>全部订单</span>
         </li>
-        <li @click="lock">
-          <i class="iconfont icon-xinxi"></i>
-          <span>我的消息</span>
+        <li @click="goHistory">
+          <i class="iconfont icon-zuji" style="font-weight: bold"></i>
+          <span>我的足迹</span>
         </li>
         <li @click="goSetting">
           <i class="iconfont icon-shezhi"></i>
@@ -86,6 +86,14 @@ export default {
     // 加入设置
     goSetting() {
       this.$router.push('/setting')
+    },
+    // 进入签到页
+    goSignin() {
+      this.$router.push('/signin')
+    },
+    // 进入足迹页
+    goHistory() {
+      this.$router.push('/history')
     },
     // 未开发的功能
     lock() {
@@ -143,6 +151,7 @@ export default {
           font-size: 30px;
           padding-bottom: 8px;
           font-weight: 550;
+          color: #fe5155;
         }
         span {
           font-size: 12px;
