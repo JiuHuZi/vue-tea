@@ -74,11 +74,14 @@ export default {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  position: fixed;
 }
 section {
   flex: 1;
   overflow: hidden;
   background-color: #f5f5f5;
+  position: relative;
+  margin-top: 44px;
 }
 .search-history h2 {
   padding: 20px;

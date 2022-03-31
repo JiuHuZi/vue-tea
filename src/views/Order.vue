@@ -254,6 +254,7 @@ header {
   justify-content: space-between;
   align-items: center;
   color: #fff;
+  position: fixed;
   i {
     padding: 0 20px;
     font-size: 22px;
@@ -266,6 +267,8 @@ header {
 
 section {
   background-color: #f7f7f7;
+  margin-top: 45px;
+  margin-bottom: 45px;
   .path {
     .path-title {
       padding: 15px;
@@ -346,6 +349,8 @@ footer {
   width: 100%;
   height: 45px;
   border-top: 1px solid #ddd;
+  position: fixed;
+  bottom: 0;
   .order-total {
     font-size: 16px;
     padding: 0 6px;

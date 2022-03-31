@@ -131,6 +131,10 @@ export default {
   justify-content: space-around;
   padding: 15px 0;
   font-size: 16px;
+  position: fixed;
+  top: 44px;
+  width: 100%;
+  background-color: #fff;
 }
 .headers ul li {
   display: flex;
@@ -146,6 +150,7 @@ export default {
 section {
   flex: 1;
   overflow: hidden;
+  margin-top: 90px;
   ul {
     display: flex;
     flex-wrap: wrap;

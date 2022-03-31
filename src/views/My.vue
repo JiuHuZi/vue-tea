@@ -172,15 +172,6 @@ export default {
     changeImg() {
       this.isShowImg = true
     },
-    // 判断上传的文件是不是图片
-    // beforeRead(file) {
-    //   console.log(file)
-    //   // if (file.type != 'image/jpeg') {
-    //   //   Toast.fail('请上传 jpg 格式图片')
-    //   //   return false
-    //   // }
-    //   // return true
-    // },
     // 修改头像
     onSubmitImg(values) {
       let name = JSON.parse(localStorage.getItem('teauserInfo')).nickName

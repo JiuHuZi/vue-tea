@@ -59,7 +59,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 header {
   width: 100%;
   height: 44px;
@@ -68,6 +68,7 @@ header {
   align-items: center;
   background-color: #ff585d;
   color: #fff;
+  position: fixed;
 }
 .search-return,
 .search-btn {

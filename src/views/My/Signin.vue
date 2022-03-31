@@ -17,11 +17,11 @@
       <div class="sign-content">
         <ul class="rewardBox">
           <li v-for="(item, index) in rewardList" :key="index">
-            <h4>{{ item.day }}</h4>
+            <h4>0{{ item.day }}</h4>
             <div class="reward-main">
               <span>{{ item.reward }}</span>
             </div>
-            <div class="itemBG"></div>
+            <div class="itemBG" :class="item.day > days ? 'noSign' : 'Sign'"></div>
           </li>
         </ul>
         <button @click="signin" :disabled="disabled" :class="isSignIn ? 'signIn' : ''">{{ isSignIn ? '今日已签到' : '签到' }}</button>
@@ -42,13 +42,13 @@ export default {
       isSignIn: false,
       disabled: true,
       rewardList: [
-        { day: '01', reward: '3 积分' },
-        { day: '02', reward: '4 积分' },
-        { day: '03', reward: '5 积分' },
-        { day: '04', reward: '8 积分' },
-        { day: '05', reward: '4 积分' },
-        { day: '06', reward: '5 积分' },
-        { day: '07', reward: '最高 24 积分' }
+        { day: '1', reward: '3 积分' },
+        { day: '2', reward: '4 积分' },
+        { day: '3', reward: '5 积分' },
+        { day: '4', reward: '8 积分' },
+        { day: '5', reward: '4 积分' },
+        { day: '6', reward: '5 积分' },
+        { day: '7', reward: '最高 24 积分' }
       ]
     }
   },
@@ -221,6 +221,9 @@ export default {
       }
       .signIn {
         background-color: #ccc;
+      }
+      .noSign {
+        background-color: lightgray !important;
       }
     }
   }

@@ -179,12 +179,13 @@ export default {
 <style lang="less" scoped>
 header {
   width: 100%;
-  height: 44px;
+  height: 45px;
   background-color: #ff585d;
   color: #fff;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: fixed;
   i {
     font-size: 22px;
     padding: 0 20px;
@@ -198,9 +199,15 @@ header {
 section {
   background-color: #f5f5f5;
   margin-bottom: 50px;
+  margin-top: 45px;
   .cart-title {
-    padding: 20px;
+    padding: 10px 20px;
     display: flex;
+    position: fixed;
+    top: 45px;
+    width: 100%;
+    z-index: 2;
+    background-color: #fff;
     span {
       padding: 0 15px;
       font-size: 18px;
@@ -208,6 +215,7 @@ section {
     }
   }
   .van-pull-refresh {
+    margin-top: 35px;
     width: 100%;
     height: 100%;
     overflow: scroll;

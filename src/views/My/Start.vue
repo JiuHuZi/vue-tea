@@ -1,14 +1,14 @@
 <template>
   <div class="start container">
     <Header></Header>
-    <div class="navBtn" @click="isNavBar">
+    <div class="navBtn" @click="isNavBar" v-if="list.length > 0">
       <span>{{ isNavStatus ? '取消' : '管理' }}</span>
     </div>
-    <section class="wrapper">
+    <section class="wrapper" :class="list.length == 0 ? 'content' : ''">
       <van-pull-refresh v-model="isLoading" :disabled="finished">
         <van-list v-model="loading" :finished="finished" finished-text="没有更多了">
           <ul v-if="list.length > 0">
-            <li v-for="(item, index) in list" :key="index" @click="goDetail(item.goods_id)">
+            <li v-for="(item, index) in list" :key="index" @click="isNavStatus ? '' : goDetail(item.goods_id)">
               <van-checkbox @click="checkLikeItem(index)" v-model="item.checked" checked-color="#ee0a24" v-if="isNavStatus"></van-checkbox>
               <img :src="item.imgUrl" alt="" />
               <h3>{{ item.goods_name }}</h3>
@@ -101,15 +101,23 @@ export default {
 
 <style lang="less" scoped>
 .navBtn {
+  width: 100%;
+  position: fixed;
+  top: 45px;
+  z-index: 2;
+  padding: 10px 0;
+  background-color: #fff;
   font-size: 16px;
-  color: #999;
   text-align: right;
-  padding: 10px;
+  color: #999;
+  span {
+    margin-right: 10px;
+  }
 }
 section {
   background-color: #f7f7f7;
   margin-bottom: 0px;
-  margin-top: 5px;
+  margin-top: 80px;
   .van-pull-refresh {
     width: 100%;
     height: 100%;
@@ -188,5 +196,19 @@ footer {
 }
 ::v-deep .van-checkbox__label {
   font-size: 16px;
+}
+.content {
+  margin-top: 45px;
+}
+section ::v-deep .van-checkbox__icon {
+  width: 40px;
+  height: 40px;
+  i {
+    width: 100%;
+    height: 40px;
+    line-height: 40px;
+    font-size: 20px;
+    border: 3px solid #999;
+  }
 }
 </style>

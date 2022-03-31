@@ -22,6 +22,6 @@ section{
   overflow: hidden;
   margin-bottom: 50px;
 }
-header,.headers{
+header,.headers,.header{
   z-index: 5;
 }
