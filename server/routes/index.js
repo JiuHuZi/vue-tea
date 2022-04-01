@@ -139,36 +139,44 @@ router.post('/api/signin', function (req, res, next) {
           }
           switch (total) {
             case 1:
-              reward = '3积分'
+              reward = '3'
               break
             case 2:
-              reward = '4积分'
+              reward = '4'
               break
             case 3:
-              reward = '5积分'
+              reward = '5'
               break
             case 4:
-              reward = '8积分'
+              reward = '8'
               break
             case 5:
-              reward = '4积分'
+              reward = '4'
               break
             case 6:
-              reward = '5积分'
+              reward = '5'
               break
             case 7:
-              reward = 8 * Math.floor(Math.random() * 3) + '积分'
+              reward = 8 * Math.floor(Math.random() * 3)
               break
           }
-          connection.query(`insert into sign_in(uid,sign_time,reward,total_time) values(${uid},'${today}','${reward}',${total})`, function () {
-            res.send({
-              data: {
-                code: 200,
-                msg: '签到成功',
-                success: true,
-                data: {
-                  total_time: total
-                }
+          connection.query(`insert into sign_in(uid,sign_time,reward,total_time) values(${uid},'${today}','${reward + '积分'}',${total})`, function () {
+            connection.query(`select * from wallet where uid =${uid}`, function (e, r) {
+              if (r.length > 0) {
+                let integral = parseFloat(r[0].integral) + parseFloat(reward)
+                connection.query(`update wallet set integral = ${integral} where uid = ${uid}`, function () {
+                  res.send({
+                    data: {
+                      code: 200,
+                      msg: '签到成功',
+                      success: true,
+                      data: {
+                        total_time: total,
+                        reward
+                      }
+                    }
+                  })
+                })
               }
             })
           })
@@ -462,16 +470,15 @@ router.post('/api/deleteLike', function (req, res, next) {
   let arrId = req.body.arrId
 
   for (let i = 0; i < arrId.length; i++) {
-    connection.query(`delete from start_list where id = ${arrId[i]}`, function (error, results) {
-      res.send({
-        data: {
-          code: 200,
-          msg: '删除成功',
-          success: true
-        }
-      })
-    })
+    connection.query(`delete from start_list where id = ${arrId[i]}`)
   }
+  res.send({
+    data: {
+      code: 200,
+      msg: '删除成功',
+      success: true
+    }
+  })
 })
 
 // 我的收藏

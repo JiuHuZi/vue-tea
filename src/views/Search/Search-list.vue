@@ -27,7 +27,7 @@
               </div>
             </li>
           </ul>
-          <h5 v-else>暂无数据……</h5>
+          <h5 v-else style="position: relative">暂无数据……</h5>
         </van-list>
       </van-pull-refresh>
     </section>
@@ -150,7 +150,7 @@ export default {
 section {
   flex: 1;
   overflow: hidden;
-  margin-top: 90px;
+  margin-top: 100px;
   ul {
     display: flex;
     flex-wrap: wrap;

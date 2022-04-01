@@ -170,6 +170,13 @@ export default {
     },
     // 点击头像显示弹出层
     changeImg() {
+      var u = navigator.userAgent
+      var isIOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/) //ios终端
+      if (isIOS) {
+        // console.log('ios')
+        Toast.fail('IOS 系统暂时无法修改头像')
+        return
+      }
       this.isShowImg = true
     },
     // 修改头像

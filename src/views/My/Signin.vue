@@ -26,6 +26,14 @@
         </ul>
         <button @click="signin" :disabled="disabled" :class="isSignIn ? 'signIn' : ''">{{ isSignIn ? '今日已签到' : '签到' }}</button>
       </div>
+      <van-popup v-model="show" class="popup" closeable @open="openPopup">
+        <img src="../../assets/images/signin.png" alt="" />
+        <div>
+          <p>连续签到 {{ days }} 天</p>
+          <p>恭喜您，获得 {{ reward }} 积分</p>
+        </div>
+        <span>3 秒后自动关闭</span>
+      </van-popup>
     </section>
   </div>
 </template>
@@ -41,6 +49,8 @@ export default {
       today: '',
       isSignIn: false,
       disabled: true,
+      show: false,
+      reward: '',
       rewardList: [
         { day: '1', reward: '3 积分' },
         { day: '2', reward: '4 积分' },
@@ -77,12 +87,13 @@ export default {
           }
         })
         .then((res) => {
-          console.log(res)
+          // console.log(res)
           this.days = res.data.total_time
           this.isSignIn = !res.success
           this.disabled = !res.success
         })
     },
+    // 点击签到触发
     signin() {
       http
         .$axios({
@@ -97,11 +108,19 @@ export default {
           }
         })
         .then((res) => {
-          console.log(res)
+          // console.log(res)
           this.days = res.data.total_time
+          this.reward = res.data.reward
           this.isSignIn = res.success
           this.disabled = res.success
+          this.show = true
         })
+    },
+    // 出现签到成功的弹窗时触发
+    openPopup() {
+      setTimeout(() => {
+        this.show = false
+      }, 3000)
     }
   },
   created() {
@@ -224,6 +243,39 @@ export default {
       }
       .noSign {
         background-color: lightgray !important;
+      }
+    }
+    .popup {
+      position: fixed;
+      width: 80vw;
+      height: 30vh;
+      border-radius: 15px;
+      overflow-y: initial;
+      img {
+        width: 300px;
+        height: 300px;
+        position: relative;
+        top: -150px;
+      }
+      div {
+        position: absolute;
+        top: 90px;
+        font-size: 20px;
+        text-align: center;
+        width: 100%;
+        p {
+          line-height: 2em;
+          color: #888;
+        }
+      }
+      span {
+        display: block;
+        position: fixed;
+        bottom: 5px;
+        width: 100%;
+        font-size: 16px;
+        text-align: center;
+        color: #999;
       }
     }
   }

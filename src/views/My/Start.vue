@@ -27,7 +27,7 @@
       <div class="radio">
         <van-checkbox @click="checkLikeAllFn" :value="isCheckedLikeAll" checked-color="#ee0a24">全选</van-checkbox>
       </div>
-      <div class="remove" @click="delLikesFn">删除</div>
+      <div class="remove" @click="dellike">删除</div>
     </footer>
   </div>
 </template>
@@ -79,6 +79,10 @@ export default {
     goDetail(val) {
       let id = val
       this.$router.push(`/detail?id=${id}`)
+    },
+    dellike() {
+      this.delLikesFn()
+      this.isNavStatus = false
     }
   },
   created() {

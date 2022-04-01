@@ -7,7 +7,7 @@
           <div v-for="(time, index) in list" :key="index" class="historyList">
             <h3>{{ time.grouptype }}</h3>
             <ul>
-              <li v-for="(item, i) in time.arrdata" :key="i">
+              <li v-for="(item, i) in time.arrdata" :key="i" @click="goDetail(item.goods_id)">
                 <div class="goods-img">
                   <img :src="item.imgUrl" alt="" />
                 </div>
@@ -92,6 +92,14 @@ export default {
 
           this.list = dest.reverse()
         })
+    },
+    goDetail(id) {
+      this.$router.push({
+        path: '/detail',
+        query: {
+          id
+        }
+      })
     }
   },
   created() {
