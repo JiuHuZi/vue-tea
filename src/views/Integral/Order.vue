@@ -153,7 +153,7 @@ export default {
     goPayment() {
       // 判断是否选择了收货地址
       if (!this.path) {
-        Toast('请填写收货地址')
+        Toast.fail('请填写收货地址')
         return
       }
 

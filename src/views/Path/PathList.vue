@@ -1,12 +1,14 @@
 <template>
   <div class="path-index container">
-    <van-popup v-model="isShow" closeable @close="onClose">
-      <div class="title">
-        <span v-if="pathStatus">添加收货地址</span>
-        <span v-else>编辑收货地址</span>
+    <van-popup v-model="isShow" closeable @close="close">
+      <div>
+        <div class="title">
+          <span v-if="pathStatus">添加收货地址</span>
+          <span v-else>编辑收货地址</span>
+        </div>
+        <van-address-edit :area-list="areaList" show-set-default @save="onAdd" v-if="pathStatus" />
+        <van-address-edit v-else :address-info="AddressInfo" :area-list="areaList" show-delete show-set-default @save="onUpdate" @delete="onDelete" />
       </div>
-      <van-address-edit :area-list="areaList" show-set-default @save="onAdd" v-if="pathStatus" />
-      <van-address-edit v-else :address-info="AddressInfo" :area-list="areaList" show-delete show-set-default @save="onUpdate" @delete="onDelete" />
     </van-popup>
   </div>
 </template>
@@ -14,32 +16,24 @@
 <script>
 import { Toast } from 'vant'
 import http from '@/common/api/request.js'
+import { areaList } from '@vant/area-data'
 export default {
   name: 'PathList',
   data() {
     return {
       AddressInfo: {},
-      areaList: {
-        province_list: {
-          110000: '北京市',
-          120000: '天津市'
-        },
-        city_list: {
-          110100: '北京市',
-          120100: '天津市'
-        },
-        county_list: {
-          110101: '东城区',
-          110102: '西城区',
-          120101: '塘沽区'
-          // ....
-        }
-      },
-      isShow: false,
-      pathStatus: false
+      areaList,
+      isShow: true
+      // pathStatus: false,
     }
   },
-  props: ['show'],
+  props: ['pathStatus', 'addInfo'],
+  created() {
+    this.AddressInfo = this.addInfo
+    this.AddressInfo.areaCode = this.addInfo.areaCode
+    this.AddressInfo.isDefault = this.AddressInfo.isDefault == 1 ? true : false
+  },
+
   methods: {
     // 点击保存触发  => 增加
     onAdd(content) {
@@ -58,7 +52,8 @@ export default {
         .then((res) => {
           if (!res.success) return
           Toast(res.msg)
-          this.$router.push('/path')
+          this.show = false
+          this.$router.go(0)
         })
     },
     // 删除
@@ -77,11 +72,13 @@ export default {
         .then((res) => {
           if (!res.success) return
           Toast(res.msg)
-          this.$router.push('/path')
+          this.show = false
+          this.$router.go(0)
         })
     },
     // 点击保存触发  => 修改
     onUpdate(content) {
+      console.log(content)
       content.isDefault = content.isDefault == true ? 1 : 0
       http
         .$axios({
@@ -97,15 +94,13 @@ export default {
         .then((res) => {
           if (!res.success) return
           Toast(res.msg)
-          this.$router.push('/path')
+          this.show = false
+          this.$router.go(0)
         })
     },
-    onClose() {
-      this.isShow = false
+    close() {
+      this.$emit('close', false)
     }
-  },
-  mounted() {
-    this.isShow = this.show
   }
 }
 </script>

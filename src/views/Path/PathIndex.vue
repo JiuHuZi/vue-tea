@@ -23,16 +23,9 @@
           <h5 style="text-align: center" v-else>暂无数据，请添加地址</h5>
         </van-list>
       </van-pull-refresh>
-      <div class="add-path" @click="goList('add')">添加地址</div>
+      <div class="add-path" @click="goList('add')">+</div>
 
-      <van-popup v-model="show" closeable>
-        <div class="title">
-          <span v-if="pathStatus">添加收货地址</span>
-          <span v-else>编辑收货地址</span>
-        </div>
-        <van-address-edit :area-list="areaList" show-set-default @save="onAdd" v-if="pathStatus" />
-        <van-address-edit v-else :address-info="AddressInfo" :area-list="areaList" show-delete show-set-default @save="onUpdate" @delete="onDelete" />
-      </van-popup>
+      <path-list v-if="show" @close="close" :pathStatus="pathStatus" :addInfo="addInfo"></path-list>
     </section>
 
     <Tabber></Tabber>
@@ -43,10 +36,9 @@
 import Header from '@/components/path/header.vue'
 import Tabber from '@/components/common/Tabbar.vue'
 import http from '@/common/api/request.js'
-import { Toast } from 'vant'
 import { mapMutations, mapState } from 'vuex'
 import bus from '@/common/bus.js'
-
+import pathList from '@/views/Path/PathList.vue'
 export default {
   name: 'PathIndex',
   data() {
@@ -57,28 +49,13 @@ export default {
       pathStatus: false,
       pathRouterStatus: false,
       show: false,
-      AddressInfo: {},
-      areaList: {
-        province_list: {
-          110000: '北京市',
-          120000: '天津市'
-        },
-        city_list: {
-          110100: '北京市',
-          120100: '天津市'
-        },
-        county_list: {
-          110101: '东城区',
-          110102: '西城区',
-          120101: '塘沽区'
-          // ....
-        }
-      }
+      addInfo: {}
     }
   },
   components: {
     Header,
-    Tabber
+    Tabber,
+    pathList
   },
   methods: {
     ...mapMutations(['initData']),
@@ -91,10 +68,8 @@ export default {
           this.$router.back()
           return
         }
+        this.addInfo = options
         this.pathStatus = false
-        this.AddressInfo = options
-        this.AddressInfo.areaCode = options.areaCode
-        this.AddressInfo.isDefault = this.AddressInfo.isDefault == 1 ? true : false
       }
       this.show = true
     },
@@ -111,67 +86,8 @@ export default {
           this.initData(res.data)
         })
     },
-    // 点击保存触发  => 增加
-    onAdd(content) {
-      content.isDefault = content.isDefault == true ? 1 : 0
-      http
-        .$axios({
-          url: '/api/addAddress',
-          method: 'POST',
-          headers: {
-            token: true
-          },
-          data: {
-            ...content
-          }
-        })
-        .then((res) => {
-          if (!res.success) return
-          Toast(res.msg)
-          this.show = false
-          this.$router.go(0)
-        })
-    },
-    // 删除
-    onDelete(content) {
-      http
-        .$axios({
-          url: '/api/deleteAddress',
-          method: 'POST',
-          headers: {
-            token: true
-          },
-          data: {
-            id: content.id
-          }
-        })
-        .then((res) => {
-          if (!res.success) return
-          Toast(res.msg)
-          this.show = false
-          this.$router.go(0)
-        })
-    },
-    // 点击保存触发  => 修改
-    onUpdate(content) {
-      content.isDefault = content.isDefault == true ? 1 : 0
-      http
-        .$axios({
-          url: '/api/updateAddress',
-          method: 'POST',
-          headers: {
-            token: true
-          },
-          data: {
-            ...content
-          }
-        })
-        .then((res) => {
-          if (!res.success) return
-          Toast(res.msg)
-          this.show = false
-          this.$router.go(0)
-        })
+    close(status) {
+      this.show = status
     }
   },
   created() {
@@ -231,14 +147,17 @@ section {
     }
   }
   .add-path {
-    background-color: #b0352f;
+    background-color: #ff585d;
     color: #fff;
-    width: 120px;
-    line-height: 40px;
-    font-size: 18px;
+    width: 70px;
+    line-height: 70px;
+    font-size: 40px;
     text-align: center;
-    border-radius: 6px;
+    border-radius: 50%;
     margin: 10px auto;
+    position: fixed;
+    right: 10px;
+    bottom: 70px;
   }
 }
 ::v-deep .van-address-edit {

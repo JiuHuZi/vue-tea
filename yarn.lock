@@ -1309,6 +1309,11 @@
     "anymatch" "^3.0.0"
     "source-map" "^0.6.0"
 
+"@vant/area-data@^1.2.3":
+  "integrity" "sha512-9bDgEsFnTjdaYXPvsYKRQmxzKDdLCl0c1dOo4JGE6RhaIcq2kR2f5cK0LUdGK+U/SuBz9NfW5ejL1lejcFiP1Q=="
+  "resolved" "https://registry.npmmirror.com/@vant/area-data/-/area-data-1.2.3.tgz"
+  "version" "1.2.3"
+
 "@vant/icons@^1.7.1":
   "integrity" "sha512-tW4EqzxN4kXw1rnlnQJQHofEifPbt/gECOWiibomht8QLyvoGuE4iUmDFS288dJ07ZjuTy0bhdABj0SENo2fmQ=="
   "resolved" "https://registry.npmmirror.com/@vant/icons/-/icons-1.7.3.tgz"

@@ -1123,10 +1123,23 @@ router.post('/api/updateAddress', function (req, res, next) {
     // 对应查询到 0 或者 1 有没有默认收货地址
     connection.query(`select * from address where uid= ${uid}`, function (err, result) {
       if (result.length > 0) {
-        // let addressId = result[0].id
-        connection.query(`update address set isDefault ='0' where uid = ${uid}`, function (e, r) {
-          let updateSql = `update address set uid= ?,name =?, tel = ?, province = ?, city = ?, county = ?, addressDetail = ?, isDefault = ?, areaCode = ? where id = ${id}`
-          connection.query(updateSql, [uid, name, tel, province, city, county, addressDetail, isDefault, areaCode], function (errors, datas) {
+        if (isDefault == '1') {
+          connection.query(`update address set isDefault ='0' where uid = ${uid}`, function (e, r) {
+            // let updateSql = `update address set uid= ?,name =?, tel = ?, province = ?, city = ?, county = ?, addressDetail = ?, isDefault = ?, areaCode = ? where id = ${id}`
+            // connection.query(updateSql, [uid, name, tel, province, city, county, addressDetail, isDefault, areaCode], function (errors, datas) {
+            connection.query(`update address set uid= ${uid},name ='${name}', tel = '${tel}', province = '${province}', city = '${city}', county = '${county}', addressDetail = '${addressDetail}', isDefault = '${isDefault}', areaCode = '${areaCode}' where id = ${id}`, function (errors, datas) {
+              res.send({
+                data: {
+                  code: 200,
+                  success: true,
+                  msg: '修改成功',
+                  data: datas
+                }
+              })
+            })
+          })
+        } else {
+          connection.query(`update address set uid= ${uid},name ='${name}', tel = '${tel}', province = '${province}', city = '${city}', county = '${county}', addressDetail = '${addressDetail}', isDefault = '${isDefault}', areaCode = '${areaCode}' where id = ${id}`, function (errors, datas) {
             res.send({
               data: {
                 code: 200,
@@ -1136,7 +1149,7 @@ router.post('/api/updateAddress', function (req, res, next) {
               }
             })
           })
-        })
+        }
       }
       // if (result.length > 0) {
       //   let addressId = result[0].id
