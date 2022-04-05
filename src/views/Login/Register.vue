@@ -6,11 +6,11 @@
         <input type="text" placeholder="请输入手机号" v-model="userTel" pattern="[0-9]*" />
       </div>
       <div class="login-code">
-        <input type="text" placeholder="请输入验证码" v-model="userCode" pattern="[0-9]*" />
-        <button @click="sendCode" :disabled="disabled">{{ codeMsg }}</button>
+        <input type="text" placeholder="请设置密码" v-model="userPwd" />
       </div>
       <div class="login-code">
-        <input type="text" placeholder="请设置密码" v-model="userPwd" />
+        <input type="text" placeholder="请输入验证码" v-model="userCode" pattern="[0-9]*" />
+        <button @click="sendCode" :disabled="disabled">{{ codeMsg }}</button>
       </div>
       <div class="login-btn" @click="register">注册</div>
       <div class="login-tab">
@@ -27,6 +27,7 @@ import Header from '@/components/Login/header.vue'
 import Tabber from '@/components/common/Tabbar.vue'
 import { Toast } from 'mint-ui'
 import http from '@/common/api/request.js'
+import { mapMutations } from 'vuex'
 export default {
   name: 'Register',
   components: {
@@ -57,6 +58,7 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['USER_LOGIN']),
     // 点击获取短信验证码按钮
     sendCode() {
       // 手机号不正确
@@ -134,6 +136,26 @@ export default {
           })
           .then((res) => {
             console.log(res)
+            // 发送请求，后端验证
+            http
+              .$axios({
+                url: '/api/login',
+                method: 'POST',
+                data: {
+                  userTel: res.data.tel,
+                  userPwd: res.data.pwd
+                }
+              })
+              .then((ress) => {
+                // 提示信息
+                Toast(res.msg)
+                // 登录失败
+                if (!ress.success) return
+                // 登录成功 => 跳转页面，存储用户信息
+                this.USER_LOGIN(res.data)
+                // 跳转到我的页面中
+                this.$router.push('/my')
+              })
           })
       }
     }

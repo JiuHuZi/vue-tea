@@ -42,7 +42,7 @@ export default {
 <style lang="less" scoped>
 .orderList {
   width: 96vw;
-  height: 110px;
+  min-height: 100px;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -51,10 +51,12 @@ export default {
   background-color: #fff;
   border-radius: 15px;
   font-size: 14px;
+  margin-top: -10px;
   h4 {
     font-size: 18px;
     padding-left: 20px;
     padding-top: 5px;
+    padding-bottom: 10px;
     letter-spacing: 2px;
   }
   ul {
@@ -68,8 +70,9 @@ export default {
       flex-direction: column;
       justify-content: center;
       align-items: center;
+      padding-bottom: 5px;
       i {
-        padding-bottom: 10px;
+        padding-bottom: 5px;
         font-size: 26px;
         font-weight: 500;
       }

@@ -49,6 +49,44 @@ router.get('/', function (req, res, next) {
   res.render('index', { title: 'Express' })
 })
 
+// 查看头像框列表
+router.post('/api/updateBorder', function (req, res, next) {
+  // token
+  let token = req.headers.token
+  let tokenObj = jwt.decode(token)
+  let imgUrl = req.body.imgUrl
+  // 查询用户
+  connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
+    // 用户id
+    let uid = results[0].id
+    connection.query(`update user set borderImg = '${imgUrl}' where id = ${uid}`, function (err, result) {
+      connection.query(user.queryUserTel({ userTel: tokenObj.tel }), function (e, r) {
+        res.send({
+          data: {
+            code: 200,
+            success: true,
+            msg: '修改成功',
+            data: r
+          }
+        })
+      })
+    })
+  })
+})
+
+// 查看头像框列表
+router.get('/api/selectBorderList', function (req, res, next) {
+  connection.query(`select * from border_list`, function (error, results) {
+    res.send({
+      data: {
+        code: 200,
+        success: true,
+        data: results
+      }
+    })
+  })
+})
+
 // 查看今天是否已经签到
 router.post('/api/selectSignin', function (req, res, next) {
   let { yesterday, today } = req.body

@@ -25,7 +25,18 @@
           </li>
         </ul>
         <button @click="signin" :disabled="disabled" :class="isSignIn ? 'signIn' : ''">{{ isSignIn ? '今日已签到' : '签到' }}</button>
+
+        <ul class="nav">
+          <li @click="$router.push('/integral')">
+            <img src="/images/icons4.png" alt="" />
+            <div>
+              <p>前往积分商城</p>
+              <p>积分兑好礼</p>
+            </div>
+          </li>
+        </ul>
       </div>
+
       <van-popup v-model="show" class="popup" closeable @open="openPopup">
         <img src="../../assets/images/signin.png" alt="" />
         <div>
@@ -132,6 +143,9 @@ export default {
 <style lang="less" scoped>
 .signin {
   background-color: #ff585d;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
   header {
     display: flex;
     justify-content: space-between;
@@ -243,6 +257,25 @@ export default {
       }
       .noSign {
         background-color: lightgray !important;
+      }
+      .nav {
+        width: 96%;
+        margin-top: 10px;
+        li {
+          width: 100%;
+          height: 150px;
+          border-radius: 15px;
+          display: flex;
+          align-items: center;
+          justify-content: space-around;
+          background-image: linear-gradient(to top, #fbc2eb 0%, #a6c1ee 100%);
+          color: #fff;
+          font-size: 30px;
+          p:last-child {
+            font-size: 25px;
+            color: lightseagreen;
+          }
+        }
       }
     }
     .popup {

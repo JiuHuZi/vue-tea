@@ -8,23 +8,39 @@
           <i class="iconfont icon-xinxi xinxi" @click="lock"></i>
         </div>
 
-        <div>
+        <div class="border">
+          <img :src="userInfo.borderImg" alt="" class="header-border" @click="changeImg" />
           <div class="imgUrl" @click="changeImg">
             <img :src="userInfo.imgUrl" alt="" />
             <i class="iconfont icon-shezhi imgSet"></i>
           </div>
-          <van-popup v-model="isShowImg" round position="top" :style="{ height: '30%' }">
-            <van-form @submit="onSubmitImg" class="changeNameForm">
-              <h5>修改头像</h5>
-              <van-field name="uploader" label="文件上传">
-                <template #input>
-                  <van-uploader v-model="uploader" :accept="'image/*'" :max-count="1" />
-                </template>
-              </van-field>
-              <div style="margin: 16px">
-                <van-button round block type="info" native-type="submit">提交</van-button>
-              </div>
-            </van-form>
+
+          <van-popup v-model="isShowImg" round position="top" :style="{ height: '35%' }">
+            <van-tabs v-model="active">
+              <van-tab title="更换头像框">
+                <div>
+                  <ul class="border-list">
+                    <li v-for="(item, index) in borderList" :key="index" @click="changeBorder(item)">
+                      <img :src="item.imgUrl" alt="" />
+                      <span>{{ item.name }}</span>
+                    </li>
+                  </ul>
+                </div>
+              </van-tab>
+              <van-tab title="更换头像">
+                <van-form @submit="onSubmitImg" class="changeNameForm">
+                  <h5>修改头像</h5>
+                  <van-field name="uploader" label="文件上传">
+                    <template #input>
+                      <van-uploader v-model="uploader" :accept="'image/*'" :max-count="1" />
+                    </template>
+                  </van-field>
+                  <div style="margin: 16px">
+                    <van-button round block type="info" native-type="submit">提交</van-button>
+                  </div>
+                </van-form>
+              </van-tab>
+            </van-tabs>
           </van-popup>
         </div>
 
@@ -63,14 +79,18 @@
         <h3>天天赚钱</h3>
         <ul>
           <li @click="$router.push('/signin')">
-            <img src="/images/goods-list1.jpeg" alt="" />
+            <div class="imgBox">
+              <img src="../assets/images/sigininLogo.gif" alt="" class="signImg" />
+            </div>
             <div>
               <h4>签到领积分</h4>
               <span>积分兑换商品</span>
             </div>
           </li>
           <li @click="lock">
-            <img src="/images/goods-list1.jpeg" alt="" />
+            <div class="imgBox">
+              <img src="/images/goods-list1.jpeg" alt="" />
+            </div>
             <div>
               <h4>优惠券大厅</h4>
               <span>支付立减优惠</span>
@@ -108,7 +128,9 @@ export default {
       isShowName: false,
       username: '',
       uploader: [],
-      isMember: false
+      isMember: false,
+      active: 0,
+      borderList: []
     }
   },
   methods: {
@@ -170,17 +192,27 @@ export default {
     },
     // 点击头像显示弹出层
     changeImg() {
-      var u = navigator.userAgent
-      var isIOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/) //ios终端
-      if (isIOS) {
-        // console.log('ios')
-        Toast.fail('IOS 系统暂时无法修改头像')
-        return
-      }
       this.isShowImg = true
+      if (this.active == 0) {
+        http
+          .$axios({
+            url: '/api/selectBorderList'
+          })
+          .then((res) => {
+            // console.log(res)
+            this.borderList = res.data
+          })
+      }
     },
     // 修改头像
     onSubmitImg(values) {
+      var u = navigator.userAgent
+      var isIOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/) //ios终端
+      if (isIOS) {
+        Toast.fail('IOS 系统该功能暂未开放，敬请期待')
+        return
+      }
+
       let name = JSON.parse(localStorage.getItem('teauserInfo')).nickName
       const formData = new FormData()
       formData.append('file', values.uploader[0].file)
@@ -208,6 +240,25 @@ export default {
             })
         }
       })
+    },
+    // 点击头像框修改头像
+    changeBorder(value) {
+      http
+        .$axios({
+          url: '/api/updateBorder',
+          method: 'POST',
+          headers: {
+            token: true
+          },
+          data: {
+            imgUrl: value.imgUrl
+          }
+        })
+        .then((res) => {
+          this.USER_LOGIN(res.data[0])
+          this.isShowImg = false
+          Toast.success(res.msg)
+        })
     },
     // 未开发的功能
     lock() {
@@ -250,7 +301,7 @@ export default {
     }
     .user-info {
       display: flex;
-      padding: 30px 20px 10px;
+      padding-top: 20px;
       position: relative;
       .setting {
         display: flex;
@@ -267,26 +318,43 @@ export default {
           transform: rotateY(180deg);
         }
       }
-      .imgUrl {
+      .border {
         position: relative;
-        img {
-          width: 80px;
-          height: 80px;
-          border-radius: 50%;
-          border: 5px solid rgb(60, 34, 0);
-        }
-        .imgSet {
-          z-index: 99;
-          color: #fff;
-          font-size: 22px;
-          font-weight: bold;
+        left: 0;
+        width: 130px;
+        height: 130px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        .header-border {
           position: absolute;
-          right: 0px;
-          bottom: 10px;
+          top: -2px;
+          // left: 0;
+          width: 125px;
+          height: 125px;
+          z-index: 10;
+        }
+        .imgUrl {
+          position: absolute;
+          img {
+            width: 85px;
+            height: 85px;
+            border-radius: 50%;
+            // border: 5px solid rgb(60, 34, 0);
+          }
+          .imgSet {
+            z-index: 99;
+            color: #fff;
+            font-size: 22px;
+            font-weight: bold;
+            position: absolute;
+            right: 0px;
+            bottom: 10px;
+          }
         }
       }
       .info-content {
-        padding: 0 10px;
+        padding: 10px 5px;
         .userName {
           position: relative;
           .userName-content {
@@ -338,9 +406,10 @@ export default {
     background-color: #f5f5f5;
     overflow: initial;
     margin-bottom: 50px;
+    margin-top: 10px;
     .make-money {
       width: 96vw;
-      margin: 40px auto 0;
+      margin: 25px auto 0;
       background-color: #fff;
       border-radius: 15px;
       h3 {
@@ -365,10 +434,23 @@ export default {
           border-radius: 5px;
           margin: 3px 10px;
           padding: 3px;
-          img {
+          .imgBox {
             width: 46px;
             height: 46px;
             margin-right: 10px;
+            overflow: hidden;
+            position: relative;
+            img {
+              width: 100%;
+              height: 100%;
+            }
+            .signImg {
+              width: 90px;
+              height: 90px;
+              position: relative;
+              left: -52%;
+              top: -56%;
+            }
           }
           div {
             display: flex;
@@ -400,5 +482,36 @@ export default {
 }
 .memberName {
   color: #fde000 !important;
+}
+.border-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 20px;
+  li {
+    width: 100px;
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    img {
+      width: 80px;
+      height: 80px;
+    }
+    span {
+      font-size: 16px;
+      text-align: center;
+    }
+  }
+}
+::v-deep .van-tabs__wrap {
+  width: 100%;
+  position: fixed;
+}
+::v-deep .van-tabs__content {
+  padding-top: 44px;
 }
 </style>
