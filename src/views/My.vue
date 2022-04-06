@@ -251,13 +251,18 @@ export default {
             token: true
           },
           data: {
-            imgUrl: value.imgUrl
+            imgUrl: value.imgUrl,
+            borderID: value.id
           }
         })
         .then((res) => {
-          this.USER_LOGIN(res.data[0])
+          if (res.success) {
+            this.USER_LOGIN(res.data[0])
+            Toast.success(res.msg)
+          } else {
+            Toast.fail(res.msg)
+          }
           this.isShowImg = false
-          Toast.success(res.msg)
         })
     },
     // 未开发的功能

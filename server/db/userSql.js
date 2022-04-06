@@ -24,8 +24,7 @@ const User = {
       expiresIn: 3600 * 24
     })
 
-    // return 'insert into user (tel,pwd,imgUrl,nickName,token,member) values(' + userTel + ',' + userPwd + ',"/images/headerImg/header.jpeg","' + userTel + '","' + token + '")'
-    return `insert into user (tel,pwd,imgUrl,nickName,token,member,borderImg) values( '${userTel}' , '${userPwd}' ,"/images/headerImg/header.jpeg", '${userTel}' , '${token}' ,'0','/images/headerBorder/border1.png')`
+    return `insert into user (tel,pwd,imgUrl,nickName,token,member,borderImg,hasBorder) values( '${userTel}' , '${userPwd}' ,"/images/headerImg/header.jpeg", '${userTel}' , '${token}' ,'0','/images/headerBorder/border1.png','0')`
   },
   // 查询密码
   insertWallet(uid) {

@@ -55,22 +55,34 @@ router.post('/api/updateBorder', function (req, res, next) {
   let token = req.headers.token
   let tokenObj = jwt.decode(token)
   let imgUrl = req.body.imgUrl
+  let borderID = req.body.borderID
   // 查询用户
   connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
     // 用户id
     let uid = results[0].id
-    connection.query(`update user set borderImg = '${imgUrl}' where id = ${uid}`, function (err, result) {
-      connection.query(user.queryUserTel({ userTel: tokenObj.tel }), function (e, r) {
-        res.send({
-          data: {
-            code: 200,
-            success: true,
-            msg: '修改成功',
-            data: r
-          }
+    let hasBorderArr = results[0].hasBorder
+    if (hasBorderArr.indexOf(borderID) != -1) {
+      connection.query(`update user set borderImg = '${imgUrl}' where id = ${uid}`, function (err, result) {
+        connection.query(user.queryUserTel({ userTel: tokenObj.tel }), function (e, r) {
+          res.send({
+            data: {
+              code: 200,
+              success: true,
+              msg: '修改成功',
+              data: r
+            }
+          })
         })
       })
-    })
+    } else {
+      res.send({
+        data: {
+          code: 0,
+          success: false,
+          msg: '该头像框未拥有'
+        }
+      })
+    }
   })
 })
 
