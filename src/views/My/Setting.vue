@@ -17,10 +17,17 @@
         <i class="iconfont icon-fanhui fanhui"></i>
       </div>
 
-      <div class="address" @click="$router.push('/path')">
-        <span>地址管理</span>
+      <div class="address nav" @click="$router.push('/path')">
+        <span>我的收货地址</span>
         <i class="iconfont icon-fanhui fanhui"></i>
       </div>
+
+      <div class="cdkey nav" @click="showCDK">
+        <span>使用兑换码</span>
+        <i class="iconfont icon-fanhui fanhui"></i>
+      </div>
+
+      <cdkey v-if="isShowCDK" @close="close" />
 
       <div class="logout" @click="Out">
         <i class="iconfont icon-tuichu" style="padding-right: 5px"></i>
@@ -32,12 +39,17 @@
 
 <script>
 import { mapMutations } from 'vuex'
+import cdkey from '@/components/my/cdkey.vue'
 export default {
   name: 'setting',
   data() {
     return {
-      userList: {}
+      userList: {},
+      isShowCDK: false
     }
+  },
+  components: {
+    cdkey
   },
   methods: {
     ...mapMutations(['loginOut']),
@@ -46,6 +58,14 @@ export default {
         this.userList = JSON.parse(localStorage.getItem('teauserInfo'))
       }
     },
+    //显示兑换CDK的界面
+    showCDK() {
+      this.isShowCDK = true
+    },
+    close(status) {
+      this.isShowCDK = status
+    },
+    // 退出登录
     Out() {
       this.loginOut()
       this.$router.replace('/my')
@@ -79,7 +99,7 @@ export default {
   section {
     height: calc(100vh - 44px);
     width: 100%;
-    background-color: #f2f2f2;
+    background-color: #f0eef0;
     .userInfo {
       height: 100px;
       width: 100%;
@@ -112,7 +132,7 @@ export default {
         }
       }
     }
-    .address {
+    .nav {
       width: 100%;
       height: 45px;
       display: flex;
@@ -124,6 +144,10 @@ export default {
       span {
         padding: 0 10px;
       }
+    }
+    .cdkey {
+      margin-top: 10px;
+      border-radius: 10px;
     }
     .logout {
       width: 100%;

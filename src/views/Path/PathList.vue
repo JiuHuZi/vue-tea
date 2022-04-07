@@ -24,7 +24,6 @@ export default {
       AddressInfo: {},
       areaList,
       isShow: true
-      // pathStatus: false,
     }
   },
   props: ['pathStatus', 'addInfo'],
