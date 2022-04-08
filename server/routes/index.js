@@ -49,6 +49,84 @@ router.get('/', function (req, res, next) {
   res.render('index', { title: 'Express' })
 })
 
+// 兑换cdk
+router.post('/api/selectCDKList', function (req, res, next) {
+  // cdk
+  let cdk = req.body.cdk
+  // token
+  let token = req.headers.token
+  let tokenObj = jwt.decode(token)
+  // 查询用户
+  connection.query(`select * from user where tel = ${tokenObj.tel}`, function (err, result) {
+    // 用户id
+    let uid = result[0].id
+    connection.query(`select * from cdk_list where cdkey = '${cdk}'`, function (error, results) {
+      if (results.length > 0) {
+        // 判断是否已经使用过
+        connection.query(`select * from use_cdk where uid = ${uid} and cdkey ='${cdk}'`, function (e, r) {
+          if (r.length > 0) {
+            res.send({
+              data: {
+                code: 0,
+                msg: '此验证码已经使用',
+                success: false
+              }
+            })
+          } else {
+            connection.query(`insert into use_cdk (uid,cdkey) values(${uid},'${cdk}')`)
+            // 奖励对应的类型
+            let type = results[0].type.split(',')
+            // 奖励剩下的个数
+            let count = parseInt(results[0].count) - 1
+            // 奖励
+            let reward = results[0].reward.split(',')
+            // console.log(type, count, reward)
+            // 奖励对应的数据库表
+            let table = ''
+            let filed = ''
+            for (let i = 0; i < type.length; i++) {
+              if (type[i] == '头像框') {
+                table = 'user'
+                filed = 'hasBorder'
+                // 拥有的头像框
+                let hasBorder = result[0].hasBorder + ',' + reward[i]
+                connection.query(`update ${table} set ${filed} = '${hasBorder}' where id = ${uid}`)
+              } else if (type[i] == '积分') {
+                table = 'wallet'
+                filed = 'integral'
+                // 拥有的积分
+                connection.query(`select * from wallet where uid = ${uid}`, function (e, data) {
+                  // console.log(data[0], reward[i])
+                  let integral = parseFloat(data[0].integral) + parseFloat(reward[i])
+                  connection.query(`update ${table} set ${filed} = '${integral}' where uid = ${uid}`)
+                })
+              }
+            }
+            connection.query(`update cdk_list set count = ${count} where cdkey = '${cdk}' `)
+            // 第一版
+            // 第二版功能预测———— 给兑换成功的显示兑换的
+            res.send({
+              data: {
+                code: 200,
+                success: true,
+                msg: '兑换成功'
+              }
+            })
+          }
+        })
+      } else {
+        res.send({
+          data: {
+            code: 0,
+            msg: '请输入正确的兑换码',
+            success: false
+          }
+        })
+      }
+    })
+  })
+})
+
 // 查看头像框列表
 router.post('/api/updateBorder', function (req, res, next) {
   // token

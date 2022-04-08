@@ -13,6 +13,8 @@
 </template>
 
 <script>
+import http from '@/common/api/request.js'
+import { Toast } from 'vant'
 export default {
   name: 'cdkey',
   data() {
@@ -26,7 +28,28 @@ export default {
       this.$emit('close', false)
     },
     onSubmit() {
-      console.log(1)
+      http
+        .$axios({
+          url: '/api/selectCDKList',
+          method: 'POST',
+          headers: {
+            token: true
+          },
+          data: {
+            cdk: this.cdk
+          }
+        })
+        .then((res) => {
+          console.log(res)
+          if (!res.success) {
+            Toast.fail(res.msg)
+            this.cdk = ''
+            return
+          } else {
+            Toast.success(res.msg)
+            this.show = false
+          }
+        })
     }
   }
 }
