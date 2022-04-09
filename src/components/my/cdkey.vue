@@ -28,6 +28,7 @@ export default {
       this.$emit('close', false)
     },
     onSubmit() {
+      this.cdk = this.cdk.toUpperCase()
       http
         .$axios({
           url: '/api/selectCDKList',

@@ -62,58 +62,68 @@ router.post('/api/selectCDKList', function (req, res, next) {
     let uid = result[0].id
     connection.query(`select * from cdk_list where cdkey = '${cdk}'`, function (error, results) {
       if (results.length > 0) {
-        // 判断是否已经使用过
-        connection.query(`select * from use_cdk where uid = ${uid} and cdkey ='${cdk}'`, function (e, r) {
-          if (r.length > 0) {
-            res.send({
-              data: {
-                code: 0,
-                msg: '此验证码已经使用',
-                success: false
-              }
-            })
-          } else {
-            connection.query(`insert into use_cdk (uid,cdkey) values(${uid},'${cdk}')`)
-            // 奖励对应的类型
-            let type = results[0].type.split(',')
-            // 奖励剩下的个数
-            let count = parseInt(results[0].count) - 1
-            // 奖励
-            let reward = results[0].reward.split(',')
-            // console.log(type, count, reward)
-            // 奖励对应的数据库表
-            let table = ''
-            let filed = ''
-            for (let i = 0; i < type.length; i++) {
-              if (type[i] == '头像框') {
-                table = 'user'
-                filed = 'hasBorder'
-                // 拥有的头像框
-                let hasBorder = result[0].hasBorder + ',' + reward[i]
-                connection.query(`update ${table} set ${filed} = '${hasBorder}' where id = ${uid}`)
-              } else if (type[i] == '积分') {
-                table = 'wallet'
-                filed = 'integral'
-                // 拥有的积分
-                connection.query(`select * from wallet where uid = ${uid}`, function (e, data) {
-                  // console.log(data[0], reward[i])
-                  let integral = parseFloat(data[0].integral) + parseFloat(reward[i])
-                  connection.query(`update ${table} set ${filed} = '${integral}' where uid = ${uid}`)
-                })
-              }
+        if (results[0].count <= 0) {
+          res.send({
+            data: {
+              code: 0,
+              success: false,
+              msg: '该兑换码已经失效'
             }
-            connection.query(`update cdk_list set count = ${count} where cdkey = '${cdk}' `)
-            // 第一版
-            // 第二版功能预测———— 给兑换成功的显示兑换的
-            res.send({
-              data: {
-                code: 200,
-                success: true,
-                msg: '兑换成功'
+          })
+        } else {
+          // 判断是否已经使用过
+          connection.query(`select * from use_cdk where uid = ${uid} and cdkey ='${cdk}'`, function (e, r) {
+            if (r.length > 0) {
+              res.send({
+                data: {
+                  code: 0,
+                  msg: '此兑换码已经使用',
+                  success: false
+                }
+              })
+            } else {
+              connection.query(`insert into use_cdk (uid,cdkey) values(${uid},'${cdk}')`)
+              // 奖励对应的类型
+              let type = results[0].type.split(',')
+              // 奖励剩下的个数
+              let count = parseInt(results[0].count) - 1
+              // 奖励
+              let reward = results[0].reward.split(',')
+              // console.log(type, count, reward)
+              // 奖励对应的数据库表
+              let table = ''
+              let filed = ''
+              for (let i = 0; i < type.length; i++) {
+                if (type[i] == '头像框') {
+                  table = 'user'
+                  filed = 'hasBorder'
+                  // 拥有的头像框
+                  let hasBorder = result[0].hasBorder + ',' + reward[i]
+                  connection.query(`update ${table} set ${filed} = '${hasBorder}' where id = ${uid}`)
+                } else if (type[i] == '积分') {
+                  table = 'wallet'
+                  filed = 'integral'
+                  // 拥有的积分
+                  connection.query(`select * from wallet where uid = ${uid}`, function (e, data) {
+                    // console.log(data[0], reward[i])
+                    let integral = parseFloat(data[0].integral) + parseFloat(reward[i])
+                    connection.query(`update ${table} set ${filed} = '${integral}' where uid = ${uid}`)
+                  })
+                }
               }
-            })
-          }
-        })
+              connection.query(`update cdk_list set count = ${count} where cdkey = '${cdk}' `)
+              // 第一版
+              // 第二版功能预测———— 给兑换成功的显示兑换的
+              res.send({
+                data: {
+                  code: 200,
+                  success: true,
+                  msg: '兑换成功'
+                }
+              })
+            }
+          })
+        }
       } else {
         res.send({
           data: {
@@ -918,7 +928,7 @@ router.post('/api/addWalletOrder', function (req, res, next) {
   connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
     // 用户id
     let uid = results[0].id
-    connection.query(`insert into store_order (order_id,goods_name,goods_price,goods_num,order_status,uid) values('${orderId}', '${goodsName}','${goodsPrice}',1,'2',${uid})`, function () {
+    connection.query(`insert into store_order (order_id,goods_name,goods_price,goods_num,order_status,uid,mode) values('${orderId}', '${goodsName}','${goodsPrice}',1,'2',${uid},'充值')`, function () {
       connection.query(`select * from store_order where uid = ${uid} and order_id = '${orderId}'`, function (err, result) {
         res.send({
           data: {
@@ -1027,6 +1037,20 @@ router.post('/api/successPayment', function (req, res, next) {
                 connection.query(`select * from store_order where uid = ${uid} and order_id = ${out_trade_no}`, function (err, result) {
                   let id = result[0].id
                   let integral = Math.floor(result[0].goods_price / 10)
+                  let mode = result[0].mode
+
+                  if (mode == '电子货币' || mode == '积分') {
+                    let goodsNameArr = result[0].goods_name.split(',')
+                    let goodsNumArr = result[0].goods_num.split(',')
+                    for (let i = 0; i < goodsNameArr.length; i++) {
+                      let num = parseInt(goodsNumArr[i])
+                      connection.query(`select * from goods_list where name = '${goodsNameArr[i]}'`, function (e, r) {
+                        let count = parseInt(r[0].num) + num
+                        connection.query(`update goods_list set num = ${count} where name = '${goodsNameArr[i]}'`)
+                      })
+                    }
+                  }
+
                   // 订单的状态改成  2==>3
                   connection.query(`update store_order set order_status = replace(order_status,'2','3') where id = ${id}`, function (e, r) {
                     connection.query(`update wallet set integral = ${integral} where uid = ${uid}`, function () {
@@ -1050,6 +1074,20 @@ router.post('/api/successPayment', function (req, res, next) {
                 connection.query(`select * from store_order where uid = ${uid} and order_id = ${out_trade_no}`, function (err, result) {
                   let id = result[0].id
                   let integral = Math.floor(result[0].goods_price / 10)
+                  let mode = result[0].mode
+
+                  if (mode == '电子货币' || mode == '积分') {
+                    let goodsNameArr = result[0].goods_name.split(',')
+                    let goodsNumArr = result[0].goods_num.split(',')
+                    for (let i = 0; i < goodsNameArr.length; i++) {
+                      let num = parseInt(goodsNumArr[i])
+                      connection.query(`select * from goods_list where name = '${goodsNameArr[i]}'`, function (e, r) {
+                        let count = parseInt(r[0].num) + num
+                        connection.query(`update goods_list set num = ${count} where name = '${goodsNameArr[i]}'`)
+                      })
+                    }
+                  }
+
                   // 订单的状态改成  2==>3
                   connection.query(`update store_order set order_status = replace(order_status,'2','3') where id = ${id}`, function (e, r) {
                     connection.query(`update wallet set integral = ${integral} where uid = ${uid}`, function () {
@@ -1130,7 +1168,7 @@ router.post('/api/submitOrder', function (req, res, next) {
   let tokenObj = jwt.decode(token)
   // 订单号
   let orderId = req.body.order_id
-  // 购物车选中的商品id
+  // 购物车选中的商品的id
   let shopArr = req.body.shopArr
 
   // 查询用户
@@ -1198,12 +1236,16 @@ router.post('/api/addOrder', function (req, res, next) {
   let goodsPrice = 0
   // 订单商品总数量
   let goodsNum = 0
+  // 订单商品分别数量
+  let goodsRespectivelyNum = []
   // 订单号
   let orderId = randomNumber()
 
   goodsArr.forEach((v) => {
+    // console.log(v)
     goodsName.push(v.goods_name)
     goodsNum += v.goods_num
+    goodsRespectivelyNum.push(v.goods_num)
     goodsPrice += v.goods_price * v.goods_num
   })
 
@@ -1211,7 +1253,7 @@ router.post('/api/addOrder', function (req, res, next) {
   connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
     // 用户id
     let uid = results[0].id
-    connection.query(`insert into store_order (order_id,goods_name,goods_price,goods_num,order_status,uid,mode) values('${orderId}', '${goodsName}','${goodsPrice}',${goodsNum},'1',${uid},'${mode}')`, function (error, results) {
+    connection.query(`insert into store_order (order_id,goods_name,goods_price,goods_num,order_status,uid,mode) values('${orderId}', '${goodsName}','${goodsPrice}','${goodsRespectivelyNum}','1',${uid},'${mode}')`, function (error, results) {
       connection.query(`select * from store_order where uid = ${uid} and order_id = '${orderId}'`, function (err, result) {
         res.send({
           data: {

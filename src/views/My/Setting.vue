@@ -86,6 +86,9 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
     color: #fff;
     i {
       padding: 0 20px;
@@ -99,6 +102,7 @@ export default {
   section {
     height: calc(100vh - 44px);
     width: 100%;
+    margin-top: 44px;
     background-color: #f0eef0;
     .userInfo {
       height: 100px;

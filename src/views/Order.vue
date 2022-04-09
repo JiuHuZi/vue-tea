@@ -159,9 +159,14 @@ export default {
         .then((res) => {
           // 存储订单号
           this.initOrder(res.data)
+          let numArr = res.data[0].goods_num.split(',')
+          let num = 0
+          numArr.forEach((v) => {
+            num += parseInt(v)
+          })
           this.total = {
             price: parseFloat(res.data[0].goods_price).toFixed(2),
-            num: res.data[0].goods_num
+            num
           }
         })
     },

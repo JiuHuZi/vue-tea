@@ -129,7 +129,7 @@ export default {
           }
         })
       })
-      // console.log(newList)
+      console.log(newList)
       // 生成一个订单
       http
         .$axios({
