@@ -5,7 +5,7 @@
       <div class="user-info" v-else>
         <div class="setting">
           <i class="iconfont icon-shezhi" @click="$router.push('/setting')"></i>
-          <i class="iconfont icon-xinxi xinxi" @click="lock"></i>
+          <i class="iconfont icon-xinxi xinxi" @click="$router.push('/mailindex')"></i>
         </div>
 
         <div class="border">
@@ -333,7 +333,7 @@ export default {
         justify-content: center;
         .header-border {
           position: absolute;
-          top: -2px;
+          top: 1px;
           // left: 0;
           width: 125px;
           height: 125px;
@@ -342,8 +342,8 @@ export default {
         .imgUrl {
           position: absolute;
           img {
-            width: 85px;
-            height: 85px;
+            width: 90px;
+            height: 90px;
             border-radius: 50%;
             // border: 5px solid rgb(60, 34, 0);
           }

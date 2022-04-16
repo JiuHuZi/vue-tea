@@ -169,6 +169,16 @@ const routes = [
     path: '/signin',
     name: 'Signin',
     component: () => import('@/views/My/Signin.vue')
+  },
+  {
+    path: '/mailindex',
+    name: 'MailIndex',
+    component: () => import('@/views/Mail/MailIndex.vue')
+  },
+  {
+    path: '/mailcontent',
+    name: 'Mailcontent',
+    component: () => import('@/views/Mail/MailContent.vue')
   }
 ]
 

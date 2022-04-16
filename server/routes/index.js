@@ -21,6 +21,22 @@ const upload = multer({
   dest: path.join(process.cwd(), '../public/images/headerImg')
 })
 
+// 获取当前时间
+function getTime() {
+  const now = new Date()
+  let year = now.getFullYear()
+  let month = now.getMonth() + 1
+  let day = now.getDate()
+  let hour = now.getHours()
+  let minutes = now.getMinutes()
+  month = setTimeDateFmt(month)
+  day = setTimeDateFmt(day)
+  hour = setTimeDateFmt(hour)
+  minutes = setTimeDateFmt(minutes)
+  let time = `${year}-${month}-${day} ${hour}:${minutes}`
+  return time
+}
+
 // 生成订单号 order_id,规则：时间戳 + 6位随机数
 function setTimeDateFmt(s) {
   return s < 10 ? '0' + s : s
@@ -47,6 +63,94 @@ function randomNumber() {
 /* GET home page. */
 router.get('/', function (req, res, next) {
   res.render('index', { title: 'Express' })
+})
+
+// 邮件领取功能
+router.post('/api/getEnclosure', function (req, res, next) {
+  // token
+  let token = req.headers.token
+  let tokenObj = jwt.decode(token)
+  // 获取邮件的附件
+  let enclosure = req.body.enclosure
+  // 获取邮件的ID
+  let id = req.body.id
+
+  // 查询用户
+  connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
+    // 用户id
+    let uid = results[0].id
+    // 判断用户是否已经领取
+    connection.query(`select * from mail where id = ${id}`, function (e, status) {
+      if (status[0].enclosureStatus == '1') {
+        res.send({
+          data: {
+            code: 0,
+            success: false,
+            msg: '已领取'
+          }
+        })
+      } else {
+        for (let i = 0; i < enclosure.length; i++) {
+          if (enclosure[i].type == '头像框') {
+            connection.query(`select * from user where id = ${uid}`, function (err, result) {
+              let hasBorder = result[0].hasBorder + ',' + enclosure[i].id
+              connection.query(`update user set hasBorder = '${hasBorder}' where id = ${uid}`)
+            })
+          } else if (enclosure[i].type == '积分') {
+            let num = enclosure[i].name.replace('积分', '')
+            connection.query(`select * from wallet where uid = ${uid}`, function (err, result) {
+              let integral = parseFloat(result[0].integral) + parseFloat(num)
+              connection.query(`update wallet set integral = '${integral}' where uid = ${uid}`)
+            })
+          }
+        }
+        connection.query(`update mail set enclosureStatus = 1 where id = ${id}`)
+        res.send({
+          data: {
+            code: 200,
+            success: true,
+            msg: '领取成功'
+          }
+        })
+      }
+    })
+  })
+})
+
+// 查询邮件
+router.post('/api/selectmail', function (req, res, next) {
+  // token
+  let token = req.headers.token
+  let tokenObj = jwt.decode(token)
+  // id
+  let id = req.body.id
+  // 查询用户
+  connection.query(`select * from user where tel = ${tokenObj.tel}`, function (err, results) {
+    // 用户id
+    let uid = results[0].id
+    if (id != undefined) {
+      connection.query(`update mail set mailStatus = replace(mailStatus,0,1) where id = ${id}`)
+      connection.query(`select * from mail where receiver = ${uid} and id = ${id}`, function (err, result) {
+        res.send({
+          data: {
+            code: 200,
+            success: true,
+            data: result[0]
+          }
+        })
+      })
+    } else {
+      connection.query(`select * from mail where receiver = ${uid} ORDER BY sendTime DESC`, function (err, result) {
+        res.send({
+          data: {
+            code: 200,
+            success: true,
+            data: result
+          }
+        })
+      })
+    }
+  })
 })
 
 // 兑换cdk
@@ -83,42 +187,62 @@ router.post('/api/selectCDKList', function (req, res, next) {
               })
             } else {
               connection.query(`insert into use_cdk (uid,cdkey) values(${uid},'${cdk}')`)
-              // 奖励对应的类型
-              let type = results[0].type.split(',')
-              // 奖励剩下的个数
-              let count = parseInt(results[0].count) - 1
-              // 奖励
-              let reward = results[0].reward.split(',')
-              // console.log(type, count, reward)
-              // 奖励对应的数据库表
-              let table = ''
-              let filed = ''
-              for (let i = 0; i < type.length; i++) {
-                if (type[i] == '头像框') {
-                  table = 'user'
-                  filed = 'hasBorder'
-                  // 拥有的头像框
-                  let hasBorder = result[0].hasBorder + ',' + reward[i]
-                  connection.query(`update ${table} set ${filed} = '${hasBorder}' where id = ${uid}`)
-                } else if (type[i] == '积分') {
-                  table = 'wallet'
-                  filed = 'integral'
-                  // 拥有的积分
-                  connection.query(`select * from wallet where uid = ${uid}`, function (e, data) {
-                    // console.log(data[0], reward[i])
-                    let integral = parseFloat(data[0].integral) + parseFloat(reward[i])
-                    connection.query(`update ${table} set ${filed} = '${integral}' where uid = ${uid}`)
-                  })
-                }
-              }
-              connection.query(`update cdk_list set count = ${count} where cdkey = '${cdk}' `)
-              // 第一版
-              // 第二版功能预测———— 给兑换成功的显示兑换的
+              let time = getTime()
+              let mailId = 0
+              connection.query(`insert into mail(sender,receiver,title,content,enclosure,enclosureStatus,sendTime,mailStatus) values('【九狐子商城】运营团队',${uid},'《奖励》兑换码兑换奖励','亲爱的旅行者：请查收通过兑换码获得的奖励','',0,'${time}',0)`, function (e, data) {
+                mailId = data.insertId
+
+                // 奖励对应的类型
+                let type = results[0].type.split(',')
+                // 奖励剩下的个数
+                let count = parseInt(results[0].count) - 1
+                // 奖励
+                let reward = results[0].reward.split(',')
+                console.log(type, count, reward)
+                // 奖励对应的数据库表
+                // let table = ''
+                // let filed = ''
+                connection.query(`select * from mail where id= ${mailId}`, function (e, borders) {
+                  let borderList = ''
+                  for (let i = 0; i < type.length; i++) {
+                    if (type[i] == '头像框') {
+                      connection.query(`select * from border_list where id = ${reward[i]}`, function (e, border) {
+                        var dataString = JSON.stringify(border[0])
+                        var data = JSON.parse(dataString)
+                        data.type = '头像框'
+                        data.weight = '1'
+                        if (borderList == '') {
+                          borderList += JSON.stringify(data)
+                        } else {
+                          borderList += borders[0].enclosure + ',' + JSON.stringify(data)
+                        }
+                        connection.query(`update mail set enclosure = '${borderList}' where id = ${mailId}`)
+                      })
+                    } else if (type[i] == '积分') {
+                      let data = {
+                        type: '积分',
+                        name: reward[i],
+                        imgUrl: '/images/coin.png',
+                        weight: '2'
+                      }
+                      if (borderList == '') {
+                        borderList += JSON.stringify(data)
+                      } else {
+                        borderList += borders[0].enclosure + ',' + JSON.stringify(data)
+                      }
+                      connection.query(`update mail set enclosure = '${borderList}' where id = ${mailId}`)
+                    }
+                  }
+                })
+                connection.query(`update cdk_list set count = ${count} where cdkey = '${cdk}' `)
+              })
+
+              // 第二版功能———— 给兑换成功的奖品添加到邮箱里面
               res.send({
                 data: {
                   code: 200,
                   success: true,
-                  msg: '兑换成功'
+                  msg: '兑换成功，前往邮箱领取'
                 }
               })
             }
@@ -897,7 +1021,8 @@ router.post('/api/topUp', function (req, res, next) {
     subject: name //商品名称
   })
   // 支付成功或者失败跳转的链接
-  formData.addField('returnUrl', 'http://localhost:8080/topUp')
+  // formData.addField('returnUrl', 'http://localhost:8080/topUp')
+  formData.addField('returnUrl', 'http://10.50.59.51:8080/topUp')
   // 返回promise
   const result = alipaySdk.exec('alipay.trade.page.pay', {}, { formData: formData })
   // 对接支付宝成功,支付宝方返回的数据
@@ -1145,7 +1270,8 @@ router.post('/api/payment', function (req, res, next) {
     subject: name //商品名称
   })
   // 支付成功或者失败跳转的链接
-  formData.addField('returnUrl', 'http://localhost:8080/payment')
+  // formData.addField('returnUrl', 'http://localhost:8080/payment')
+  formData.addField('returnUrl', 'http://10.50.59.51:8080/payment')
   // 返回promise
   const result = alipaySdk.exec('alipay.trade.page.pay', {}, { formData: formData })
   // 对接支付宝成功,支付宝方返回的数据
