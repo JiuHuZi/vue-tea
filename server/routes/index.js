@@ -65,6 +65,28 @@ router.get('/', function (req, res, next) {
   res.render('index', { title: 'Express' })
 })
 
+// 查询是否有未读的邮件
+router.post('/api/selectUnreadMail', function (req, res, next) {
+  // token
+  let token = req.headers.token
+  let tokenObj = jwt.decode(token)
+
+  // 查询用户
+  connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
+    // 用户id
+    let uid = results[0].id
+    connection.query(`select count(*) as count from mail where receiver = ${uid} and mailStatus = 0`, function (err, result) {
+      res.send({
+        data: {
+          code: 200,
+          success: true,
+          data: result[0]
+        }
+      })
+    })
+  })
+})
+
 // 邮件领取功能
 router.post('/api/getEnclosure', function (req, res, next) {
   // token

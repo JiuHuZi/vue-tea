@@ -18,7 +18,7 @@
       </div>
     </section>
     <footer>
-      <div class="btn" @click="getEnclosure">
+      <div class="btn" @click="getEnclosure" v-if="enclosureStatus == 0">
         <i class="iconfont icon-xiazai-wenjianxiazai-25"></i>
         <span>领取</span>
       </div>
@@ -34,7 +34,8 @@ export default {
   name: 'MailContent',
   data() {
     return {
-      mailList: ''
+      mailList: [],
+      enclosureStatus: 0
     }
   },
   components: {
@@ -54,7 +55,7 @@ export default {
           }
         })
         .then((res) => {
-          console.log(res)
+          // console.log(res)
           res.data.enclosure = '[' + res.data.enclosure + ']'
           this.mailList = res.data
           this.mailList.enclosure = eval(this.mailList.enclosure)
@@ -73,6 +74,7 @@ export default {
             }
           }
           this.mailList.enclosure.sort(compare('weight'))
+          this.enclosureStatus = this.mailList.enclosureStatus
         })
     },
     // 根据权重显示不同颜色
@@ -98,9 +100,10 @@ export default {
           }
         })
         .then((res) => {
-          console.log(res)
+          // console.log(res)
           if (res.success) {
             Toast.success(res.msg)
+            this.enclosureStatus = 1
           } else {
             Toast.fail(res.msg)
           }
@@ -201,6 +204,7 @@ footer {
     i {
       font-size: 24px;
       padding-right: 10px;
+      color: green;
     }
   }
 }

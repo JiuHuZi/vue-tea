@@ -3,70 +3,77 @@
     <header>
       <div class="login" @click="goLogin" v-if="!loginStatus">登录 / 注册</div>
       <div class="user-info" v-else>
-        <div class="setting">
-          <i class="iconfont icon-shezhi" @click="$router.push('/setting')"></i>
-          <i class="iconfont icon-xinxi xinxi" @click="$router.push('/mailindex')"></i>
+        <div class="headerNav">
+          <div class="setting">
+            <i class="iconfont icon-shezhi" @click="$router.push('/setting')"></i>
+          </div>
+          <div class="setting mail">
+            <i class="redIcon" v-if="hasMail"></i>
+            <i class="iconfont icon-xinxi xinxi" @click="$router.push('/mailindex')"></i>
+          </div>
         </div>
 
-        <div class="border">
-          <img :src="userInfo.borderImg" alt="" class="header-border" @click="changeImg" />
-          <div class="imgUrl" @click="changeImg">
-            <img :src="userInfo.imgUrl" alt="" />
-            <i class="iconfont icon-shezhi imgSet"></i>
+        <div class="userInfoContent">
+          <div class="border">
+            <img :src="userInfo.borderImg" alt="" class="header-border" @click="changeImg" />
+            <div class="imgUrl" @click="changeImg">
+              <img :src="userInfo.imgUrl" alt="" />
+              <i class="iconfont icon-shezhi imgSet"></i>
+            </div>
+
+            <van-popup v-model="isShowImg" round position="top" :style="{ height: '35%' }">
+              <van-tabs v-model="active">
+                <van-tab title="更换头像框">
+                  <div>
+                    <ul class="border-list">
+                      <li v-for="(item, index) in borderList" :key="index" @click="changeBorder(item)">
+                        <img :src="item.imgUrl" alt="" />
+                        <span>{{ item.name }}</span>
+                      </li>
+                    </ul>
+                  </div>
+                </van-tab>
+                <van-tab title="更换头像">
+                  <van-form @submit="onSubmitImg" class="changeNameForm">
+                    <h5>修改头像</h5>
+                    <van-field name="uploader" label="文件上传">
+                      <template #input>
+                        <van-uploader v-model="uploader" :accept="'image/*'" :max-count="1" />
+                      </template>
+                    </van-field>
+                    <div style="margin: 16px">
+                      <van-button round block type="info" native-type="submit">提交</van-button>
+                    </div>
+                  </van-form>
+                </van-tab>
+              </van-tabs>
+            </van-popup>
           </div>
 
-          <van-popup v-model="isShowImg" round position="top" :style="{ height: '35%' }">
-            <van-tabs v-model="active">
-              <van-tab title="更换头像框">
-                <div>
-                  <ul class="border-list">
-                    <li v-for="(item, index) in borderList" :key="index" @click="changeBorder(item)">
-                      <img :src="item.imgUrl" alt="" />
-                      <span>{{ item.name }}</span>
-                    </li>
-                  </ul>
+          <div class="info-content" v-if="loginStatus">
+            <div class="userName">
+              <div class="userName-content">
+                <div @click="changeName">
+                  <span :class="isMember ? 'memberName' : ''">{{ userInfo.nickName }}</span>
+                  <i class="iconfont icon-xiugai"></i>
                 </div>
-              </van-tab>
-              <van-tab title="更换头像">
-                <van-form @submit="onSubmitImg" class="changeNameForm">
-                  <h5>修改头像</h5>
-                  <van-field name="uploader" label="文件上传">
-                    <template #input>
-                      <van-uploader v-model="uploader" :accept="'image/*'" :max-count="1" />
-                    </template>
-                  </van-field>
-                  <div style="margin: 16px">
-                    <van-button round block type="info" native-type="submit">提交</van-button>
-                  </div>
-                </van-form>
-              </van-tab>
-            </van-tabs>
-          </van-popup>
-        </div>
-
-        <div class="info-content" v-if="loginStatus">
-          <div class="userName">
-            <div class="userName-content">
-              <div @click="changeName">
-                <span :class="isMember ? 'memberName' : ''">{{ userInfo.nickName }}</span>
-                <i class="iconfont icon-xiugai"></i>
-              </div>
-              <div @click="lock">
-                <van-badge :content="isMember ? '大会员' : '正式会员'" :class="isMember ? 'member' : 'notMember'" />
+                <div @click="lock">
+                  <van-badge :content="isMember ? '大会员' : '正式会员'" :class="isMember ? 'member' : 'notMember'" />
+                </div>
               </div>
             </div>
-          </div>
-          <van-popup v-model="isShowName" round position="bottom" :style="{ height: '30%' }">
-            <van-form @submit="onSubmitName" class="changeNameForm">
-              <h5>修改用户名</h5>
-              <van-field v-model="username" name="新用户名" label="新用户名" placeholder="新用户名" maxlength="8" :rules="[{ required: true, message: '请填写用户名' }]" />
-              <div style="margin: 16px">
-                <van-button round block type="info" native-type="submit">提交</van-button>
-              </div>
-            </van-form>
-          </van-popup>
-          <div class="uid">
-            <span>UID:{{ userInfo.id }}</span>
+            <van-popup v-model="isShowName" round position="bottom" :style="{ height: '30%' }">
+              <van-form @submit="onSubmitName" class="changeNameForm">
+                <h5>修改用户名</h5>
+                <van-field v-model="username" name="新用户名" label="新用户名" placeholder="新用户名" maxlength="8" :rules="[{ required: true, message: '请填写用户名' }]" />
+                <div style="margin: 16px">
+                  <van-button round block type="info" native-type="submit">提交</van-button>
+                </div>
+              </van-form>
+            </van-popup>
+            <div class="uid">
+              <span>UID:{{ userInfo.id }}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -130,7 +137,8 @@ export default {
       uploader: [],
       isMember: false,
       active: 0,
-      borderList: []
+      borderList: [],
+      hasMail: false
     }
   },
   methods: {
@@ -153,6 +161,21 @@ export default {
             // console.log(res.data[0])
             this.USER_LOGIN(res.data[0])
             this.isMember = this.userInfo.member == '1' ? true : false
+          })
+
+        // 查询是否有未读信息
+        http
+          .$axios({
+            url: '/api/selectUnreadMail',
+            method: 'POST',
+            headers: {
+              token: true
+            }
+          })
+          .then((ress) => {
+            if (ress.data.count != 0) {
+              this.hasMail = true
+            }
           })
       }
     },
@@ -306,102 +329,126 @@ export default {
     }
     .user-info {
       display: flex;
+      flex-direction: column;
       padding-top: 20px;
       position: relative;
-      .setting {
+      .headerNav {
+        width: 100%;
         display: flex;
-        position: absolute;
-        right: 5px;
-        top: 5px;
-        color: #fff;
-        font-weight: 500;
-        i {
-          font-size: 26px;
-          padding-right: 5px;
-        }
-        .xinxi {
-          transform: rotateY(180deg);
-        }
-      }
-      .border {
-        position: relative;
-        left: 0;
-        width: 130px;
-        height: 130px;
-        display: flex;
+        justify-content: flex-end;
         align-items: center;
-        justify-content: center;
-        .header-border {
-          position: absolute;
-          top: 1px;
-          // left: 0;
-          width: 125px;
-          height: 125px;
-          z-index: 10;
-        }
-        .imgUrl {
-          position: absolute;
-          img {
-            width: 90px;
-            height: 90px;
-            border-radius: 50%;
-            // border: 5px solid rgb(60, 34, 0);
+        position: absolute;
+        top: 0;
+
+        .setting {
+          display: flex;
+          margin-top: 5px;
+          color: #fff;
+          font-weight: 500;
+          padding-right: 10px;
+          position: relative;
+          i {
+            font-size: 26px;
           }
-          .imgSet {
-            z-index: 99;
-            color: #fff;
-            font-size: 22px;
-            font-weight: bold;
+          .xinxi {
+            transform: rotateY(180deg);
+          }
+        }
+        .mail {
+          .redIcon {
             position: absolute;
-            right: 0px;
-            bottom: 10px;
+            right: 25%;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: red;
+            z-index: 5;
           }
         }
       }
-      .info-content {
-        padding: 10px 5px;
-        .userName {
+      .userInfoContent {
+        display: flex;
+
+        .border {
           position: relative;
-          .userName-content {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            div {
-              display: flex;
-              align-items: center;
-              justify-content: center;
+          left: 0;
+          width: 130px;
+          height: 130px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          .header-border {
+            position: absolute;
+            top: 1px;
+            // left: 0;
+            width: 125px;
+            height: 125px;
+            z-index: 10;
+          }
+          .imgUrl {
+            position: absolute;
+            img {
+              width: 90px;
+              height: 90px;
+              border-radius: 50%;
+              // border: 5px solid rgb(60, 34, 0);
             }
-            .member {
-              background-color: rgb(251, 114, 153);
+            .imgSet {
+              z-index: 99;
               color: #fff;
+              font-size: 22px;
+              font-weight: bold;
+              position: absolute;
+              right: 0px;
+              bottom: 10px;
             }
-            .notMember {
-              background-color: #ccd0d7;
-              color: #99a2aa;
-            }
-            .van-badge {
-              border: none;
-              padding: 2px 5px;
-              text-align: center;
-              margin-left: 5px;
-              margin-top: 3px;
-            }
-          }
-          span {
-            color: #fff;
-            font-size: 18px;
-            padding: 10px 0;
-          }
-          i {
-            color: #fff;
-            font-size: 16px;
-            font-weight: bold;
-            margin-top: 5px;
           }
         }
-        .uid {
-          font-size: 14px;
-          color: #fff;
+        .info-content {
+          padding: 10px 5px;
+          .userName {
+            position: relative;
+            .userName-content {
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              div {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              }
+              .member {
+                background-color: rgb(251, 114, 153);
+                color: #fff;
+              }
+              .notMember {
+                background-color: #ccd0d7;
+                color: #99a2aa;
+              }
+              .van-badge {
+                border: none;
+                padding: 2px 5px;
+                text-align: center;
+                margin-left: 5px;
+                margin-top: 3px;
+              }
+            }
+            span {
+              color: #fff;
+              font-size: 18px;
+              padding: 10px 0;
+            }
+            i {
+              color: #fff;
+              font-size: 16px;
+              font-weight: bold;
+              margin-top: 5px;
+            }
+          }
+          .uid {
+            font-size: 14px;
+            color: #fff;
+          }
         }
       }
     }

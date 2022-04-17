@@ -8,7 +8,7 @@
     </div>
 
     <section>
-      <van-pull-refresh v-model="isLoading" :disabled="finished">
+      <van-pull-refresh v-model="isLoading" @refresh="onRefresh">
         <van-list v-model="loading" :finished="finished" finished-text="没有更多了">
           <div v-for="(item, index) in newData" :key="index">
             <Swiper v-if="item.type == 'swiperList'" :swiperList="item.data"></Swiper>
@@ -77,6 +77,8 @@ export default {
       this.items = Object.freeze(res.topBar)
       this.newData = Object.freeze(res.data)
 
+      console.log(this.newData[3])
+
       // 随机生成8个商品
       let randomArr = []
 
@@ -105,6 +107,26 @@ export default {
     },
     changeTab(item, index) {
       this.addData(index)
+    },
+    // 下拉刷新喜欢列表
+    onRefresh() {
+      console.log('触发下拉刷新')
+      // 随机生成8个商品
+      let randomArr = []
+
+      for (let i = 0; i < this.newData[3].data.length; i++) {
+        let random = Math.floor(Math.random() * this.newData[3].data.length)
+        if (randomArr.indexOf(random) != -1) {
+          i--
+          continue
+        }
+        randomArr.push(random)
+      }
+      this.likeList = []
+      for (let j = 0; j < 8; j++) {
+        this.likeList.push(this.newData[3].data[randomArr[j]])
+      }
+      this.isLoading = false
     }
   }
 }

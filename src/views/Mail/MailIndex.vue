@@ -32,7 +32,7 @@ export default {
   name: 'MailIndex',
   data() {
     return {
-      mailList: ''
+      mailList: []
     }
   },
   components: {

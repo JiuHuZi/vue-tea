@@ -28,7 +28,8 @@ const routes = [
     name: 'Home',
     component: Home,
     meta: {
-      title: '九狐茶叶商城'
+      title: '九狐茶叶商城',
+      keepAlive: true // 此组件需要被缓存
     }
   },
   {
