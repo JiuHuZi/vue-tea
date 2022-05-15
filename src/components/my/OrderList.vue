@@ -2,19 +2,19 @@
   <div class="orderList">
     <h4>我的交易</h4>
     <ul>
-      <li @click="lock">
+      <li @click="goArrearage">
         <i class="iconfont icon-daifukuan" style="font-weight: bold"></i>
         <span>待付款</span>
       </li>
-      <li @click="lock">
+      <li @click="goUnshipped">
         <i class="iconfont icon-icon2"></i>
         <span>待发货</span>
       </li>
-      <li @click="lock">
+      <li @click="goWaitReceiving">
         <i class="iconfont icon-daishouhuo"></i>
         <span>待收货</span>
       </li>
-      <li @click="lock">
+      <li @click="goNoEvaluation">
         <i class="iconfont icon-daipingjia"></i>
         <span>待评价</span>
       </li>
@@ -31,6 +31,42 @@ import { Toast } from 'vant'
 export default {
   name: 'OrderList',
   methods: {
+    // 前往未付款页
+    goArrearage() {
+      this.$router.push({
+        path: '/deal',
+        query: {
+          type: 0
+        }
+      })
+    },
+    // 未发货
+    goUnshipped() {
+      this.$router.push({
+        path: '/deal/unshipped',
+        query: {
+          type: 1
+        }
+      })
+    },
+    // 未收货
+    goWaitReceiving() {
+      this.$router.push({
+        path: '/deal/waitreceiving',
+        query: {
+          type: 2
+        }
+      })
+    },
+    // 未评价
+    goNoEvaluation() {
+      this.$router.push({
+        path: '/deal/noevaluation',
+        query: {
+          type: 3
+        }
+      })
+    },
     // 未开发的功能
     lock() {
       Toast.fail('该功能暂未开放，敬请期待')

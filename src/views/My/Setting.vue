@@ -1,5 +1,5 @@
 <template>
-  <div class="setting">
+  <div class="setting container">
     <header>
       <i class="iconfont icon-fanhui" @click="$router.back()"></i>
       <span>账户设置</span>
@@ -100,9 +100,10 @@ export default {
     }
   }
   section {
-    height: calc(100vh - 44px);
+    height: 100vh;
     width: 100%;
     margin-top: 44px;
+    margin-bottom: 0;
     background-color: #f0eef0;
     .userInfo {
       height: 100px;

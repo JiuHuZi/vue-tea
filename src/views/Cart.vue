@@ -52,7 +52,7 @@
         </div>
         <div>
           <span>总计：</span>
-          <span class="total-active">￥{{ total.price.toFixed(2) }} + 0茶币</span>
+          <span class="total-active">￥{{ total.price.toFixed(2) }}</span>
         </div>
       </div>
       <div class="order" v-if="!isNavState" @click="goOrder">去结算</div>
@@ -152,7 +152,8 @@ export default {
             path: 'Order',
             query: {
               detail: JSON.stringify(this.selectList),
-              goodsList: JSON.stringify(this.goodsList)
+              goodsList: JSON.stringify(this.goodsList),
+              member: JSON.parse(localStorage.getItem('teauserInfo')).member
             }
           })
         })

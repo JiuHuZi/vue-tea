@@ -273,7 +273,8 @@ export default {
             path: '/order',
             query: {
               detail: JSON.stringify([res.data[0].goods_id]),
-              goodsList: JSON.stringify([res.data[0]])
+              goodsList: JSON.stringify([res.data[0]]),
+              member: JSON.parse(localStorage.getItem('teauserInfo')).member
             }
           })
         })

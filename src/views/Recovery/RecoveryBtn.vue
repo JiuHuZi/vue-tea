@@ -79,6 +79,7 @@ section {
   align-items: center;
   flex-direction: column;
   background-color: #f5f5f5;
+  font-size: 12px;
   div {
     width: 335px;
     margin: 10px 0;
@@ -119,6 +120,11 @@ section {
     color: #fff;
     font-size: 16px;
     border-radius: 6px;
+  }
+  .login-tab {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
   }
 }
 </style>

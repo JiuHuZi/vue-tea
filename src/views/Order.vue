@@ -36,6 +36,11 @@
         </van-radio-group>
       </div>
 
+      <div class="discounts">
+        <span class="discounts-title">优惠：</span>
+        <span class="discounts-msg">{{ discountTitle }}</span>
+      </div>
+
       <div class="goods">
         <ul>
           <li v-for="(item, index) in goodsList" :key="index">
@@ -89,7 +94,34 @@ export default {
       order_id: (state) => state.order.order_id,
       selectList: (state) => state.cart.selectList
     }),
-    ...mapGetters(['defaultPath'])
+    ...mapGetters(['defaultPath']),
+    discountMsg() {
+      let discounts = 1
+      let member = this.$route.query.member
+      if (member == '1') {
+        discounts = 0.9
+      } else if (member == '2') {
+        discounts = 0.85
+      } else if (member == '3') {
+        discounts = 0.8
+      } else if (member == '4') {
+        discounts = 0.75
+      }
+      return discounts
+    },
+    discountTitle() {
+      let message = '无优惠'
+      if (this.discountMsg == 0.9) {
+        message = '月度会员9折'
+      } else if (this.discountMsg == 0.85) {
+        message = '季度会员85折'
+      } else if (this.discountMsg == 0.8) {
+        message = '年度会员8折'
+      } else if (this.discountMsg == 0.75) {
+        message = '百年大会员75折'
+      }
+      return message
+    }
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
@@ -165,7 +197,7 @@ export default {
             num += parseInt(v)
           })
           this.total = {
-            price: parseFloat(res.data[0].goods_price).toFixed(2),
+            price: parseFloat(res.data[0].goods_price).toFixed(2) * this.discountMsg,
             num
           }
         })
@@ -308,12 +340,30 @@ section {
     padding: 6px 10px;
     margin-top: 15px;
     font-size: 16px;
+    .payment-title {
+      font-weight: bold;
+    }
     .van-radio-group {
       display: flex;
       padding: 10px 0;
       .van-radio {
         padding-right: 10px;
       }
+    }
+  }
+  .discounts {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 16px;
+    padding: 5px 10px;
+    background-color: #fff;
+    .discounts-title {
+      font-weight: bold;
+    }
+    .discounts-msg {
+      color: #999;
+      font-size: 14px;
     }
   }
   .goods {

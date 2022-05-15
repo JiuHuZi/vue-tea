@@ -25,7 +25,7 @@
 <script>
 import Header from '@/components/Login/header.vue'
 import Tabber from '@/components/common/Tabbar.vue'
-import { Toast } from 'mint-ui'
+import { Toast } from 'vant'
 import http from '@/common/api/request.js'
 import { mapMutations } from 'vuex'
 export default {
@@ -104,7 +104,7 @@ export default {
       let bool = true
       if (!this.rules[key].rule.test(this[key])) {
         // 提示信息
-        Toast(this.rules[key].msg)
+        Toast.fail(this.rules[key].msg)
         bool = false
         return false
       }
@@ -117,7 +117,19 @@ export default {
 
       // 判断验证码是否正确
       if (this.code != this.userCode) {
-        Toast('验证码不正确')
+        Toast.fail('验证码不正确')
+        return
+      }
+
+      // 判断是否有输入手机号
+      if (this.userTel == '') {
+        Toast.fail('请输入手机号')
+        return
+      }
+
+      // 判断是否有输入验证码
+      if (this.userCode == '') {
+        Toast.fail('请输入验证码')
         return
       }
 

@@ -2,8 +2,8 @@
   <div class="mail-index container">
     <Header><span>邮箱</span></Header>
     <section>
-      <div v-if="mailList == ''">
-        <span>邮箱是空的噢</span>
+      <div v-if="mailList == ''" style="text-align: center">
+        <span style="font-size: 12px; color: #999">———————— 邮箱空空如也 ————————</span>
       </div>
       <ul v-else>
         <li v-for="(item, index) in mailList" :key="index" @click="goMailContent(item)" :class="item.mailStatus == 1 ? 'readed' : ''">

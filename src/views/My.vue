@@ -27,7 +27,7 @@
                   <div>
                     <ul class="border-list">
                       <li v-for="(item, index) in borderList" :key="index" @click="changeBorder(item)">
-                        <img :src="item.imgUrl" alt="" />
+                        <img v-lazy="item.imgUrl" alt="" />
                         <span>{{ item.name }}</span>
                       </li>
                     </ul>
@@ -57,8 +57,8 @@
                   <span :class="isMember ? 'memberName' : ''">{{ userInfo.nickName }}</span>
                   <i class="iconfont icon-xiugai"></i>
                 </div>
-                <div @click="lock">
-                  <van-badge :content="isMember ? '大会员' : '正式会员'" :class="isMember ? 'member' : 'notMember'" />
+                <div @click="$router.push('/vip')">
+                  <van-badge :content="memberName" :class="isMember ? 'member' : 'notMember'" />
                 </div>
               </div>
             </div>
@@ -160,7 +160,7 @@ export default {
           .then((res) => {
             // console.log(res.data[0])
             this.USER_LOGIN(res.data[0])
-            this.isMember = this.userInfo.member == '1' ? true : false
+            this.isMember = this.userInfo.member == '0' ? false : true
           })
 
         // 查询是否有未读信息
@@ -297,7 +297,22 @@ export default {
     ...mapState({
       userInfo: (state) => state.user.userInfo,
       loginStatus: (state) => state.user.loginStatus
-    })
+    }),
+    memberName() {
+      let name = ''
+      if (this.userInfo.member == '0') {
+        name = '正式会员'
+      } else if (this.userInfo.member == '1') {
+        name = '月度大会员'
+      } else if (this.userInfo.member == '2') {
+        name = '季度大会员'
+      } else if (this.userInfo.member == '3') {
+        name = '年度大会员'
+      } else if (this.userInfo.member == '4') {
+        name = '百年大会员'
+      }
+      return name
+    }
   },
   created() {
     this.getData()
@@ -379,14 +394,16 @@ export default {
           justify-content: center;
           .header-border {
             position: absolute;
-            top: 1px;
+            // top: 1px;
             // left: 0;
-            width: 125px;
-            height: 125px;
+            width: 130px;
+            height: 130px;
             z-index: 10;
           }
           .imgUrl {
             position: absolute;
+            width: 90px;
+            height: 90px;
             img {
               width: 90px;
               height: 90px;

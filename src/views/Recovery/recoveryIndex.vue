@@ -102,6 +102,11 @@ export default {
         Toast('验证码不正确')
         return
       }
+      // 判断是否有输入手机号
+      if (this.userTel == '') {
+        Toast('请输入手机号')
+        return
+      }
 
       // 告诉后端，用户输入的手机号，存在吗？
       let res = await http.$axios({
@@ -134,6 +139,7 @@ section {
   align-items: center;
   flex-direction: column;
   background-color: #f5f5f5;
+  font-size: 12px;
   div {
     width: 335px;
     margin: 10px 0;
@@ -174,6 +180,11 @@ section {
     color: #fff;
     font-size: 16px;
     border-radius: 6px;
+  }
+  .login-tab {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
   }
 }
 </style>

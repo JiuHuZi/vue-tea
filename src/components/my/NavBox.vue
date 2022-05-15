@@ -13,7 +13,7 @@
           <i class="iconfont icon-kefu"></i>
           <span>客服中心</span>
         </li>
-        <li @click="goStart">
+        <li @click="goCollect">
           <i class="iconfont icon-shoucang"></i>
           <span>我的收藏</span>
         </li>
@@ -37,7 +37,7 @@
           <i class="iconfont icon-qiandao" style="font-weight: bold"></i>
           <span>签到送礼</span>
         </li>
-        <li @click="lock">
+        <li @click="goVip">
           <i class="iconfont icon-huiyuan" style="font-weight: bold"></i>
           <span>大会员中心</span>
         </li>
@@ -76,8 +76,8 @@ export default {
       this.$router.push('/wallet')
     },
     // 进入我的收藏
-    goStart() {
-      this.$router.push('/start')
+    goCollect() {
+      this.$router.push('/collect')
     },
     // 进入修改密码
     goEdit() {
@@ -94,6 +94,10 @@ export default {
     // 进入足迹页
     goHistory() {
       this.$router.push('/history')
+    },
+    // 进入会员页
+    goVip() {
+      this.$router.push('/vip')
     },
     // 未开发的功能
     lock() {

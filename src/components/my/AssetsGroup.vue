@@ -13,7 +13,7 @@
         <b>{{ payTokenNum }}</b>
         <span>优惠券</span>
       </li>
-      <li @click="$router.push('/start')">
+      <li @click="$router.push('/collect')">
         <b>{{ startNum }}</b>
         <span>收藏夹</span>
       </li>

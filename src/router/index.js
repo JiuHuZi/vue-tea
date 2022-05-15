@@ -35,24 +35,47 @@ const routes = [
   {
     path: '/list',
     name: 'List',
-    component: () => import('../views/List.vue')
+    component: () => import('../views/List.vue'),
+    meta: {
+      title: '分类'
+    }
   },
   {
     path: '/cart',
     name: 'Cart',
-    component: () => import('../views/Cart.vue')
+    component: () => import('../views/Cart.vue'),
+    meta: {
+      title: '购物车'
+    }
   },
   {
     path: '/my',
     name: 'My',
-    component: () => import('../views/My.vue')
+    component: () => import('../views/My.vue'),
+    meta: {
+      title: '我的'
+    }
   },
   {
     path: '/search',
     name: 'Search',
     children: [
-      { path: '/', name: 'index', component: () => import('@/views/Search/Search-index.vue') },
-      { path: 'slist', name: 'slist', component: () => import('@/views/Search/Search-list.vue') }
+      {
+        path: '/',
+        name: 'index',
+        component: () => import('@/views/Search/Search-index.vue'),
+        meta: {
+          title: '搜索'
+        }
+      },
+      {
+        path: 'slist',
+        name: 'slist',
+        component: () => import('@/views/Search/Search-list.vue'),
+        meta: {
+          title: '搜索'
+        }
+      }
     ],
     component: () => import('@/views/Search.vue')
   },
@@ -60,6 +83,7 @@ const routes = [
     path: '/detail',
     name: 'Detail',
     meta: {
+      title: '商品详情',
       keepAlive: true // 此组件需要被缓存
     },
     component: () => import('@/views/Detail.vue')
@@ -67,24 +91,47 @@ const routes = [
   {
     path: '/login',
     name: 'Login',
-    component: () => import('@/views/Login/Login.vue')
+    component: () => import('@/views/Login/Login.vue'),
+    meta: {
+      title: '登录'
+    }
   },
   {
     path: '/userlogin',
     name: 'UserLogin',
-    component: () => import('@/views/Login/UserLogin.vue')
+    component: () => import('@/views/Login/UserLogin.vue'),
+    meta: {
+      title: '登录'
+    }
   },
   {
     path: '/register',
     name: 'Register',
-    component: () => import('@/views/Login/Register.vue')
+    component: () => import('@/views/Login/Register.vue'),
+    meta: {
+      title: '注册'
+    }
   },
   {
     path: '/recovery',
     name: 'Recovery',
     children: [
-      { path: '/', name: 'recoveryindex', component: () => import('@/views/Recovery/recoveryIndex.vue') },
-      { path: 'btn', name: 'btn', component: () => import('@/views/Recovery/RecoveryBtn.vue') }
+      {
+        path: '/',
+        name: 'recoveryindex',
+        component: () => import('@/views/Recovery/recoveryIndex.vue'),
+        meta: {
+          title: '找回密码'
+        }
+      },
+      {
+        path: 'btn',
+        name: 'btn',
+        component: () => import('@/views/Recovery/RecoveryBtn.vue'),
+        meta: {
+          title: '找回密码'
+        }
+      }
     ],
     component: () => import('@/views/Search.vue')
   },
@@ -92,8 +139,22 @@ const routes = [
     path: '/path',
     name: 'Path',
     children: [
-      { path: '/', name: 'pathindex', component: () => import('@/views/Path/PathIndex.vue') },
-      { path: 'pathlist', name: 'pathlist', component: () => import('@/views/Path/PathList.vue') }
+      {
+        path: '/',
+        name: 'pathindex',
+        component: () => import('@/views/Path/PathIndex.vue'),
+        meta: {
+          title: '我的地址'
+        }
+      },
+      {
+        path: 'pathlist',
+        name: 'pathlist',
+        component: () => import('@/views/Path/PathList.vue'),
+        meta: {
+          title: '我的地址'
+        }
+      }
     ],
     component: () => import('@/views/My/Path.vue')
   },
@@ -101,6 +162,7 @@ const routes = [
     path: '/order',
     name: 'Order',
     meta: {
+      title: '我的订单',
       keepAlive: true // 此组件需要被缓存
     },
     component: () => import('@/views/Order.vue')
@@ -113,7 +175,10 @@ const routes = [
   {
     path: '/wallet',
     name: 'Wallet',
-    component: () => import('@/views/My/Wallet.vue')
+    component: () => import('@/views/My/Wallet.vue'),
+    meta: {
+      title: '我的钱包'
+    }
   },
   {
     path: '/topUp',
@@ -121,19 +186,26 @@ const routes = [
     component: () => import('@/views/Topup.vue')
   },
   {
-    path: '/start',
-    name: 'Start',
-    component: () => import('@/views/My/Start.vue')
+    path: '/collect',
+    name: 'Collect',
+    component: () => import('@/views/My/Collect.vue'),
+    meta: {
+      title: '我的收藏'
+    }
   },
   {
     path: '/integral',
     name: 'Integral',
-    component: () => import('@/views/Integral.vue')
+    component: () => import('@/views/Integral.vue'),
+    meta: {
+      title: '积分商城'
+    }
   },
   {
     path: '/integralDetail',
     name: 'IntegralDetail',
     meta: {
+      title: '商品详情',
       keepAlive: true // 此组件需要被缓存
     },
     component: () => import('@/views/Integral/Detail.vue')
@@ -142,6 +214,7 @@ const routes = [
     path: '/integralOrder',
     name: 'IntegralOrder',
     meta: {
+      title: '我的订单',
       keepAlive: true // 此组件需要被缓存
     },
     component: () => import('@/views/Integral/Order.vue')
@@ -154,32 +227,102 @@ const routes = [
   {
     path: '/editPassword',
     name: 'EditPassword',
-    component: () => import('@/views/My/Edit.vue')
+    component: () => import('@/views/My/Edit.vue'),
+    meta: {
+      title: '修改密码'
+    }
   },
   {
     path: '/setting',
     name: 'Setting',
-    component: () => import('@/views/My/Setting.vue')
+    component: () => import('@/views/My/Setting.vue'),
+    meta: {
+      title: '设置'
+    }
   },
   {
     path: '/history',
     name: 'History',
-    component: () => import('@/views/My/History.vue')
+    component: () => import('@/views/My/History.vue'),
+    meta: {
+      title: '足迹'
+    }
   },
   {
     path: '/signin',
     name: 'Signin',
-    component: () => import('@/views/My/Signin.vue')
+    component: () => import('@/views/My/Signin.vue'),
+    meta: {
+      title: '签到'
+    }
   },
   {
     path: '/mailindex',
     name: 'MailIndex',
-    component: () => import('@/views/Mail/MailIndex.vue')
+    component: () => import('@/views/Mail/MailIndex.vue'),
+    meta: {
+      title: '邮箱'
+    }
   },
   {
     path: '/mailcontent',
     name: 'Mailcontent',
-    component: () => import('@/views/Mail/MailContent.vue')
+    component: () => import('@/views/Mail/MailContent.vue'),
+    meta: {
+      title: '邮箱'
+    }
+  },
+  {
+    path: '/vip',
+    name: 'Vip',
+    component: () => import('@/views/Vip/Vip.vue'),
+    meta: {
+      title: '会员中心'
+    }
+  },
+  {
+    path: '/vipstatus',
+    name: 'Vipstatus',
+    component: () => import('@/views/Vip/Vipstatus.vue')
+  },
+  {
+    path: '/deal',
+    name: 'Deal',
+    children: [
+      {
+        path: '/',
+        name: 'Arrearage',
+        component: () => import('@/views/Deal/Arrearage.vue'),
+        meta: {
+          title: '未付款'
+        }
+      },
+      {
+        path: 'unshipped',
+        name: 'Unshipped',
+        component: () => import('@/views/Deal/Unshipped.vue'),
+        meta: {
+          title: '待发货'
+        }
+      },
+      {
+        path: 'waitreceiving',
+        name: 'WaitReceiving',
+        component: () => import('@/views/Deal/WaitReceiving.vue'),
+        meta: {
+          title: '待收货'
+        }
+      },
+      {
+        path: 'noevaluation',
+        name: 'NoEvaluation',
+        component: () => import('@/views/Deal/NoEvaluation.vue'),
+        meta: {
+          title: '待评价'
+        }
+      }
+    ],
+    component: () => import('@/views/Deal/Deal.vue')
   }
 ]
 

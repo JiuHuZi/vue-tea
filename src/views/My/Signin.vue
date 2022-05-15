@@ -42,6 +42,8 @@
         <div>
           <p>连续签到 {{ days }} 天</p>
           <p>恭喜您，获得 {{ reward }} 积分</p>
+          <p style="font-size: 14px" v-if="memberReward != 0">会员权益，额外获得 {{ memberReward }} 积分</p>
+          <p style="font-size: 14px; color: #bbb">可前往我的钱包查看</p>
         </div>
         <span>3 秒后自动关闭</span>
       </van-popup>
@@ -62,6 +64,7 @@ export default {
       disabled: true,
       show: false,
       reward: '',
+      memberReward: '',
       rewardList: [
         { day: '1', reward: '3 积分' },
         { day: '2', reward: '4 积分' },
@@ -119,9 +122,10 @@ export default {
           }
         })
         .then((res) => {
-          // console.log(res)
+          console.log(res)
           this.days = res.data.total_time
           this.reward = res.data.reward
+          this.memberReward = res.data.memberReward
           this.isSignIn = res.success
           this.disabled = res.success
           this.show = true

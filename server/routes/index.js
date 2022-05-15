@@ -21,6 +21,22 @@ const upload = multer({
   dest: path.join(process.cwd(), '../public/images/headerImg')
 })
 
+// 获取N个月后的时间
+function getDate(params, data = '') {
+  var dt = data != '' ? new Date(data) : new Date()
+  dt.setMonth(dt.getMonth() + Number(params + 1))
+  // return dt.toLocaleString().replace(/\//g, '-') //这里只是把 "/" 替换为 "-" ;  看需要可去掉;
+  console.log(`${dt.getFullYear()}-${dt.getMonth()}-${dt.getDate()} ${dt.getHours()}:${dt.getMinutes()}`)
+  return `${dt.getFullYear()}-${dt.getMonth()}-${dt.getDate()} ${dt.getHours()}:${dt.getMinutes()}`
+}
+
+// 计算两个日期相差多少天
+function days(day1, day2) {
+  var time = new Date(day2).getTime() - new Date(day1).getTime()
+  var date = Math.ceil(time / (24 * 60 * 60 * 1000))
+  return date
+}
+
 // 获取当前时间
 function getTime() {
   const now = new Date()
@@ -65,6 +81,476 @@ router.get('/', function (req, res, next) {
   res.render('index', { title: 'Express' })
 })
 
+// 查看vip状态
+router.post('/api/selectVipStatus', function (req, res, next) {
+  // token
+  let token = req.headers.token
+  let tokenObj = jwt.decode(token)
+  // 查询用户
+  connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
+    // 用户id
+    let uid = results[0].id
+    connection.query(`select * from vip_list where uid = ${uid}`, function (err, result) {
+      if (result.length > 0) {
+        res.send({
+          data: {
+            code: 200,
+            success: true,
+            data: result[0]
+          }
+        })
+      } else {
+        res.send({
+          data: {
+            code: 0,
+            success: false,
+            msg: '没有购买过vip'
+          }
+        })
+      }
+    })
+  })
+})
+
+// 查看vip状态
+router.post('/api/selectVip', function (req, res, next) {
+  // token
+  let token = req.headers.token
+  let tokenObj = jwt.decode(token)
+  // 查询用户
+  connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
+    // 用户id
+    let uid = results[0].id
+    connection.query(`select * from vip_list where uid = ${uid}`, function (err, result) {
+      if (result.length > 0) {
+        let overtime = result[0].overtime
+        let day = days(getTime(), overtime)
+        // 会员等级
+        let vipStatus = 0
+        if (day >= 36500) {
+          vipStatus = 4
+        } else if (day >= 365 && day < 36500) {
+          vipStatus = 3
+        } else if (day >= 90 && day < 365) {
+          vipStatus = 2
+        } else if (day > 0 && day < 90) {
+          vipStatus = 1
+        } else if (day <= 0) {
+          vipStatus = 0
+        }
+        connection.query(`update user set member = '${vipStatus}' where id = ${uid}`)
+        res.send({
+          data: {
+            code: 200,
+            success: true
+          }
+        })
+      }
+    })
+  })
+})
+
+// 支付状态
+router.post('/api/successVip', function (req, res, next) {
+  // token
+  let token = req.headers.token
+  let tokenObj = jwt.decode(token)
+  // 订单号
+  let out_trade_no = req.body.out_trade_no
+  let trade_no = req.body.trade_no
+  // console.log(out_trade_no, trade_no)
+
+  //支付宝配置
+  const formData = new AlipayFormData()
+  // 调用 setMethod 并传入 get，会返回可以跳转到支付页面的 url
+  formData.setMethod('get')
+  // 支付时的信息
+  formData.addField('bizContent', {
+    out_trade_no,
+    trade_no
+  })
+  // 返回promise
+  const result = alipaySdk.exec('alipay.trade.query', {}, { formData: formData })
+  // 后端请求支付宝
+  result.then((resData) => {
+    axios({
+      method: 'GET',
+      url: resData
+    })
+      .then((data) => {
+        // console.log(data)
+        let responseCode = data.data.alipay_trade_query_response
+        if (responseCode.code == '10000') {
+          switch (responseCode.trade_status) {
+            case 'WAIT_BUYER_PAY':
+              res.send({
+                data: {
+                  code: 0,
+                  msg: '支付宝有交易,没付款'
+                }
+              })
+              break
+
+            case 'TRADE_CLOSED':
+              res.send({
+                data: {
+                  code: 1,
+                  msg: '交易关闭'
+                }
+              })
+              break
+
+            case 'TRADE_FINISHED':
+              // 查询用户
+              connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
+                // 用户id
+                let uid = results[0].id
+                let borderList = results[0].hasBorder.split(',')
+                connection.query(`select * from store_order where order_id = ${out_trade_no}`, function (err, result) {
+                  // 充值月份
+                  let month = 0
+                  if (result[0].goods_name == '月度大会员') {
+                    if (borderList.indexOf('22') == -1) {
+                      connection.query(`select * from border_list where id = 22`, function (e, border) {
+                        let borderMsg = border[0]
+                        borderMsg.type = '头像框'
+                        borderMsg.weight = '1'
+                        connection.query(
+                          `insert into mail(sender,receiver,title,content,enclosure,enclosureStatus,sendTime,mailStatus) values('【九狐子商城】运营团队',${uid},'【奖励】会员等级奖励','亲爱的旅行者：请查收通过购买大会员增值服务获得的奖励','${JSON.stringify(borderMsg)}',0,'${getTime()}',0)`
+                        )
+                      })
+                    }
+                    month = 1
+                  } else if (result[0].goods_name == '季度大会员') {
+                    if (borderList.indexOf('23') == -1) {
+                      connection.query(`select * from border_list where id = 23`, function (e, border) {
+                        console.log(border)
+                        let borderMsg = border[0]
+                        borderMsg.type = '头像框'
+                        borderMsg.weight = '1'
+                        connection.query(
+                          `insert into mail(sender,receiver,title,content,enclosure,enclosureStatus,sendTime,mailStatus) values('【九狐子商城】运营团队',${uid},'【奖励】会员等级奖励','亲爱的旅行者：请查收通过购买大会员增值服务获得的奖励','${JSON.stringify(borderMsg)}',0,'${getTime()}',0)`
+                        )
+                      })
+                    }
+                    month = 3
+                  } else if (result[0].goods_name == '年度大会员') {
+                    if (borderList.indexOf('24') == -1) {
+                      connection.query(`select * from border_list where id = 24`, function (e, border) {
+                        let borderMsg = border[0]
+                        borderMsg.type = '头像框'
+                        borderMsg.weight = '1'
+                        connection.query(
+                          `insert into mail(sender,receiver,title,content,enclosure,enclosureStatus,sendTime,mailStatus) values('【九狐子商城】运营团队',${uid},'【奖励】会员等级奖励','亲爱的旅行者：请查收通过购买大会员增值服务获得的奖励','${JSON.stringify(borderMsg)}',0,'${getTime()}',0)`
+                        )
+                      })
+                    }
+                    month = 12
+                  }
+
+                  connection.query(`select * from vip_list where uid = ${uid}`, function (e, r) {
+                    if (r.length == 0) {
+                      connection.query(`insert into vip_list(uid,overtime) value(${uid},'${getDate(month)}')`, function () {
+                        connection.query(`select * from vip_list where uid = ${uid}`, function (e, date) {
+                          let day = days(getTime(), date[0].overtime)
+                          console.log(day)
+                          // 会员等级
+                          let vipStatus = 0
+                          if (day >= 36500) {
+                            vipStatus = 4
+                          } else if (day >= 365 && day < 36500) {
+                            vipStatus = 3
+                          } else if (day >= 90 && day < 365) {
+                            vipStatus = 2
+                          } else if (day > 0 && day < 90) {
+                            vipStatus = 1
+                          } else if (day <= 0) {
+                            vipStatus = 0
+                          }
+                          connection.query(`update user set member = '${vipStatus}' where id = ${uid}`)
+                        })
+                      })
+                    } else {
+                      let overtime = r[0].overtime
+                      if (getTime() > overtime) {
+                        connection.query(`update vip_list set overtime = '${getDate(month)}' where uid = ${uid}`, function () {
+                          connection.query(`select * from vip_list where uid = ${uid}`, function (e, date) {
+                            let day = days(getTime(), date[0].overtime)
+                            console.log(day)
+                            // 会员等级
+                            let vipStatus = 0
+                            if (day >= 36500) {
+                              vipStatus = 4
+                            } else if (day >= 365 && day < 36500) {
+                              vipStatus = 3
+                            } else if (day >= 90 && day < 365) {
+                              vipStatus = 2
+                            } else if (day > 0 && day < 90) {
+                              vipStatus = 1
+                            } else if (day <= 0) {
+                              vipStatus = 0
+                            }
+                            connection.query(`update user set member = '${vipStatus}' where id = ${uid}`)
+                          })
+                        })
+                      } else {
+                        connection.query(`update vip_list set overtime = '${getDate(month, overtime)}' where uid = ${uid}`, function () {
+                          connection.query(`select * from vip_list where uid = ${uid}`, function (e, date) {
+                            let day = days(getTime(), date[0].overtime)
+                            console.log(day)
+                            // 会员等级
+                            let vipStatus = 0
+                            if (day >= 36500) {
+                              vipStatus = 4
+                            } else if (day >= 365 && day < 36500) {
+                              vipStatus = 3
+                            } else if (day >= 90 && day < 365) {
+                              vipStatus = 2
+                            } else if (day > 0 && day < 90) {
+                              vipStatus = 1
+                            } else if (day <= 0) {
+                              vipStatus = 0
+                            }
+                            connection.query(`update user set member = '${vipStatus}' where id = ${uid}`)
+                          })
+                        })
+                      }
+                    }
+
+                    connection.query(`update store_order set order_status = replace(order_status,2,3) where order_id = ${out_trade_no}`, function () {
+                      res.send({
+                        data: {
+                          code: 2,
+                          msg: '交易完成'
+                        }
+                      })
+                    })
+                  })
+                })
+              })
+              break
+
+            case 'TRADE_SUCCESS':
+              // 查询用户
+              connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
+                // 用户id
+                let uid = results[0].id
+                let borderList = results[0].hasBorder.split(',')
+                // console.log(borderList)
+                connection.query(`select * from store_order where order_id = ${out_trade_no}`, function (err, result) {
+                  // 充值月份
+                  let month = 0
+                  if (result[0].goods_name == '月度大会员') {
+                    if (borderList.indexOf('22') == -1) {
+                      connection.query(`select * from border_list where id = 22`, function (e, border) {
+                        let borderMsg = border[0]
+                        borderMsg.type = '头像框'
+                        borderMsg.weight = '1'
+                        connection.query(`insert into mail(sender,receiver,title,content,enclosure,enclosureStatus,sendTime,mailStatus) values('【九狐子商城】运营团队',${uid},'【奖励】会员等级奖励','亲爱的旅行者：请查收通过购买大会员获得的奖励','${JSON.stringify(borderMsg)}',0,'${getTime()}',0)`)
+                      })
+                    }
+                    month = 1
+                  } else if (result[0].goods_name == '季度大会员') {
+                    if (borderList.indexOf('23') == -1) {
+                      connection.query(`select * from border_list where id = 23`, function (e, border) {
+                        let borderMsg = border[0]
+                        borderMsg.type = '头像框'
+                        borderMsg.weight = '1'
+                        connection.query(`insert into mail(sender,receiver,title,content,enclosure,enclosureStatus,sendTime,mailStatus) values('【九狐子商城】运营团队',${uid},'【奖励】会员等级奖励','亲爱的旅行者：请查收通过购买大会员获得的奖励','${JSON.stringify(borderMsg)}',0,'${getTime()}',0)`)
+                      })
+                    }
+                    month = 3
+                  } else if (result[0].goods_name == '年度大会员') {
+                    if (borderList.indexOf('24') == -1) {
+                      connection.query(`select * from border_list where id = 24`, function (e, border) {
+                        let borderMsg = border[0]
+                        borderMsg.type = '头像框'
+                        borderMsg.weight = '1'
+                        connection.query(`insert into mail(sender,receiver,title,content,enclosure,enclosureStatus,sendTime,mailStatus) values('【九狐子商城】运营团队',${uid},'【奖励】会员等级奖励','亲爱的旅行者：请查收通过购买大会员获得的奖励','${JSON.stringify(borderMsg)}',0,'${getTime()}',0)`)
+                      })
+                    }
+                    month = 12
+                  }
+
+                  connection.query(`select * from vip_list where uid = ${uid}`, function (e, r) {
+                    if (r.length == 0) {
+                      connection.query(`insert into vip_list(uid,overtime) value(${uid},'${getDate(month)}')`, function () {
+                        connection.query(`select * from vip_list where uid = ${uid}`, function (e, date) {
+                          let day = days(getTime(), date[0].overtime)
+                          console.log(day)
+                          // 会员等级
+                          let vipStatus = 0
+                          if (day >= 36500) {
+                            vipStatus = 4
+                          } else if (day >= 365 && day < 36500) {
+                            vipStatus = 3
+                          } else if (day >= 90 && day < 365) {
+                            vipStatus = 2
+                          } else if (day > 0 && day < 90) {
+                            vipStatus = 1
+                          } else if (day <= 0) {
+                            vipStatus = 0
+                          }
+                          connection.query(`update user set member = '${vipStatus}' where id = ${uid}`)
+                        })
+                      })
+                    } else {
+                      let overtime = r[0].overtime
+                      if (getTime() > overtime) {
+                        connection.query(`update vip_list set overtime = '${getDate(month)}' where uid = ${uid}`, function () {
+                          connection.query(`select * from vip_list where uid = ${uid}`, function (e, date) {
+                            let day = days(getTime(), date[0].overtime)
+                            console.log(day)
+                            // 会员等级
+                            let vipStatus = 0
+                            if (day >= 36500) {
+                              vipStatus = 4
+                            } else if (day >= 365 && day < 36500) {
+                              vipStatus = 3
+                            } else if (day >= 90 && day < 365) {
+                              vipStatus = 2
+                            } else if (day > 0 && day < 90) {
+                              vipStatus = 1
+                            } else if (day <= 0) {
+                              vipStatus = 0
+                            }
+                            connection.query(`update user set member = '${vipStatus}' where id = ${uid}`)
+                          })
+                        })
+                      } else {
+                        connection.query(`update vip_list set overtime = '${getDate(month, overtime)}' where uid = ${uid}`, function () {
+                          connection.query(`select * from vip_list where uid = ${uid}`, function (e, date) {
+                            let day = days(getTime(), date[0].overtime)
+                            console.log(day)
+                            // 会员等级
+                            let vipStatus = 0
+                            if (day >= 36500) {
+                              vipStatus = 4
+                            } else if (day >= 365 && day < 36500) {
+                              vipStatus = 3
+                            } else if (day >= 90 && day < 365) {
+                              vipStatus = 2
+                            } else if (day > 0 && day < 90) {
+                              vipStatus = 1
+                            } else if (day <= 0) {
+                              vipStatus = 0
+                            }
+                            connection.query(`update user set member = '${vipStatus}' where id = ${uid}`)
+                          })
+                        })
+                      }
+                    }
+
+                    connection.query(`update store_order set order_status = replace(order_status,2,3) where order_id = ${out_trade_no}`, function () {
+                      res.send({
+                        data: {
+                          code: 2,
+                          msg: '交易完成'
+                        }
+                      })
+                    })
+                  })
+                })
+              })
+              break
+          }
+        } else if (responseCode.code == '40004') {
+          res.send({
+            data: {
+              code: 4,
+              msg: '交易不存在'
+            }
+          })
+        }
+      })
+      .catch((err) => {
+        res.send({
+          data: {
+            code: 500,
+            msg: '交易失败',
+            err
+          }
+        })
+      })
+  })
+})
+
+// 发起支付
+router.post('/api/buyvip', function (req, res, next) {
+  // 订单号
+  let orderId = req.body.orderId
+  // 商品总价
+  let price = req.body.price
+  // 购买商品的名称
+  let name = req.body.name
+
+  // 开始对接支付宝API
+  const formData = new AlipayFormData()
+  // 调用 setMethod 并传入 get，会返回可以跳转到支付页面的 url
+  formData.setMethod('get')
+  // 支付时的信息
+  formData.addField('bizContent', {
+    outTradeNo: orderId, //订单号
+    productCode: 'FAST_INSTANT_TRADE_PAY', //写死的
+    totalAmount: price, //价格
+    subject: name //商品名称
+  })
+  // 支付成功或者失败跳转的链接
+  // formData.addField('returnUrl', 'http://localhost:8080/topUp')
+  formData.addField('returnUrl', 'http://10.50.59.51:8080/vipstatus')
+  // 返回promise
+  const result = alipaySdk.exec('alipay.trade.page.pay', {}, { formData: formData })
+  // 对接支付宝成功,支付宝方返回的数据
+  result.then((resp) => {
+    res.send({
+      data: {
+        code: 200,
+        success: true,
+        msg: '支付中',
+        paymentUrl: resp
+      }
+    })
+  })
+})
+
+// 购买VIP订单
+router.post('/api/addOrdervip', function (req, res, next) {
+  let current = req.body.current
+  let goodsName = ''
+  let goodsPrice = 0
+  if (current == 0) {
+    goodsName = '年度大会员'
+    goodsPrice = 216
+  } else if (current == 1) {
+    goodsName = '季度大会员'
+    goodsPrice = 60
+  } else if (current == 2) {
+    goodsName = '月度大会员'
+    goodsPrice = 25
+  }
+  // token
+  let token = req.headers.token
+  let tokenObj = jwt.decode(token)
+  // 订单号
+  let orderId = randomNumber()
+
+  // 查询用户
+  connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
+    // 用户id
+    let uid = results[0].id
+    connection.query(`insert into store_order (order_id,goods_name,goods_price,goods_num,order_status,uid,mode) values('${orderId}', '${goodsName}','${goodsPrice}',1,'2',${uid},'会员')`, function () {
+      connection.query(`select * from store_order where uid = ${uid} and order_id = '${orderId}'`, function (err, result) {
+        res.send({
+          data: {
+            code: 200,
+            data: result[0],
+            success: true
+          }
+        })
+      })
+    })
+  })
+})
 // 查询是否有未读的邮件
 router.post('/api/selectUnreadMail', function (req, res, next) {
   // token
@@ -211,7 +697,7 @@ router.post('/api/selectCDKList', function (req, res, next) {
               connection.query(`insert into use_cdk (uid,cdkey) values(${uid},'${cdk}')`)
               let time = getTime()
               let mailId = 0
-              connection.query(`insert into mail(sender,receiver,title,content,enclosure,enclosureStatus,sendTime,mailStatus) values('【九狐子商城】运营团队',${uid},'《奖励》兑换码兑换奖励','亲爱的旅行者：请查收通过兑换码获得的奖励','',0,'${time}',0)`, function (e, data) {
+              connection.query(`insert into mail(sender,receiver,title,content,enclosure,enclosureStatus,sendTime,mailStatus) values('【九狐子商城】运营团队',${uid},'【奖励】兑换码兑换奖励','亲爱的旅行者：请查收通过兑换码获得的奖励','',0,'${time}',0)`, function (e, data) {
                 mailId = data.insertId
 
                 // 奖励对应的类型
@@ -296,7 +782,7 @@ router.post('/api/updateBorder', function (req, res, next) {
     let uid = results[0].id
     let hasBorderArr = results[0].hasBorder
     if (hasBorderArr.indexOf(borderID) != -1) {
-      connection.query(`update user set borderImg = '${imgUrl}' where id = ${uid}`, function (err, result) {
+      connection.query(`update user set borderImg = '${imgUrl}' where id = ${uid}`, function () {
         connection.query(user.queryUserTel({ userTel: tokenObj.tel }), function (e, r) {
           res.send({
             data: {
@@ -396,6 +882,7 @@ router.post('/api/signin', function (req, res, next) {
   connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
     // 用户id
     let uid = results[0].id
+    let member = results[0].member
     connection.query(`select * from sign_in where uid = ${uid} and sign_time = '${today}'`, function (err, result) {
       if (result.length > 0) {
         res.send({
@@ -409,9 +896,10 @@ router.post('/api/signin', function (req, res, next) {
           }
         })
       } else {
-        connection.query(`select * from sign_in where uid=${uid} and sign_time = '${yesterday}'`, function (e, r) {
+        connection.query(`select * from sign_in where uid = ${uid} and sign_time = '${yesterday}'`, function (e, r) {
           let total = 1
           let reward = ''
+          let memberReward = 2 * parseInt(member)
           if (r.length > 0) {
             if (r[0].total_time == 7) {
               total = 1
@@ -447,7 +935,7 @@ router.post('/api/signin', function (req, res, next) {
           connection.query(`insert into sign_in(uid,sign_time,reward,total_time) values(${uid},'${today}','${reward + '积分'}',${total})`, function () {
             connection.query(`select * from wallet where uid =${uid}`, function (e, r) {
               if (r.length > 0) {
-                let integral = parseFloat(r[0].integral) + parseFloat(reward)
+                let integral = parseFloat(r[0].integral) + parseFloat(reward) + memberReward
                 connection.query(`update wallet set integral = ${integral} where uid = ${uid}`, function () {
                   res.send({
                     data: {
@@ -456,7 +944,8 @@ router.post('/api/signin', function (req, res, next) {
                       success: true,
                       data: {
                         total_time: total,
-                        reward
+                        reward,
+                        memberReward
                       }
                     }
                   })
@@ -662,7 +1151,7 @@ router.post('/api/updateheaderImg', function (req, res, next) {
   // console.log(`select * from user where nickName = '${name}'`)
 
   // 修改用户
-  connection.query(`update user set imgUrl ='${imgUrl}' where tel ='${phone}'`, function (error, results) {
+  connection.query(`update user set imgUrl ='${imgUrl}' where tel ='${phone}'`, function () {
     connection.query(`select * from user where tel = '${phone}'`, function (e, r) {
       res.send({
         data: {
@@ -694,7 +1183,7 @@ router.post('/api/updateUser', function (req, res, next) {
       })
     } else {
       // 修改用户
-      connection.query(`update user set nickName ='${name}' where tel ='${phone}'`, function (error, results) {
+      connection.query(`update user set nickName ='${name}' where tel ='${phone}'`, function () {
         connection.query(`select * from user where tel = '${phone}'`, function (e, r) {
           res.send({
             data: {
@@ -1236,7 +1725,7 @@ router.post('/api/successPayment', function (req, res, next) {
                   }
 
                   // 订单的状态改成  2==>3
-                  connection.query(`update store_order set order_status = replace(order_status,'2','3') where id = ${id}`, function (e, r) {
+                  connection.query(`update store_order set order_status = replace(order_status,'2','3') where id = ${id}`, function () {
                     connection.query(`update wallet set integral = ${integral} where uid = ${uid}`, function () {
                       res.send({
                         data: {
@@ -1743,15 +2232,40 @@ router.post('/api/selectUser', function (req, res, next) {
     if (err) throw err
     if (result.length > 0) {
       let uid = result[0].id
+
       connection.query(`select * from wallet where uid = ${uid}`, function (e, r) {
+        // 如果用户钱包没有数据，则为用户添加一条钱包数据
         if (r.length == 0) {
           connection.query(user.insertWallet(uid))
         }
-        res.send({
-          code: 200,
-          data: {
-            success: true,
-            data: result
+        // 查询用户vip是否过期
+        connection.query(`select * from vip_list where uid = ${uid}`, function (e, data) {
+          if (data.length > 0) {
+            let overtime = data[0].overtime
+            let day = days(getTime(), overtime)
+            // 会员等级
+            let vipStatus = 0
+            if (day >= 36500) {
+              vipStatus = 4
+            } else if (day >= 365 && day < 36500) {
+              vipStatus = 3
+            } else if (day >= 90 && day < 365) {
+              vipStatus = 2
+            } else if (day > 0 && day < 90) {
+              vipStatus = 1
+            } else if (day <= 0) {
+              vipStatus = 0
+            }
+            connection.query(`update user set member = '${vipStatus}' where id = ${uid}`)
+            connection.query(user.queryUserTel(params), function (e, userinfo) {
+              res.send({
+                code: 200,
+                data: {
+                  success: true,
+                  data: userinfo
+                }
+              })
+            })
           }
         })
       })
