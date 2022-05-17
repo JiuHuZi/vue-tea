@@ -45,7 +45,7 @@
           <i class="iconfont icon-daipingjia"></i>
           <span>我的评价</span>
         </li>
-        <li @click="lock">
+        <li @click="goOrder">
           <i class="iconfont icon-tubiao_dingdan" style="font-weight: bold"></i>
           <span>全部订单</span>
         </li>
@@ -98,6 +98,10 @@ export default {
     // 进入会员页
     goVip() {
       this.$router.push('/vip')
+    },
+    // 进入订单页
+    goOrder() {
+      this.$router.push('/deal')
     },
     // 未开发的功能
     lock() {

@@ -34,9 +34,9 @@ export default {
     // 前往未付款页
     goArrearage() {
       this.$router.push({
-        path: '/deal',
+        path: '/deal/arrearage',
         query: {
-          type: 0
+          type: 1
         }
       })
     },
@@ -45,7 +45,7 @@ export default {
       this.$router.push({
         path: '/deal/unshipped',
         query: {
-          type: 1
+          type: 2
         }
       })
     },
@@ -54,7 +54,7 @@ export default {
       this.$router.push({
         path: '/deal/waitreceiving',
         query: {
-          type: 2
+          type: 3
         }
       })
     },
@@ -63,7 +63,7 @@ export default {
       this.$router.push({
         path: '/deal/noevaluation',
         query: {
-          type: 3
+          type: 4
         }
       })
     },

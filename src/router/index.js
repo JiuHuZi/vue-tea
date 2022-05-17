@@ -291,6 +291,14 @@ const routes = [
     children: [
       {
         path: '/',
+        name: 'All',
+        component: () => import('@/views/Deal/All.vue'),
+        meta: {
+          title: '全部订单'
+        }
+      },
+      {
+        path: 'arrearage',
         name: 'Arrearage',
         component: () => import('@/views/Deal/Arrearage.vue'),
         meta: {

@@ -81,6 +81,75 @@ router.get('/', function (req, res, next) {
   res.render('index', { title: 'Express' })
 })
 
+// 查看订单卡片商品信息
+router.post('/api/selectGoods', function (req, res, next) {
+  let { goods_name, goods_num } = req.body.goods
+  // console.log(req.body.goods)
+
+  let numList = goods_num.split(',')
+  let nameList = goods_name.split(',')
+
+  // console.log(numList, nameList)
+  let product = []
+
+  for (let i = 0; i < nameList.length; i++) {
+    connection.query(`select * from goods_list where name = '${nameList[i]}'`, function (err, result) {
+      // console.log(`select * from goods_list where name = '${nameList[i]}'`)
+      product.push({
+        name: nameList[i],
+        num: numList[i],
+        price: result[0].price,
+        imgUrl: result[0].imgUrl
+      })
+
+      // console.log(product)
+      if (i + 1 == nameList.length) {
+        res.send({
+          data: {
+            code: 200,
+            success: true,
+            data: product
+          }
+        })
+      }
+    })
+  }
+})
+
+// 查看各状态订单列表
+router.post('/api/selectOrderStatus', function (req, res, next) {
+  // token
+  let token = req.headers.token
+  let tokenObj = jwt.decode(token)
+  // 订单状态
+  // 1 => 未支付    3 => 待发货    4 => 待收货     5 => 待评价
+  let type = req.body.type || ''
+  // 查询用户
+  connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
+    // 用户id
+    let uid = results[0].id
+    // console.log(`select * from store_order where order_status like '%${type}%' and uid = ${uid} and mode = ('电子货币' OR '积分')`)
+    connection.query(`select * from store_order where order_status like '%${type}%' and uid = ${uid} and (MODE = '电子货币' OR MODE = '积分')`, function (err, result) {
+      if (result.length > 0) {
+        res.send({
+          data: {
+            success: true,
+            code: 200,
+            data: result
+          }
+        })
+      } else {
+        res.send({
+          data: {
+            code: 0,
+            success: false
+          }
+        })
+      }
+    })
+  })
+})
+
 // 查看vip状态
 router.post('/api/selectVipStatus', function (req, res, next) {
   // token
@@ -538,7 +607,7 @@ router.post('/api/addOrdervip', function (req, res, next) {
   connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
     // 用户id
     let uid = results[0].id
-    connection.query(`insert into store_order (order_id,goods_name,goods_price,goods_num,order_status,uid,mode) values('${orderId}', '${goodsName}','${goodsPrice}',1,'2',${uid},'会员')`, function () {
+    connection.query(`insert into store_order (order_id,goods_name,goods_price,goods_num,order_status,uid,mode,time) values('${orderId}', '${goodsName}','${goodsPrice}',1,'2',${uid},'会员','${getTime()}')`, function () {
       connection.query(`select * from store_order where uid = ${uid} and order_id = '${orderId}'`, function (err, result) {
         res.send({
           data: {
@@ -1564,7 +1633,7 @@ router.post('/api/addWalletOrder', function (req, res, next) {
   connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
     // 用户id
     let uid = results[0].id
-    connection.query(`insert into store_order (order_id,goods_name,goods_price,goods_num,order_status,uid,mode) values('${orderId}', '${goodsName}','${goodsPrice}',1,'2',${uid},'充值')`, function () {
+    connection.query(`insert into store_order (order_id,goods_name,goods_price,goods_num,order_status,uid,mode,time) values('${orderId}', '${goodsName}','${goodsPrice}',1,'2',${uid},'充值','${getTime()}')`, function () {
       connection.query(`select * from store_order where uid = ${uid} and order_id = '${orderId}'`, function (err, result) {
         res.send({
           data: {
@@ -1890,7 +1959,7 @@ router.post('/api/addOrder', function (req, res, next) {
   connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
     // 用户id
     let uid = results[0].id
-    connection.query(`insert into store_order (order_id,goods_name,goods_price,goods_num,order_status,uid,mode) values('${orderId}', '${goodsName}','${goodsPrice}','${goodsRespectivelyNum}','1',${uid},'${mode}')`, function (error, results) {
+    connection.query(`insert into store_order (order_id,goods_name,goods_price,goods_num,order_status,uid,mode,time) values('${orderId}', '${goodsName}','${goodsPrice}','${goodsRespectivelyNum}','1',${uid},'${mode}','${getTime()}')`, function (error, results) {
       connection.query(`select * from store_order where uid = ${uid} and order_id = '${orderId}'`, function (err, result) {
         res.send({
           data: {

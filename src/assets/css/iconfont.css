@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 3192614 */
-  src: url('../fonts/iconfont.woff2?t=1651740107216') format('woff2'),
-       url('../fonts/iconfont.woff?t=1651740107216') format('woff'),
-       url('../fonts/iconfont.ttf?t=1651740107216') format('truetype');
+  src: url('../fonts/iconfont.woff2?t=1652603090258') format('woff2'),
+       url('../fonts/iconfont.woff?t=1652603090258') format('woff'),
+       url('../fonts/iconfont.ttf?t=1652603090258') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,10 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-gengduo:before {
+  content: "\e633";
 }
 
 .icon-cunqianguan:before {

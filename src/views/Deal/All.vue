@@ -1,6 +1,6 @@
 <template>
-  <!-- 未付款模块 -->
-  <div class="arrearage">
+  <!-- 待评价模块 -->
+  <div class="NoEvaluation">
     <div class="cardList" v-if="list">
       <goods-card v-for="(item, index) in list" :key="index" :goods="item" />
     </div>
@@ -12,10 +12,9 @@
 import goodsCard from '@/components/deal/goodsCard.vue'
 import http from '@/common/api/request.js'
 export default {
-  name: 'arrearage',
+  name: 'NoEvaluation',
   data() {
     return {
-      // list: null
       list: null
     }
   },
@@ -33,9 +32,6 @@ export default {
           method: 'POST',
           headers: {
             token: true
-          },
-          data: {
-            type: 1
           }
         })
         .then((res) => {
