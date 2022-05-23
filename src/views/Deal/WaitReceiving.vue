@@ -39,10 +39,19 @@ export default {
         })
         .then((res) => {
           if (res.success) {
-            console.log(res)
-            this.list = res.data
+            let list = res.data
+            http
+              .$axios({
+                url: '/api/selectGoods',
+                method: 'POST',
+                data: { list }
+              })
+              .then((ress) => {
+                // console.log(ress)
+                this.list = ress.data
+              })
           } else {
-            console.log('没有该信息')
+            console.log('失败')
           }
         })
     }

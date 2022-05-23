@@ -285,7 +285,7 @@ export default {
     .popup {
       position: fixed;
       width: 80vw;
-      height: 30vh;
+      max-height: 38vh;
       border-radius: 15px;
       overflow-y: initial;
       img {

@@ -508,7 +508,9 @@ export default {
             height: 46px;
             margin-right: 10px;
             overflow: hidden;
-            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             img {
               width: 100%;
               height: 100%;
@@ -516,9 +518,6 @@ export default {
             .signImg {
               width: 90px;
               height: 90px;
-              position: relative;
-              left: -52%;
-              top: -56%;
             }
           }
           div {

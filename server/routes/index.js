@@ -81,38 +81,56 @@ router.get('/', function (req, res, next) {
   res.render('index', { title: 'Express' })
 })
 
-// 查看订单卡片商品信息
-router.post('/api/selectGoods', function (req, res, next) {
-  let { goods_name, goods_num } = req.body.goods
-  // console.log(req.body.goods)
-
-  let numList = goods_num.split(',')
-  let nameList = goods_name.split(',')
-
-  // console.log(numList, nameList)
-  let product = []
-
-  for (let i = 0; i < nameList.length; i++) {
-    connection.query(`select * from goods_list where name = '${nameList[i]}'`, function (err, result) {
-      // console.log(`select * from goods_list where name = '${nameList[i]}'`)
-      product.push({
-        name: nameList[i],
-        num: numList[i],
-        price: result[0].price,
-        imgUrl: result[0].imgUrl
-      })
-
-      // console.log(product)
-      if (i + 1 == nameList.length) {
-        res.send({
-          data: {
-            code: 200,
-            success: true,
-            data: product
-          }
-        })
+// 更改订单状态
+router.post('/api/changeOrderStatus', function (req, res, next) {
+  let { id, status } = req.body
+  // console.log(`update store_order set order_status = '${status}' where order_id = '${id}'`)
+  connection.query(`update store_order set order_status = '${status}' where order_id = '${id}'`, function () {
+    res.send({
+      data: {
+        success: true,
+        code: 200,
+        msg: '修改成功'
       }
     })
+  })
+})
+
+// 查看订单卡片商品信息
+router.post('/api/selectGoods', function (req, res, next) {
+  let list = req.body.list
+  let product = []
+  for (let i = 0; i < list.length; i++) {
+    let goods = []
+    let { goods_name, goods_num } = list[i]
+    let numList = goods_num.split(',')
+    let nameList = goods_name.split(',')
+    for (let j = 0; j < nameList.length; j++) {
+      connection.query(`select * from goods_list where name = '${nameList[j]}'`, function (err, result) {
+        // console.log(`select * from goods_list where name = '${nameList[i]}'`)
+        goods.push({
+          name: nameList[j],
+          num: numList[j],
+          price: result[0].price,
+          imgUrl: result[0].imgUrl,
+          totalPrice: list[i].goods_price,
+          order_id: list[i].order_id,
+          mode: list[i].mode,
+          order_status: list[i].order_status
+        })
+
+        if (j + 1 == nameList.length && i + 1 == list.length) {
+          res.send({
+            data: {
+              code: 200,
+              success: true,
+              data: product
+            }
+          })
+        }
+      })
+    }
+    product.push(goods)
   }
 })
 
