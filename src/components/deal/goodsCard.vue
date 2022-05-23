@@ -16,9 +16,9 @@
       </div>
       <div class="btn-content" :style="goods[0].order_status == '6' ? 'justify-content: space-between;' : ''">
         <i class="iconfont icon-shanchu" v-if="goods[0].order_status == '6'"></i>
-        <div class="btnBox" v-if="goods[0].order_status != '0'">
+        <div class="btnBox" v-if="['1', '3', '4', '5'].includes(goods[0].order_status)">
           <div class="cancel" v-if="goods[0].order_status == '1'" @click="changeStatus(goods[0].order_id, 0)">取消订单</div>
-          <div class="submit" v-if="goods[0].order_status != '2'">{{ btnStatus }}</div>
+          <div class="submit" v-if="goods[0].order_status != '2'" @click="changeStatus(goods[0].order_id, goods[0].order_status)">{{ btnStatus }}</div>
         </div>
       </div>
     </div>
@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import { Dialog } from 'vant'
+import { Dialog, Toast } from 'vant'
 import http from '@/common/api/request.js'
 export default {
   name: 'goodsCard',
@@ -66,6 +66,8 @@ export default {
           .catch(() => {
             return true
           })
+      } else if (status == 3) {
+        Toast.success('已提醒商家尽快发货！')
       } else {
         http
           .$axios({
@@ -76,7 +78,7 @@ export default {
             },
             data: {
               id,
-              status
+              status: parseInt(status) + 1
             }
           })
           .then((res) => {
@@ -124,6 +126,9 @@ export default {
           break
         case '0':
           status = '买家已取消订单'
+          break
+        case '6':
+          status = '买家已完成评价'
           break
       }
       return status

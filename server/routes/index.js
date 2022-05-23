@@ -147,7 +147,7 @@ router.post('/api/selectOrderStatus', function (req, res, next) {
     // 用户id
     let uid = results[0].id
     // console.log(`select * from store_order where order_status like '%${type}%' and uid = ${uid} and mode = ('电子货币' OR '积分')`)
-    connection.query(`select * from store_order where order_status like '%${type}%' and uid = ${uid} and (MODE = '电子货币' OR MODE = '积分')`, function (err, result) {
+    connection.query(`select * from store_order where order_status like '%${type}%' and order_status != 2  and uid = ${uid} and (MODE = '电子货币' OR MODE = '积分')`, function (err, result) {
       if (result.length > 0) {
         res.send({
           data: {
