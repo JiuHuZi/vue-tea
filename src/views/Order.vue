@@ -131,7 +131,11 @@ export default {
       // console.log(from)
     })
   },
+  updated() {
+    this.OrderUserInfo()
+  },
   created() {
+    console.log(1)
     this.goodsList = JSON.parse(this.$route.query.goodsList)
     function toFix(num1) {
       if (typeof num1 == 'undefined') {
@@ -263,6 +267,26 @@ export default {
                 console.log(res)
               })
           }
+        })
+    },
+    // 存储订单的用户信息
+    OrderUserInfo() {
+      if (Object.keys(this.path).length == 0) return
+      console.log(this.path)
+      http
+        .$axios({
+          url: '/api/orderUserInfo',
+          method: 'POST',
+          headers: {
+            token: true
+          },
+          data: {
+            path: this.path,
+            order_id: this.order_id
+          }
+        })
+        .then((res) => {
+          console.log(res)
         })
     }
   },

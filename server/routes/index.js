@@ -81,6 +81,22 @@ router.get('/', function (req, res, next) {
   res.render('index', { title: 'Express' })
 })
 
+// 给订单添加收货信息
+router.post('/api/orderUserInfo', function (req, res, next) {
+  let { path, order_id } = req.body
+  let address = path.city + path.county + path.addressDetail
+
+  connection.query(`UPDATE store_order SET recipient = '${path.name}' , phone = '${path.tel}' , address = '${address}' WHERE order_id = '${order_id}'`, function () {
+    res.send({
+      data: {
+        code: 200,
+        success: true,
+        msg: '修改成功'
+      }
+    })
+  })
+})
+
 // 更改订单状态
 router.post('/api/changeOrderStatus', function (req, res, next) {
   let { id, status } = req.body
@@ -1775,7 +1791,7 @@ router.post('/api/successPayment', function (req, res, next) {
                   }
 
                   // 订单的状态改成  2==>3
-                  connection.query(`update store_order set order_status = replace(order_status,'2','3') where id = ${id}`, function (e, r) {
+                  connection.query(`update store_order set order_status = '3' where id = ${id}`, function (e, r) {
                     connection.query(`update wallet set integral = ${integral} where uid = ${uid}`, function () {
                       res.send({
                         data: {
@@ -1812,7 +1828,7 @@ router.post('/api/successPayment', function (req, res, next) {
                   }
 
                   // 订单的状态改成  2==>3
-                  connection.query(`update store_order set order_status = replace(order_status,'2','3') where id = ${id}`, function () {
+                  connection.query(`update store_order set order_status ='3' where id = ${id}`, function () {
                     connection.query(`update wallet set integral = ${integral} where uid = ${uid}`, function () {
                       res.send({
                         data: {

@@ -28,6 +28,7 @@
 <script>
 import { Dialog, Toast } from 'vant'
 import http from '@/common/api/request.js'
+import qs from 'qs'
 export default {
   name: 'goodsCard',
   props: {
@@ -68,6 +69,41 @@ export default {
           })
       } else if (status == 3) {
         Toast.success('已提醒商家尽快发货！')
+      } else if (status == 1) {
+        // console.log(this.goods)
+        let name = ''
+        this.goods.forEach((value) => {
+          // console.log(value)
+          name += value.name
+        })
+        console.log(name)
+
+        // 支付传递的参数
+        let dataOrder = {
+          orderId: this.goods[0].order_id,
+          name,
+          price: this.goods[0].totalPrice
+        }
+
+        // 去支付
+        http
+          .$axios({
+            url: '/api/payment',
+            method: 'POST',
+            headers: {
+              token: true,
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            // qs 是增加安全性的序列化
+            data: qs.stringify(dataOrder)
+          })
+          .then((res) => {
+            if (res.success) {
+              // 打开支付包支付的页面
+              window.location.href = res.paymentUrl
+            }
+            console.log(res)
+          })
       } else {
         http
           .$axios({
