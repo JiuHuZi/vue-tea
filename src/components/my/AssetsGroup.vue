@@ -9,7 +9,7 @@
         <b>{{ historyNum }}</b>
         <span>足迹</span>
       </li>
-      <li @click="lock">
+      <li @click="$router.push('/coupon')">
         <b>{{ payTokenNum }}</b>
         <span>优惠券</span>
       </li>

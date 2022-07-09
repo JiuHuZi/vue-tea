@@ -95,6 +95,9 @@ export default {
     // console.log(this.goodsList)
     this.selectAddress()
   },
+  updated() {
+    this.OrderUserInfo()
+  },
   methods: {
     ...mapMutations(['initData', 'initOrder']),
     // 查询到地址
@@ -188,6 +191,26 @@ export default {
               if (!ress.success) return
               this.$router.replace({ path: '/successExchange', query: { order_id: this.order_id } })
             })
+        })
+    },
+    // 存储订单的用户信息
+    OrderUserInfo() {
+      if (Object.keys(this.path).length == 0) return
+      console.log(this.path)
+      http
+        .$axios({
+          url: '/api/orderUserInfo',
+          method: 'POST',
+          headers: {
+            token: true
+          },
+          data: {
+            path: this.path,
+            order_id: this.order_id
+          }
+        })
+        .then((res) => {
+          console.log(res)
         })
     }
   },

@@ -1,3 +1,6 @@
+// 导入公共函数文件
+var common = require('./common.js')
+
 var express = require('express')
 var router = express.Router()
 var connection = require('../db/sql.js')
@@ -21,64 +24,76 @@ const upload = multer({
   dest: path.join(process.cwd(), '../public/images/headerImg')
 })
 
-// 获取N个月后的时间
-function getDate(params, data = '') {
-  var dt = data != '' ? new Date(data) : new Date()
-  dt.setMonth(dt.getMonth() + Number(params + 1))
-  // return dt.toLocaleString().replace(/\//g, '-') //这里只是把 "/" 替换为 "-" ;  看需要可去掉;
-  console.log(`${dt.getFullYear()}-${dt.getMonth()}-${dt.getDate()} ${dt.getHours()}:${dt.getMinutes()}`)
-  return `${dt.getFullYear()}-${dt.getMonth()}-${dt.getDate()} ${dt.getHours()}:${dt.getMinutes()}`
-}
-
-// 计算两个日期相差多少天
-function days(day1, day2) {
-  var time = new Date(day2).getTime() - new Date(day1).getTime()
-  var date = Math.ceil(time / (24 * 60 * 60 * 1000))
-  return date
-}
-
-// 获取当前时间
-function getTime() {
-  const now = new Date()
-  let year = now.getFullYear()
-  let month = now.getMonth() + 1
-  let day = now.getDate()
-  let hour = now.getHours()
-  let minutes = now.getMinutes()
-  month = setTimeDateFmt(month)
-  day = setTimeDateFmt(day)
-  hour = setTimeDateFmt(hour)
-  minutes = setTimeDateFmt(minutes)
-  let time = `${year}-${month}-${day} ${hour}:${minutes}`
-  return time
-}
-
-// 生成订单号 order_id,规则：时间戳 + 6位随机数
-function setTimeDateFmt(s) {
-  return s < 10 ? '0' + s : s
-}
-function randomNumber() {
-  const now = new Date()
-  let month = now.getMonth() + 1
-  let day = now.getDate()
-  let hour = now.getHours()
-  let minutes = now.getMinutes()
-  let seconds = now.getSeconds()
-
-  month = setTimeDateFmt(month)
-  day = setTimeDateFmt(day)
-  hour = setTimeDateFmt(hour)
-  minutes = setTimeDateFmt(minutes)
-  seconds = setTimeDateFmt(seconds)
-
-  let orderCode = now.getFullYear().toString() + month.toString() + day.toString() + hour.toString() + minutes.toString() + seconds.toString() + Math.round(Math.random() * 1000000).toString()
-
-  return orderCode
-}
-
 /* GET home page. */
 router.get('/', function (req, res, next) {
   res.render('index', { title: 'Express' })
+})
+
+// 查询用户的优惠券
+router.post('/api/selectCoupon', function (req, res, next) {
+  // token
+  let token = req.headers.token
+  let tokenObj = jwt.decode(token)
+
+  // 查询用户
+  connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
+    // 用户id
+    let uid = results[0].id
+    connection.query(`select * from tb_coupon where uid = ${uid}`, function (err, result) {
+      if (result.length > 0) {
+        for (let i = 0; i < result.length; i++) {
+          connection.query(`select * from coupon_list where id = ${result[i].coupon_id}`, function (e, r) {
+            result[i].name = r[0].name
+            result[i].price = r[0].price
+            result[i].condition = r[0].condition
+            result[i].unitDesc = r[0].unitDesc
+            result[i].maxDiscont = r[0].maxDiscont
+
+            // console.log(result)
+            if (i + 1 >= result.length) {
+              res.send({
+                data: {
+                  data: result,
+                  success: true,
+                  code: 200
+                }
+              })
+            }
+          })
+        }
+      } else {
+        res.send({
+          data: {
+            success: false,
+            code: 0,
+            msg: '无优惠券'
+          }
+        })
+      }
+    })
+  })
+})
+// 优惠券
+router.post('/api/coupon', function (req, res, next) {
+  // token
+  let token = req.headers.token
+  let tokenObj = jwt.decode(token)
+  // 获取现在的时间戳
+  let today = new Date().getTime()
+  let endAt = today + 1000 * 60 * 60 * 24
+
+  // 查询用户
+  connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
+    // 用户id
+    let uid = results[0].id
+    connection.query(`insert into tb_coupon(uid,coupon_id,startAt,endAt,isUse) values(${uid},3,'${today}','${endAt}','2')`, function (err, result) {
+      res.send({
+        data: {
+          a: 1
+        }
+      })
+    })
+  })
 })
 
 // 给订单添加收货信息
@@ -215,44 +230,6 @@ router.post('/api/selectVipStatus', function (req, res, next) {
   })
 })
 
-// 查看vip状态
-router.post('/api/selectVip', function (req, res, next) {
-  // token
-  let token = req.headers.token
-  let tokenObj = jwt.decode(token)
-  // 查询用户
-  connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
-    // 用户id
-    let uid = results[0].id
-    connection.query(`select * from vip_list where uid = ${uid}`, function (err, result) {
-      if (result.length > 0) {
-        let overtime = result[0].overtime
-        let day = days(getTime(), overtime)
-        // 会员等级
-        let vipStatus = 0
-        if (day >= 36500) {
-          vipStatus = 4
-        } else if (day >= 365 && day < 36500) {
-          vipStatus = 3
-        } else if (day >= 90 && day < 365) {
-          vipStatus = 2
-        } else if (day > 0 && day < 90) {
-          vipStatus = 1
-        } else if (day <= 0) {
-          vipStatus = 0
-        }
-        connection.query(`update user set member = '${vipStatus}' where id = ${uid}`)
-        res.send({
-          data: {
-            code: 200,
-            success: true
-          }
-        })
-      }
-    })
-  })
-})
-
 // 支付状态
 router.post('/api/successVip', function (req, res, next) {
   // token
@@ -319,7 +296,7 @@ router.post('/api/successVip', function (req, res, next) {
                         borderMsg.type = '头像框'
                         borderMsg.weight = '1'
                         connection.query(
-                          `insert into mail(sender,receiver,title,content,enclosure,enclosureStatus,sendTime,mailStatus) values('【九狐子商城】运营团队',${uid},'【奖励】会员等级奖励','亲爱的旅行者：请查收通过购买大会员增值服务获得的奖励','${JSON.stringify(borderMsg)}',0,'${getTime()}',0)`
+                          `insert into mail(sender,receiver,title,content,enclosure,enclosureStatus,sendTime,mailStatus) values('【九狐子商城】运营团队',${uid},'【奖励】会员等级奖励','亲爱的旅行者：请查收通过购买大会员增值服务获得的奖励','${JSON.stringify(borderMsg)}',0,'${common.getTime()}',0)`
                         )
                       })
                     }
@@ -332,7 +309,7 @@ router.post('/api/successVip', function (req, res, next) {
                         borderMsg.type = '头像框'
                         borderMsg.weight = '1'
                         connection.query(
-                          `insert into mail(sender,receiver,title,content,enclosure,enclosureStatus,sendTime,mailStatus) values('【九狐子商城】运营团队',${uid},'【奖励】会员等级奖励','亲爱的旅行者：请查收通过购买大会员增值服务获得的奖励','${JSON.stringify(borderMsg)}',0,'${getTime()}',0)`
+                          `insert into mail(sender,receiver,title,content,enclosure,enclosureStatus,sendTime,mailStatus) values('【九狐子商城】运营团队',${uid},'【奖励】会员等级奖励','亲爱的旅行者：请查收通过购买大会员增值服务获得的奖励','${JSON.stringify(borderMsg)}',0,'${common.getTime()}',0)`
                         )
                       })
                     }
@@ -344,7 +321,7 @@ router.post('/api/successVip', function (req, res, next) {
                         borderMsg.type = '头像框'
                         borderMsg.weight = '1'
                         connection.query(
-                          `insert into mail(sender,receiver,title,content,enclosure,enclosureStatus,sendTime,mailStatus) values('【九狐子商城】运营团队',${uid},'【奖励】会员等级奖励','亲爱的旅行者：请查收通过购买大会员增值服务获得的奖励','${JSON.stringify(borderMsg)}',0,'${getTime()}',0)`
+                          `insert into mail(sender,receiver,title,content,enclosure,enclosureStatus,sendTime,mailStatus) values('【九狐子商城】运营团队',${uid},'【奖励】会员等级奖励','亲爱的旅行者：请查收通过购买大会员增值服务获得的奖励','${JSON.stringify(borderMsg)}',0,'${common.getTime()}',0)`
                         )
                       })
                     }
@@ -353,9 +330,9 @@ router.post('/api/successVip', function (req, res, next) {
 
                   connection.query(`select * from vip_list where uid = ${uid}`, function (e, r) {
                     if (r.length == 0) {
-                      connection.query(`insert into vip_list(uid,overtime) value(${uid},'${getDate(month)}')`, function () {
+                      connection.query(`insert into vip_list(uid,overtime) value(${uid},'${common.getDate(month)}')`, function () {
                         connection.query(`select * from vip_list where uid = ${uid}`, function (e, date) {
-                          let day = days(getTime(), date[0].overtime)
+                          let day = common.days(common.getTime(), date[0].overtime)
                           console.log(day)
                           // 会员等级
                           let vipStatus = 0
@@ -375,10 +352,10 @@ router.post('/api/successVip', function (req, res, next) {
                       })
                     } else {
                       let overtime = r[0].overtime
-                      if (getTime() > overtime) {
-                        connection.query(`update vip_list set overtime = '${getDate(month)}' where uid = ${uid}`, function () {
+                      if (common.getTime() > overtime) {
+                        connection.query(`update vip_list set overtime = '${common.getDate(month)}' where uid = ${uid}`, function () {
                           connection.query(`select * from vip_list where uid = ${uid}`, function (e, date) {
-                            let day = days(getTime(), date[0].overtime)
+                            let day = common.days(common.getTime(), date[0].overtime)
                             console.log(day)
                             // 会员等级
                             let vipStatus = 0
@@ -397,9 +374,9 @@ router.post('/api/successVip', function (req, res, next) {
                           })
                         })
                       } else {
-                        connection.query(`update vip_list set overtime = '${getDate(month, overtime)}' where uid = ${uid}`, function () {
+                        connection.query(`update vip_list set overtime = '${common.getDate(month, overtime)}' where uid = ${uid}`, function () {
                           connection.query(`select * from vip_list where uid = ${uid}`, function (e, date) {
-                            let day = days(getTime(), date[0].overtime)
+                            let day = common.days(common.getTime(), date[0].overtime)
                             console.log(day)
                             // 会员等级
                             let vipStatus = 0
@@ -449,7 +426,9 @@ router.post('/api/successVip', function (req, res, next) {
                         let borderMsg = border[0]
                         borderMsg.type = '头像框'
                         borderMsg.weight = '1'
-                        connection.query(`insert into mail(sender,receiver,title,content,enclosure,enclosureStatus,sendTime,mailStatus) values('【九狐子商城】运营团队',${uid},'【奖励】会员等级奖励','亲爱的旅行者：请查收通过购买大会员获得的奖励','${JSON.stringify(borderMsg)}',0,'${getTime()}',0)`)
+                        connection.query(
+                          `insert into mail(sender,receiver,title,content,enclosure,enclosureStatus,sendTime,mailStatus) values('【九狐子商城】运营团队',${uid},'【奖励】会员等级奖励','亲爱的旅行者：请查收通过购买大会员获得的奖励','${JSON.stringify(borderMsg)}',0,'${common.getTime()}',0)`
+                        )
                       })
                     }
                     month = 1
@@ -459,7 +438,9 @@ router.post('/api/successVip', function (req, res, next) {
                         let borderMsg = border[0]
                         borderMsg.type = '头像框'
                         borderMsg.weight = '1'
-                        connection.query(`insert into mail(sender,receiver,title,content,enclosure,enclosureStatus,sendTime,mailStatus) values('【九狐子商城】运营团队',${uid},'【奖励】会员等级奖励','亲爱的旅行者：请查收通过购买大会员获得的奖励','${JSON.stringify(borderMsg)}',0,'${getTime()}',0)`)
+                        connection.query(
+                          `insert into mail(sender,receiver,title,content,enclosure,enclosureStatus,sendTime,mailStatus) values('【九狐子商城】运营团队',${uid},'【奖励】会员等级奖励','亲爱的旅行者：请查收通过购买大会员获得的奖励','${JSON.stringify(borderMsg)}',0,'${common.getTime()}',0)`
+                        )
                       })
                     }
                     month = 3
@@ -469,7 +450,9 @@ router.post('/api/successVip', function (req, res, next) {
                         let borderMsg = border[0]
                         borderMsg.type = '头像框'
                         borderMsg.weight = '1'
-                        connection.query(`insert into mail(sender,receiver,title,content,enclosure,enclosureStatus,sendTime,mailStatus) values('【九狐子商城】运营团队',${uid},'【奖励】会员等级奖励','亲爱的旅行者：请查收通过购买大会员获得的奖励','${JSON.stringify(borderMsg)}',0,'${getTime()}',0)`)
+                        connection.query(
+                          `insert into mail(sender,receiver,title,content,enclosure,enclosureStatus,sendTime,mailStatus) values('【九狐子商城】运营团队',${uid},'【奖励】会员等级奖励','亲爱的旅行者：请查收通过购买大会员获得的奖励','${JSON.stringify(borderMsg)}',0,'${common.getTime()}',0)`
+                        )
                       })
                     }
                     month = 12
@@ -477,9 +460,9 @@ router.post('/api/successVip', function (req, res, next) {
 
                   connection.query(`select * from vip_list where uid = ${uid}`, function (e, r) {
                     if (r.length == 0) {
-                      connection.query(`insert into vip_list(uid,overtime) value(${uid},'${getDate(month)}')`, function () {
+                      connection.query(`insert into vip_list(uid,overtime) value(${uid},'${common.getDate(month)}')`, function () {
                         connection.query(`select * from vip_list where uid = ${uid}`, function (e, date) {
-                          let day = days(getTime(), date[0].overtime)
+                          let day = common.days(common.getTime(), date[0].overtime)
                           console.log(day)
                           // 会员等级
                           let vipStatus = 0
@@ -499,10 +482,10 @@ router.post('/api/successVip', function (req, res, next) {
                       })
                     } else {
                       let overtime = r[0].overtime
-                      if (getTime() > overtime) {
-                        connection.query(`update vip_list set overtime = '${getDate(month)}' where uid = ${uid}`, function () {
+                      if (common.getTime() > overtime) {
+                        connection.query(`update vip_list set overtime = '${common.getDate(month)}' where uid = ${uid}`, function () {
                           connection.query(`select * from vip_list where uid = ${uid}`, function (e, date) {
-                            let day = days(getTime(), date[0].overtime)
+                            let day = common.days(common.getTime(), date[0].overtime)
                             console.log(day)
                             // 会员等级
                             let vipStatus = 0
@@ -521,9 +504,9 @@ router.post('/api/successVip', function (req, res, next) {
                           })
                         })
                       } else {
-                        connection.query(`update vip_list set overtime = '${getDate(month, overtime)}' where uid = ${uid}`, function () {
+                        connection.query(`update vip_list set overtime = '${common.getDate(month, overtime)}' where uid = ${uid}`, function () {
                           connection.query(`select * from vip_list where uid = ${uid}`, function (e, date) {
-                            let day = days(getTime(), date[0].overtime)
+                            let day = common.days(common.getTime(), date[0].overtime)
                             console.log(day)
                             // 会员等级
                             let vipStatus = 0
@@ -600,7 +583,7 @@ router.post('/api/buyvip', function (req, res, next) {
   })
   // 支付成功或者失败跳转的链接
   // formData.addField('returnUrl', 'http://localhost:8080/topUp')
-  formData.addField('returnUrl', 'http://10.50.59.51:8080/vipstatus')
+  formData.addField('returnUrl', 'http://192.168.0.244:80/vipstatus')
   // 返回promise
   const result = alipaySdk.exec('alipay.trade.page.pay', {}, { formData: formData })
   // 对接支付宝成功,支付宝方返回的数据
@@ -635,13 +618,13 @@ router.post('/api/addOrdervip', function (req, res, next) {
   let token = req.headers.token
   let tokenObj = jwt.decode(token)
   // 订单号
-  let orderId = randomNumber()
+  let orderId = common.randomNumber()
 
   // 查询用户
   connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
     // 用户id
     let uid = results[0].id
-    connection.query(`insert into store_order (order_id,goods_name,goods_price,goods_num,order_status,uid,mode,time) values('${orderId}', '${goodsName}','${goodsPrice}',1,'2',${uid},'会员','${getTime()}')`, function () {
+    connection.query(`insert into store_order (order_id,goods_name,goods_price,goods_num,order_status,uid,mode,time) values('${orderId}', '${goodsName}','${goodsPrice}',1,'2',${uid},'会员','${common.getTime()}')`, function () {
       connection.query(`select * from store_order where uid = ${uid} and order_id = '${orderId}'`, function (err, result) {
         res.send({
           data: {
@@ -798,7 +781,7 @@ router.post('/api/selectCDKList', function (req, res, next) {
               })
             } else {
               connection.query(`insert into use_cdk (uid,cdkey) values(${uid},'${cdk}')`)
-              let time = getTime()
+              let time = common.getTime()
               let mailId = 0
               connection.query(`insert into mail(sender,receiver,title,content,enclosure,enclosureStatus,sendTime,mailStatus) values('【九狐子商城】运营团队',${uid},'【奖励】兑换码兑换奖励','亲爱的旅行者：请查收通过兑换码获得的奖励','',0,'${time}',0)`, function (e, data) {
                 mailId = data.insertId
@@ -1636,7 +1619,7 @@ router.post('/api/topUp', function (req, res, next) {
   })
   // 支付成功或者失败跳转的链接
   // formData.addField('returnUrl', 'http://localhost:8080/topUp')
-  formData.addField('returnUrl', 'http://10.50.59.51:8080/topUp')
+  formData.addField('returnUrl', 'http://192.168.0.244:80/topUp')
   // 返回promise
   const result = alipaySdk.exec('alipay.trade.page.pay', {}, { formData: formData })
   // 对接支付宝成功,支付宝方返回的数据
@@ -1661,13 +1644,13 @@ router.post('/api/addWalletOrder', function (req, res, next) {
   let goodsName = req.body.goods_name
   let goodsPrice = req.body.goods_price
   // 订单号
-  let orderId = randomNumber()
+  let orderId = common.randomNumber()
 
   // 查询用户
   connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
     // 用户id
     let uid = results[0].id
-    connection.query(`insert into store_order (order_id,goods_name,goods_price,goods_num,order_status,uid,mode,time) values('${orderId}', '${goodsName}','${goodsPrice}',1,'2',${uid},'充值','${getTime()}')`, function () {
+    connection.query(`insert into store_order (order_id,goods_name,goods_price,goods_num,order_status,uid,mode,time) values('${orderId}', '${goodsName}','${goodsPrice}',1,'2',${uid},'充值','${common.getTime()}')`, function () {
       connection.query(`select * from store_order where uid = ${uid} and order_id = '${orderId}'`, function (err, result) {
         res.send({
           data: {
@@ -1885,7 +1868,7 @@ router.post('/api/payment', function (req, res, next) {
   })
   // 支付成功或者失败跳转的链接
   // formData.addField('returnUrl', 'http://localhost:8080/payment')
-  formData.addField('returnUrl', 'http://10.50.59.51:8080/payment')
+  formData.addField('returnUrl', 'http://192.168.0.244:80/payment')
   // 返回promise
   const result = alipaySdk.exec('alipay.trade.page.pay', {}, { formData: formData })
   // 对接支付宝成功,支付宝方返回的数据
@@ -1979,7 +1962,7 @@ router.post('/api/addOrder', function (req, res, next) {
   // 订单商品分别数量
   let goodsRespectivelyNum = []
   // 订单号
-  let orderId = randomNumber()
+  let orderId = common.randomNumber()
 
   goodsArr.forEach((v) => {
     // console.log(v)
@@ -1993,7 +1976,7 @@ router.post('/api/addOrder', function (req, res, next) {
   connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
     // 用户id
     let uid = results[0].id
-    connection.query(`insert into store_order (order_id,goods_name,goods_price,goods_num,order_status,uid,mode,time) values('${orderId}', '${goodsName}','${goodsPrice}','${goodsRespectivelyNum}','1',${uid},'${mode}','${getTime()}')`, function (error, results) {
+    connection.query(`insert into store_order (order_id,goods_name,goods_price,goods_num,order_status,uid,mode,time) values('${orderId}', '${goodsName}','${goodsPrice}','${goodsRespectivelyNum}','1',${uid},'${mode}','${common.getTime()}')`, function (error, results) {
       connection.query(`select * from store_order where uid = ${uid} and order_id = '${orderId}'`, function (err, result) {
         res.send({
           data: {
@@ -2345,7 +2328,7 @@ router.post('/api/selectUser', function (req, res, next) {
         connection.query(`select * from vip_list where uid = ${uid}`, function (e, data) {
           if (data.length > 0) {
             let overtime = data[0].overtime
-            let day = days(getTime(), overtime)
+            let day = common.days(common.getTime(), overtime)
             // 会员等级
             let vipStatus = 0
             if (day >= 36500) {

@@ -10,6 +10,10 @@
     </div>
     <div class="goods_content">
       <van-card v-for="(item, index) in goods" :key="index" :num="item.num" :price="item.price.toFixed(2)" desc="预计7天内发货" :title="item.name" :thumb="item.imgUrl" />
+      <div class="order_id_box">
+        <span>订单号：</span>
+        <span>{{ goods[0].order_id }}</span>
+      </div>
       <div class="total-price">
         <span v-if="goods[0].mode == '积分'">实付款{{ goods[0].totalPrice }}积分</span>
         <span v-if="goods[0].mode == '电子货币'">实付款￥{{ goods[0].totalPrice }}</span>
@@ -207,6 +211,13 @@ export default {
     }
   }
   .goods_content {
+    .order_id_box {
+      padding: 8px 16px;
+      font-size: 14px;
+      span:first-child {
+        color: #666;
+      }
+    }
     .total-price {
       display: flex;
       align-items: center;

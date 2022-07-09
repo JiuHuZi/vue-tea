@@ -2,6 +2,7 @@ let path = require('path')
 module.exports = {
   // 代理
   devServer: {
+    port: 80,
     proxy: {
       '/api': {
         target: 'http://localhost:3000',

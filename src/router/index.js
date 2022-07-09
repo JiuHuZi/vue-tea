@@ -331,6 +331,41 @@ const routes = [
       }
     ],
     component: () => import('@/views/Deal/Deal.vue')
+  },
+  {
+    path: '/test',
+    name: 'Test',
+    component: () => import('@/views/Test.vue')
+  },
+  {
+    path: '/coupon',
+    name: 'Coupon',
+    component: () => import('@/views/Coupon/Coupon.vue'),
+    children: [
+      {
+        path: '/',
+        name: 'All',
+        component: () => import('@/views/Coupon/All.vue')
+      },
+      {
+        path: 'unused',
+        name: 'Unused',
+        component: () => import('@/views/Coupon/Unused.vue')
+      },
+      {
+        path: 'useed',
+        name: 'Used',
+        component: () => import('@/views/Coupon/Used.vue')
+      },
+      {
+        path: 'overdue',
+        name: 'Overdue',
+        component: () => import('@/views/Coupon/Overdue.vue')
+      }
+    ],
+    meta: {
+      title: '优惠券'
+    }
   }
 ]
 

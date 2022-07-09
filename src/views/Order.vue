@@ -37,9 +37,16 @@
       </div>
 
       <div class="discounts">
-        <span class="discounts-title">优惠：</span>
+        <span class="discounts-title">折扣</span>
         <span class="discounts-msg">{{ discountTitle }}</span>
       </div>
+
+      <!-- 优惠券单元格 -->
+      <van-coupon-cell :coupons="coupons" :chosen-coupon="chosenCoupon" @click="showList = true" />
+      <!-- 优惠券列表 -->
+      <van-popup v-model="showList" round position="bottom" style="height: 90%; padding-top: 4px">
+        <van-coupon-list :coupons="coupons" :chosen-coupon="chosenCoupon" :show-exchange-bar="false" :disabled-coupons="disabledCoupons" @change="onChange" @exchange="onExchange" />
+      </van-popup>
 
       <div class="goods">
         <ul>
@@ -76,6 +83,23 @@ import http from '@/common/api/request.js'
 import { Toast } from 'vant'
 import bus from '@/common/bus.js'
 import qs from 'qs'
+
+const coupon = {
+  // 满减条件
+  condition: '无使用门槛\n最多优惠12元',
+  // 不可用原因
+  reason: '',
+  // 优惠金额，单位分
+  value: 150,
+  name: '优惠券名称',
+  startAt: 1657182833099,
+  endAt: 1657269233099,
+  // 优惠券金额文案
+  valueDesc: '1.5',
+  // 单位文案
+  unitDesc: '元'
+}
+
 export default {
   name: 'Order',
   data() {
@@ -86,7 +110,12 @@ export default {
       total: {
         num: 0,
         price: 0
-      }
+      },
+      // 优惠券参数
+      chosenCoupon: -1,
+      coupons: [coupon],
+      disabledCoupons: [coupon],
+      showList: false
     }
   },
   computed: {
@@ -288,6 +317,15 @@ export default {
         .then((res) => {
           console.log(res)
         })
+    },
+    // 优惠券方法
+    onChange(index) {
+      this.showList = false
+      this.chosenCoupon = index
+    },
+    onExchange(code) {
+      console.log(code)
+      this.coupons.push(coupon)
     }
   },
   activated() {
@@ -379,12 +417,12 @@ section {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 16px;
-    padding: 5px 10px;
+    font-size: 14px;
+    padding: 5px 16px;
     background-color: #fff;
-    .discounts-title {
-      font-weight: bold;
-    }
+    // .discounts-title {
+    //   font-weight: bold;
+    // }
     .discounts-msg {
       color: #999;
       font-size: 14px;

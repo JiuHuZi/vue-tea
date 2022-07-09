@@ -6,7 +6,7 @@
         <input type="text" placeholder="请输入手机号" v-model="userTel" pattern="[0-9]*" />
       </div>
       <div class="login-code">
-        <input type="text" placeholder="请输入密码" v-model="userPwd" />
+        <input type="password" placeholder="请输入密码" v-model="userPwd" />
       </div>
       <div class="login-btn" @click="login">登录</div>
       <div class="login-tab">
