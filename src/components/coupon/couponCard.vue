@@ -22,7 +22,7 @@
           <span class="currency">￥</span>
           <span>{{ content.value / 100 }}</span>
         </div>
-        <div class="useBtn" v-if="content.isUse == '0'">立即使用</div>
+        <div class="useBtn" v-if="content.isUse == '0'" @click="$router.push('/home')">立即使用</div>
       </div>
     </div>
 

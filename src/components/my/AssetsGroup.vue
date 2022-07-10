@@ -10,7 +10,7 @@
         <span>足迹</span>
       </li>
       <li @click="$router.push('/coupon')">
-        <b>{{ payTokenNum }}</b>
+        <b>{{ couponNum }}</b>
         <span>优惠券</span>
       </li>
       <li @click="$router.push('/collect')">
@@ -33,7 +33,7 @@ export default {
       // 足迹数量
       historyNum: 0,
       // 优惠券数量
-      payTokenNum: 0,
+      couponNum: 0,
       // 收藏商品数量·
       startNum: 0
     }
@@ -84,6 +84,21 @@ export default {
         })
         .then((res) => {
           this.historyNum = res.data
+        })
+
+      // 统计可用优惠券的数量
+      http
+        .$axios({
+          url: '/api/selectCoupon',
+          method: 'POST',
+          headers: {
+            token: true
+          }
+        })
+        .then((res) => {
+          res.data.forEach((v) => {
+            if (v.isUse == '0') this.couponNum++
+          })
         })
     }
   },

@@ -29,6 +29,47 @@ router.get('/', function (req, res, next) {
   res.render('index', { title: 'Express' })
 })
 
+// 修改已过期的优惠券
+router.post('/api/changeCoupon', function (req, res, next) {
+  // token
+  let token = req.headers.token
+  let tokenObj = jwt.decode(token)
+  // 拿到现在的时间戳
+  let today = new Date().getTime()
+
+  // 查询用户
+  connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
+    // 用户id
+    let uid = results[0].id
+
+    connection.query(`select * from tb_coupon where uid = ${uid}`, function (err, result) {
+      if (result.length > 0) {
+        for (let i = 0; i < result.length; i++) {
+          result[i].endAt > today
+          if (result[i].endAt < today) {
+            connection.query(`update tb_coupon set isUse = '2' where id = ${result[i].id}`)
+          }
+          if (i + 1 == result.length) {
+            res.send({
+              data: {
+                code: 200,
+                success: true
+              }
+            })
+          }
+        }
+      } else {
+        res.send({
+          data: {
+            code: 0,
+            success: false
+          }
+        })
+      }
+    })
+  })
+})
+
 // 查询用户的优惠券
 router.post('/api/selectCoupon', function (req, res, next) {
   // token

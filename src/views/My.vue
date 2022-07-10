@@ -177,6 +177,19 @@ export default {
               this.hasMail = true
             }
           })
+
+        // 修改已过期的优惠券
+        http
+          .$axios({
+            url: '/api/changeCoupon',
+            method: 'POST',
+            headers: {
+              token: true
+            }
+          })
+          .then((ress) => {
+            console.log(ress)
+          })
       }
     },
     // 点击名字显示弹出层
