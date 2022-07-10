@@ -37,6 +37,7 @@ export default {
         .then((res) => {
           if (res.success) {
             let list = res.data
+
             http
               .$axios({
                 url: '/api/selectGoods',
@@ -44,8 +45,10 @@ export default {
                 data: { list }
               })
               .then((ress) => {
-                // console.log(ress)
-                this.list = ress.data
+                console.log(ress)
+                this.list = ress.data.sort((a, b) => {
+                  return b[0].order_status - a[0].order_status
+                })
               })
           } else {
             console.log('失败')

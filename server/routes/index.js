@@ -44,10 +44,10 @@ router.post('/api/selectCoupon', function (req, res, next) {
         for (let i = 0; i < result.length; i++) {
           connection.query(`select * from coupon_list where id = ${result[i].coupon_id}`, function (e, r) {
             result[i].name = r[0].name
-            result[i].price = r[0].price
+            result[i].value = r[0].value
             result[i].condition = r[0].condition
             result[i].unitDesc = r[0].unitDesc
-            result[i].maxDiscont = r[0].maxDiscont
+            result[i].maxDiscount = r[0].maxDiscount
 
             // console.log(result)
             if (i + 1 >= result.length) {
@@ -134,11 +134,12 @@ router.post('/api/selectGoods', function (req, res, next) {
   for (let i = 0; i < list.length; i++) {
     let goods = []
     let { goods_name, goods_num } = list[i]
+    console.log(goods_name, goods_num)
     let numList = goods_num.split(',')
     let nameList = goods_name.split(',')
     for (let j = 0; j < nameList.length; j++) {
       connection.query(`select * from goods_list where name = '${nameList[j]}'`, function (err, result) {
-        // console.log(`select * from goods_list where name = '${nameList[i]}'`)
+        // console.log(`select * from goods_list where name = '${nameList[j]}'`)
         goods.push({
           name: nameList[j],
           num: numList[j],

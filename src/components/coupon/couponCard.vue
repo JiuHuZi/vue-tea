@@ -20,7 +20,7 @@
         </div>
         <div class="moneyBox" v-if="content.unitDesc == '元'">
           <span class="currency">￥</span>
-          <span>{{ content.price / 100 }}</span>
+          <span>{{ content.value / 100 }}</span>
         </div>
         <div class="useBtn" v-if="content.isUse == '0'">立即使用</div>
       </div>
@@ -52,7 +52,7 @@ export default {
       let str = ''
       if (this.content.condition != 0) {
         if (this.content.unitDesc == '元') str = `满 ${this.content.condition / 100} 元可用`
-        if (this.content.unitDesc == '折') str = `满 ${this.content.condition / 100} 享 ${this.content.price} 折,最多减 ${this.content.maxDiscont} 元`
+        if (this.content.unitDesc == '折') str = `满 ${this.content.condition / 100} 享 ${this.content.value} 折,最多减 ${this.content.maxDiscont} 元`
       } else {
         str = '无门槛优惠券'
       }

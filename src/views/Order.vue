@@ -45,7 +45,7 @@
       <van-coupon-cell :coupons="coupons" :chosen-coupon="chosenCoupon" @click="showList = true" />
       <!-- 优惠券列表 -->
       <van-popup v-model="showList" round position="bottom" style="height: 90%; padding-top: 4px">
-        <van-coupon-list :coupons="coupons" :chosen-coupon="chosenCoupon" :show-exchange-bar="false" :disabled-coupons="disabledCoupons" @change="onChange" @exchange="onExchange" />
+        <van-coupon-list :coupons="coupons" :chosen-coupon="chosenCoupon" :show-exchange-bar="false" :disabled-coupons="disabledCoupons" @change="onChange" />
       </van-popup>
 
       <div class="goods">
@@ -84,22 +84,6 @@ import { Toast } from 'vant'
 import bus from '@/common/bus.js'
 import qs from 'qs'
 
-const coupon = {
-  // 满减条件
-  condition: '无使用门槛\n最多优惠12元',
-  // 不可用原因
-  reason: '',
-  // 优惠金额，单位分
-  value: 150,
-  name: '优惠券名称',
-  startAt: 1657182833099,
-  endAt: 1657269233099,
-  // 优惠券金额文案
-  valueDesc: '1.5',
-  // 单位文案
-  unitDesc: '元'
-}
-
 export default {
   name: 'Order',
   data() {
@@ -113,9 +97,12 @@ export default {
       },
       // 优惠券参数
       chosenCoupon: -1,
-      coupons: [coupon],
-      disabledCoupons: [coupon],
-      showList: false
+      // 可用的优惠券
+      coupons: [],
+      // 不可用的优惠券
+      disabledCoupons: [],
+      showList: false,
+      oldPrice: 0
     }
   },
   computed: {
@@ -164,7 +151,6 @@ export default {
     this.OrderUserInfo()
   },
   created() {
-    console.log(1)
     this.goodsList = JSON.parse(this.$route.query.goodsList)
     function toFix(num1) {
       if (typeof num1 == 'undefined') {
@@ -176,6 +162,7 @@ export default {
     this.goodsList.goods_price = toFix(this.goodsList.goods_price)
     this.selectAddress()
   },
+  mounted() {},
   methods: {
     ...mapMutations(['initData', 'initOrder', 'cleaerSelectList']),
     // 查询到地址
@@ -233,6 +220,8 @@ export default {
             price: parseFloat(res.data[0].goods_price).toFixed(2) * this.discountMsg,
             num
           }
+          console.log(this.total)
+          this.oldPrice = parseFloat(res.data[0].goods_price).toFixed(2) * this.discountMsg
         })
     },
     // 提交订单
@@ -301,10 +290,42 @@ export default {
     // 存储订单的用户信息
     OrderUserInfo() {
       if (Object.keys(this.path).length == 0) return
-      console.log(this.path)
+      // console.log(this.path)
+      http.$axios({
+        url: '/api/orderUserInfo',
+        method: 'POST',
+        headers: {
+          token: true
+        },
+        data: {
+          path: this.path,
+          order_id: this.order_id
+        }
+      })
+    },
+    // 优惠券方法
+    onChange(index) {
+      this.showList = false
+      this.chosenCoupon = index
+      this.total.price = this.oldPrice
+      if (index == -1) {
+        this.total.price = this.oldPrice
+      } else {
+        if (this.coupons[index].unitDesc == '折') {
+          // 显示减多少元
+          this.coupons[index].value = (this.oldPrice - (this.coupons[index].valueDesc * this.oldPrice) / 10) * 100
+          // 最后总价
+          this.total.price -= (this.coupons[index].value / 100).toFixed(2)
+        } else {
+          this.total.price -= this.coupons[index].valueDesc.toFixed(2)
+        }
+      }
+    },
+    // 查询用户的优惠券
+    getCouponList() {
       http
         .$axios({
-          url: '/api/orderUserInfo',
+          url: '/api/selectCoupon',
           method: 'POST',
           headers: {
             token: true
@@ -315,19 +336,59 @@ export default {
           }
         })
         .then((res) => {
-          console.log(res)
+          // console.log('优惠券', res)
+          if (res.success) {
+            // 可用的优惠券
+            let arr = []
+            // 不可用的优惠券
+            let disabled = []
+            let condition = 0
+            for (let i = 0; i < res.data.length; i++) {
+              if (res.data[i].isUse == '0') {
+                // 不可用原因
+                res.data[i].reason = ''
+                // 优惠券金额文案
+                if (res.data[i].unitDesc == '元') {
+                  res.data[i].valueDesc = res.data[i].value / 100
+                } else if (res.data[i].unitDesc == '折') {
+                  res.data[i].valueDesc = res.data[i].value
+                }
+
+                if (res.data[i].condition == 0) {
+                  condition = 0
+                  if (res.data[i].maxDiscount == null) {
+                    res.data[i].condition = `无使用门槛`
+                  } else {
+                    res.data[i].condition = `无使用门槛\n最多优惠${res.data[i].maxDiscount}`
+                  }
+                } else {
+                  condition = res.data[i].condition / 100
+                  if (res.data[i].maxDiscount == null) {
+                    res.data[i].condition = `满${res.data[i].condition / 100}可用`
+                  } else {
+                    res.data[i].condition = `满${res.data[i].condition / 100}可用\n最多优惠${res.data[i].maxDiscount}`
+                  }
+                }
+
+                if (condition > this.oldPrice) {
+                  res.data[i].reason = '购买金额少于满减条件'
+                  disabled.push(res.data[i])
+                } else {
+                  arr.push(res.data[i])
+                }
+              }
+
+              if (i + 1 == res.data.length) {
+                if (arr.length == 0) return
+                this.coupons = arr
+                this.disabledCoupons = disabled
+              }
+            }
+          }
         })
-    },
-    // 优惠券方法
-    onChange(index) {
-      this.showList = false
-      this.chosenCoupon = index
-    },
-    onExchange(code) {
-      console.log(code)
-      this.coupons.push(coupon)
     }
   },
+  // 使用了keepalive且再次进入生命周期
   activated() {
     bus.$on(
       'selectPath',
@@ -340,6 +401,14 @@ export default {
     this.goodsList = JSON.parse(this.$route.query.goodsList)
 
     this.selectOrder()
+
+    this.getCouponList()
+    this.chosenCoupon = -1
+  },
+  // 离开keepalive触发事件
+  deactivated() {
+    this.getCouponList()
+    this.chosenCoupon = -1
   }
 }
 </script>
