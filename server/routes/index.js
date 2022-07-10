@@ -45,7 +45,7 @@ router.post('/api/changeCoupon', function (req, res, next) {
     connection.query(`select * from tb_coupon where uid = ${uid}`, function (err, result) {
       if (result.length > 0) {
         for (let i = 0; i < result.length; i++) {
-          result[i].endAt > today
+          console.log(result[i].endAt > today)
           if (result[i].endAt < today) {
             connection.query(`update tb_coupon set isUse = '2' where id = ${result[i].id}`)
           }
@@ -127,7 +127,7 @@ router.post('/api/coupon', function (req, res, next) {
   connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
     // 用户id
     let uid = results[0].id
-    connection.query(`insert into tb_coupon(uid,coupon_id,startAt,endAt,isUse) values(${uid},3,'${today}','${endAt}','2')`, function (err, result) {
+    connection.query(`insert into tb_coupon(uid,coupon_id,startAt,endAt,isUse) values(${uid},3,'${today}','${endAt}','0')`, function (err, result) {
       res.send({
         data: {
           a: 1
