@@ -55,10 +55,11 @@ export default {
           }
         })
         .then((res) => {
-          // console.log(res)
-          res.data.enclosure = '[' + res.data.enclosure + ']'
+          // 判断返回的附件是优惠券还是其他，如果是优惠券则无需加方括号
+          if (!Array.isArray(JSON.parse(res.data.enclosure))) res.data.enclosure = '[' + res.data.enclosure + ']'
           this.mailList = res.data
           this.mailList.enclosure = eval(this.mailList.enclosure)
+          console.log(this.mailList)
           this.mailList.enclosure.forEach((v) => {
             if (v.type == '积分') {
               v.name = v.name + '积分'
@@ -87,6 +88,7 @@ export default {
     },
     // 领取奖励
     getEnclosure() {
+      console.log(this.mailList)
       http
         .$axios({
           url: '/api/getEnclosure',

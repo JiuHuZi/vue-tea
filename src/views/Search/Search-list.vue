@@ -157,7 +157,7 @@ section {
     justify-content: space-between;
     align-items: center;
     li {
-      width: 190px;
+      width: 50%;
       padding: 10px;
       box-sizing: border-box;
       display: flex;

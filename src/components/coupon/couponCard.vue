@@ -52,7 +52,7 @@ export default {
       let str = ''
       if (this.content.condition != 0) {
         if (this.content.unitDesc == '元') str = `满 ${this.content.condition / 100} 元可用`
-        if (this.content.unitDesc == '折') str = `满 ${this.content.condition / 100} 享 ${this.content.value} 折,最多减 ${this.content.maxDiscont} 元`
+        if (this.content.unitDesc == '折') str = `满 ${this.content.condition / 100} 享 ${this.content.value} 折,最多减 ${this.content.maxDiscount} 元`
       } else {
         str = '无门槛优惠券'
       }

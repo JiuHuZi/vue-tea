@@ -49,7 +49,7 @@ export default {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  /* width: 50%; */
+  width: 50%;
 }
 .like h3 {
   width: 176px;

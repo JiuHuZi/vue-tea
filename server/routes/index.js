@@ -328,6 +328,15 @@ router.post('/api/successVip', function (req, res, next) {
                 // 用户id
                 let uid = results[0].id
                 let borderList = results[0].hasBorder.split(',')
+
+                // 充值会员获得的优惠券
+                let coupenList = [
+                  { couponId: 4, name: '会员无门槛8折优惠券', imgUrl: '/images/coupon.png', num: 1, type: '优惠券', weight: '1' },
+                  { couponId: 5, name: '会员无门槛10元优惠券', imgUrl: '/images/coupon.png', num: 1, type: '优惠券', weight: '1' },
+                  { couponId: 6, name: '会员50元优惠券', imgUrl: '/images/coupon.png', num: 1, type: '优惠券', weight: '1' },
+                  { couponId: 7, name: '会员10元优惠券', imgUrl: '/images/coupon.png', num: 1, type: '优惠券', weight: '1' }
+                ]
+
                 connection.query(`select * from store_order where order_id = ${out_trade_no}`, function (err, result) {
                   // 充值月份
                   let month = 0
@@ -338,7 +347,7 @@ router.post('/api/successVip', function (req, res, next) {
                         borderMsg.type = '头像框'
                         borderMsg.weight = '1'
                         connection.query(
-                          `insert into mail(sender,receiver,title,content,enclosure,enclosureStatus,sendTime,mailStatus) values('【九狐子商城】运营团队',${uid},'【奖励】会员等级奖励','亲爱的旅行者：请查收通过购买大会员增值服务获得的奖励','${JSON.stringify(borderMsg)}',0,'${common.getTime()}',0)`
+                          `insert into mail(sender,receiver,title,content,enclosure,enclosureStatus,sendTime,mailStatus) values('【九狐子商城】运营团队',${uid},'【奖励】会员等级奖励','亲爱的旅行者：请查收通过购买大会员增值服务获得的奖励','${JSON.stringify(coupenList)}',0,'${common.getTime()}',0)`
                         )
                       })
                     }
@@ -356,6 +365,10 @@ router.post('/api/successVip', function (req, res, next) {
                       })
                     }
                     month = 3
+                    // 季度会员拥有三张优惠券
+                    for (let i = 0; i < coupenList.length; i++) {
+                      coupenList[i].num = 3
+                    }
                   } else if (result[0].goods_name == '年度大会员') {
                     if (borderList.indexOf('24') == -1) {
                       connection.query(`select * from border_list where id = 24`, function (e, border) {
@@ -368,7 +381,17 @@ router.post('/api/successVip', function (req, res, next) {
                       })
                     }
                     month = 12
+
+                    // 季度会员拥有十二张优惠券
+                    for (let i = 0; i < coupenList.length; i++) {
+                      coupenList[i].num = 12
+                    }
                   }
+
+                  // 每次购买会员获取优惠券
+                  connection.query(
+                    `insert into mail(sender,receiver,title,content,enclosure,enclosureStatus,sendTime,mailStatus) values('【九狐子商城】运营团队',${uid},'【奖励】会员等级奖励','亲爱的旅行者：请查收通过购买大会员增值服务获得的奖励','${JSON.stringify(coupenList)}',0,'${common.getTime()}',0)`
+                  )
 
                   connection.query(`select * from vip_list where uid = ${uid}`, function (e, r) {
                     if (r.length == 0) {
@@ -458,6 +481,15 @@ router.post('/api/successVip', function (req, res, next) {
                 // 用户id
                 let uid = results[0].id
                 let borderList = results[0].hasBorder.split(',')
+
+                // 充值会员获得的优惠券
+                let coupenList = [
+                  { couponId: 4, name: '会员无门槛8折优惠券', imgUrl: '/images/coupon.png', num: 1, type: '优惠券', weight: '1' },
+                  { couponId: 5, name: '会员无门槛10元优惠券', imgUrl: '/images/coupon.png', num: 1, type: '优惠券', weight: '1' },
+                  { couponId: 6, name: '会员50元优惠券', imgUrl: '/images/coupon.png', num: 1, type: '优惠券', weight: '1' },
+                  { couponId: 7, name: '会员10元优惠券', imgUrl: '/images/coupon.png', num: 1, type: '优惠券', weight: '1' }
+                ]
+
                 // console.log(borderList)
                 connection.query(`select * from store_order where order_id = ${out_trade_no}`, function (err, result) {
                   // 充值月份
@@ -486,6 +518,10 @@ router.post('/api/successVip', function (req, res, next) {
                       })
                     }
                     month = 3
+                    // 季度会员拥有三张优惠券
+                    for (let i = 0; i < coupenList.length; i++) {
+                      coupenList[i].num = 3
+                    }
                   } else if (result[0].goods_name == '年度大会员') {
                     if (borderList.indexOf('24') == -1) {
                       connection.query(`select * from border_list where id = 24`, function (e, border) {
@@ -498,7 +534,16 @@ router.post('/api/successVip', function (req, res, next) {
                       })
                     }
                     month = 12
+
+                    // 季度会员拥有十二张优惠券
+                    for (let i = 0; i < coupenList.length; i++) {
+                      coupenList[i].num = 12
+                    }
                   }
+                  // 每次购买会员获取优惠券
+                  connection.query(
+                    `insert into mail(sender,receiver,title,content,enclosure,enclosureStatus,sendTime,mailStatus) values('【九狐子商城】运营团队',${uid},'【奖励】会员等级奖励','亲爱的旅行者：请查收通过购买大会员增值服务获得的奖励','${JSON.stringify(coupenList)}',0,'${common.getTime()}',0)`
+                  )
 
                   connection.query(`select * from vip_list where uid = ${uid}`, function (e, r) {
                     if (r.length == 0) {
@@ -711,6 +756,8 @@ router.post('/api/getEnclosure', function (req, res, next) {
   // 获取邮件的ID
   let id = req.body.id
 
+  console.log(enclosure)
+
   // 查询用户
   connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
     // 用户id
@@ -738,6 +785,16 @@ router.post('/api/getEnclosure', function (req, res, next) {
               let integral = parseFloat(result[0].integral) + parseFloat(num)
               connection.query(`update wallet set integral = '${integral}' where uid = ${uid}`)
             })
+          } else if (enclosure[i].type == '优惠券') {
+            console.log('优惠券')
+            // 优惠券有效时间
+            let startAt = new Date().getTime()
+            // 设置优惠券过期时间为3个月
+            let endAt = startAt + 60 * 60 * 24 * 1000 * 30 * 3
+            for (let j = 0; j < enclosure[i].num; j++) {
+              console.log(`insert into tb_coupon(uid,coupon_id,startAt,endAt,isUse) value(${uid},${enclosure[i].couponId},'${startAt}','${endAt}','0')`)
+              connection.query(`insert into tb_coupon(uid,coupon_id,startAt,endAt,isUse) value(${uid},${enclosure[i].couponId},'${startAt}','${endAt}','0')`)
+            }
           }
         }
         connection.query(`update mail set enclosureStatus = 1 where id = ${id}`)

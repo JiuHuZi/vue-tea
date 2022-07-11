@@ -203,7 +203,7 @@ section {
         padding-bottom: 30px;
 
         li {
-          width: 190px;
+          width: 50%;
           padding: 10px;
           box-sizing: border-box;
           display: flex;

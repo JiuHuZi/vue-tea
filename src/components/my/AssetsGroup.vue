@@ -96,9 +96,11 @@ export default {
           }
         })
         .then((res) => {
-          res.data.forEach((v) => {
-            if (v.isUse == '0') this.couponNum++
-          })
+          if (res.success) {
+            res.data.forEach((v) => {
+              if (v.isUse == '0') this.couponNum++
+            })
+          }
         })
     }
   },
