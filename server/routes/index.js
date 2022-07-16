@@ -45,7 +45,7 @@ router.post('/api/changeCoupon', function (req, res, next) {
     connection.query(`select * from tb_coupon where uid = ${uid}`, function (err, result) {
       if (result.length > 0) {
         for (let i = 0; i < result.length; i++) {
-          console.log(result[i].endAt > today)
+          // console.log(result[i].endAt > today)
           if (result[i].endAt < today) {
             connection.query(`update tb_coupon set isUse = '2' where id = ${result[i].id}`)
           }
@@ -114,6 +114,7 @@ router.post('/api/selectCoupon', function (req, res, next) {
     })
   })
 })
+
 // 优惠券
 router.post('/api/coupon', function (req, res, next) {
   // token
@@ -1810,6 +1811,8 @@ router.post('/api/successPayment', function (req, res, next) {
   let out_trade_no = req.body.out_trade_no
   let trade_no = req.body.trade_no
 
+  console.log(req.body)
+
   //支付宝配置
   const formData = new AlipayFormData()
   // 调用 setMethod 并传入 get，会返回可以跳转到支付页面的 url
@@ -1833,6 +1836,17 @@ router.post('/api/successPayment', function (req, res, next) {
         if (responseCode.code == '10000') {
           switch (responseCode.trade_status) {
             case 'WAIT_BUYER_PAY':
+              // 查询用户
+              connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
+                // 用户id
+                let uid = results[0].id
+                // 如果使用优惠券则返回
+                connection.query(`select couponID from store_order where uid = ${uid} and order_id = ${out_trade_no}`, function (err, result) {
+                  if (result != null) {
+                    connection.query(`update tb_coupon set isUse = replace(isUse,'1','0') where id = ${result}`)
+                  }
+                })
+              })
               res.send({
                 data: {
                   code: 0,
@@ -1842,6 +1856,17 @@ router.post('/api/successPayment', function (req, res, next) {
               break
 
             case 'TRADE_CLOSED':
+              // 查询用户
+              connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
+                // 用户id
+                let uid = results[0].id
+                // 如果使用优惠券则返回
+                connection.query(`select couponID from store_order where uid = ${uid} and order_id = ${out_trade_no}`, function (err, result) {
+                  if (result != null) {
+                    connection.query(`update tb_coupon set isUse = replace(isUse,'1','0') where id = ${result}`)
+                  }
+                })
+              })
               res.send({
                 data: {
                   code: 1,
@@ -1934,6 +1959,17 @@ router.post('/api/successPayment', function (req, res, next) {
         }
       })
       .catch((err) => {
+        // 查询用户
+        connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
+          // 用户id
+          let uid = results[0].id
+          // 如果使用优惠券则返回
+          connection.query(`select couponID from store_order where uid = ${uid} and order_id = ${out_trade_no}`, function (err, result) {
+            if (result != null) {
+              connection.query(`update tb_coupon set isUse = replace(isUse,'1','0') where id = ${result}`)
+            }
+          })
+        })
         res.send({
           data: {
             code: 500,
@@ -1992,11 +2028,18 @@ router.post('/api/submitOrder', function (req, res, next) {
   let orderId = req.body.order_id
   // 购物车选中的商品的id
   let shopArr = req.body.shopArr
-
+  // 优惠券ID
+  let coupon_id = req.body.coupon_id
   // 查询用户
   connection.query(`select * from user where tel = ${tokenObj.tel}`, function (error, results) {
     // 用户id
     let uid = results[0].id
+    // 如果使用了优惠券，则修改优惠券表对应的状态
+    // 修改订单状态  1 ==> 2
+    if (coupon_id != null) {
+      connection.query(`update store_order set couponID = ${coupon_id}  where order_id = ${orderId}`)
+      connection.query(`update tb_coupon set isUse = replace(isUse,'0','1') where id = ${coupon_id} and uid = ${uid}`)
+    }
     connection.query(`select * from store_order where uid = ${uid} and order_id = ${orderId}`, function (err, result) {
       // 订单的数据库 id
       let id = result[0].id

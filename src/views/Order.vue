@@ -102,7 +102,8 @@ export default {
       // 不可用的优惠券
       disabledCoupons: [],
       showList: false,
-      oldPrice: 0
+      oldPrice: 0,
+      couponID: null
     }
   },
   computed: {
@@ -217,11 +218,10 @@ export default {
             num += parseInt(v)
           })
           this.total = {
-            price: parseFloat(res.data[0].goods_price).toFixed(2) * this.discountMsg,
+            price: (parseFloat(res.data[0].goods_price).toFixed(2) * this.discountMsg).toFixed(2),
             num
           }
-          console.log(this.total)
-          this.oldPrice = parseFloat(res.data[0].goods_price).toFixed(2) * this.discountMsg
+          this.oldPrice = (parseFloat(res.data[0].goods_price).toFixed(2) * this.discountMsg).toFixed(2)
         })
     },
     // 提交订单
@@ -236,7 +236,6 @@ export default {
       if (this.fromPath == '/detail') {
         this.cleaerSelectList()
       }
-      console.log(this.selectList)
 
       // 发送请求  ==> 1.修改订单状态  2.删除购物车数据
       http
@@ -248,7 +247,8 @@ export default {
           },
           data: {
             order_id: this.order_id,
-            shopArr: this.selectList
+            shopArr: this.selectList,
+            coupon_id: this.couponID
           }
         })
         .then((res) => {
@@ -282,7 +282,6 @@ export default {
                   // 打开支付包支付的页面
                   window.location.href = res.paymentUrl
                 }
-                console.log(res)
               })
           }
         })
@@ -311,11 +310,19 @@ export default {
       if (index == -1) {
         this.total.price = this.oldPrice
       } else {
+        this.couponID = this.coupons[index].id
         if (this.coupons[index].unitDesc == '折') {
+          // 优惠券减多少元
+          let value = (this.oldPrice - (this.coupons[index].valueDesc * this.oldPrice) / 10) * 100
+          // 判断是否有最多减多少元
+          if (this.coupons[index].maxDiscount != null && value > this.coupons[index].maxDiscount) {
+            value = this.coupons[index].maxDiscount
+          }
           // 显示减多少元
-          this.coupons[index].value = (this.oldPrice - (this.coupons[index].valueDesc * this.oldPrice) / 10) * 100
+          this.coupons[index].value = value
           // 最后总价
-          this.total.price -= (this.coupons[index].value / 100).toFixed(2)
+          this.total.price -= this.coupons[index].value / 100
+          this.total.price = this.total.price.toFixed(2)
         } else {
           this.total.price -= this.coupons[index].valueDesc.toFixed(2)
         }
@@ -359,14 +366,14 @@ export default {
                   if (res.data[i].maxDiscount == null) {
                     res.data[i].condition = `无使用门槛`
                   } else {
-                    res.data[i].condition = `无使用门槛\n最多优惠${res.data[i].maxDiscount}`
+                    res.data[i].condition = `无使用门槛\n最多优惠 ${res.data[i].maxDiscount / 100} 元`
                   }
                 } else {
                   condition = res.data[i].condition / 100
                   if (res.data[i].maxDiscount == null) {
                     res.data[i].condition = `满${res.data[i].condition / 100}可用`
                   } else {
-                    res.data[i].condition = `满${res.data[i].condition / 100}可用\n最多优惠${res.data[i].maxDiscount}`
+                    res.data[i].condition = `满${res.data[i].condition / 100}可用\n最多优惠${res.data[i].maxDiscount / 100} 元`
                   }
                 }
 

@@ -173,6 +173,7 @@ section {
           bottom: 0;
           left: 0;
           font-size: 12px;
+          text-align: center;
           display: flex;
           justify-content: center;
           align-items: center;
