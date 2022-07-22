@@ -671,7 +671,7 @@ router.post('/api/buyvip', function (req, res, next) {
   })
   // 支付成功或者失败跳转的链接
   // formData.addField('returnUrl', 'http://localhost:8080/topUp')
-  formData.addField('returnUrl', 'http://192.168.0.244:80/vipstatus')
+  formData.addField('returnUrl', 'http://localhost/vipstatus')
   // 返回promise
   const result = alipaySdk.exec('alipay.trade.page.pay', {}, { formData: formData })
   // 对接支付宝成功,支付宝方返回的数据
@@ -1719,7 +1719,7 @@ router.post('/api/topUp', function (req, res, next) {
   })
   // 支付成功或者失败跳转的链接
   // formData.addField('returnUrl', 'http://localhost:8080/topUp')
-  formData.addField('returnUrl', 'http://192.168.0.244:80/topUp')
+  formData.addField('returnUrl', 'http://localhost/topUp')
   // 返回promise
   const result = alipaySdk.exec('alipay.trade.page.pay', {}, { formData: formData })
   // 对接支付宝成功,支付宝方返回的数据
@@ -2003,7 +2003,7 @@ router.post('/api/payment', function (req, res, next) {
   })
   // 支付成功或者失败跳转的链接
   // formData.addField('returnUrl', 'http://localhost:8080/payment')
-  formData.addField('returnUrl', 'http://192.168.0.244:80/payment')
+  formData.addField('returnUrl', 'http://localhost/payment')
   // 返回promise
   const result = alipaySdk.exec('alipay.trade.page.pay', {}, { formData: formData })
   // 对接支付宝成功,支付宝方返回的数据
