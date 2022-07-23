@@ -249,15 +249,17 @@ export default {
         return
       }
 
-      let name = JSON.parse(localStorage.getItem('teauserInfo')).nickName
+      let id = JSON.parse(localStorage.getItem('teauserInfo')).id
       const formData = new FormData()
       formData.append('file', values.uploader[0].file)
-      formData.append('uname', name)
+      formData.append('id', id)
       fetch('/api/set', {
         method: 'post',
         body: formData
       }).then(async (res) => {
         const data = await res.json()
+        console.log(data)
+
         if (data.code == 200) {
           http
             .$axios({

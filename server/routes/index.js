@@ -1387,18 +1387,19 @@ router.post('/api/updateUser', function (req, res, next) {
 
 // 获取更新的头像
 router.post('/api/set', upload.single('file'), function (req, res, next) {
-  let username = req.body.uname
+  let id = req.body.id
+  console.log(id)
   fs.readFile(req.file.path, function (error, results) {
     if (error) {
       res.send('图片上传失败')
     }
-    let filename = username + '-' + Date.now() + path.parse(req.file.originalname).ext
+    let filename = id + '-' + Date.now() + path.parse(req.file.originalname).ext
     fs.writeFile(path.join(process.cwd(), '../public/images/headerImg', filename), results, function (err) {
       if (err) {
         res.send('图片写入失败')
       }
       fs.unlinkSync(req.file.path)
-      res.json({
+      res.send({
         code: 200,
         results: `/images/headerImg/${filename}`,
         msg: '图片上传成功'

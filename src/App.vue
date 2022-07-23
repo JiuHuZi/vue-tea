@@ -13,6 +13,8 @@
 export default {
   created() {
     this.$store.commit('INIT_USER')
+    // console.log(process.env.VUE_APP_ENV)
+    // console.log(process.env.VUE_APP_BASE_API)
   }
 }
 </script>
